@@ -1,0 +1,3158 @@
+{
+	"inputs" : 
+	[
+		{
+			"path" : "CMakeLists.txt"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "build/CMakeFiles/3.16.3/CMakeSystem.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake-3.16/Modules/CMakeSystemSpecificInitialize.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "build/CMakeFiles/3.16.3/CMakeCCompiler.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "build/CMakeFiles/3.16.3/CMakeCXXCompiler.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "build/CMakeFiles/3.16.3/CMakeFortranCompiler.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake-3.16/Modules/CMakeSystemSpecificInformation.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake-3.16/Modules/CMakeGenericSystem.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake-3.16/Modules/CMakeInitializeConfigs.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake-3.16/Modules/Platform/Linux.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake-3.16/Modules/Platform/UnixPaths.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake-3.16/Modules/CMakeCInformation.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake-3.16/Modules/CMakeLanguageInformation.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake-3.16/Modules/Compiler/GNU-C.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake-3.16/Modules/Compiler/GNU.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake-3.16/Modules/Compiler/CMakeCommonCompilerMacros.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake-3.16/Modules/Internal/CMakeCheckCompilerFlag.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake-3.16/Modules/CMakeCheckCompilerFlagCommonPatterns.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake-3.16/Modules/Platform/Linux-GNU-C.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake-3.16/Modules/Platform/Linux-GNU.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake-3.16/Modules/CMakeCommonLanguageInclude.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake-3.16/Modules/CMakeCXXInformation.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake-3.16/Modules/CMakeLanguageInformation.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake-3.16/Modules/Compiler/GNU-CXX.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake-3.16/Modules/Compiler/GNU.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake-3.16/Modules/Platform/Linux-GNU-CXX.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake-3.16/Modules/Platform/Linux-GNU.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake-3.16/Modules/CMakeCommonLanguageInclude.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake-3.16/Modules/CMakeFortranInformation.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake-3.16/Modules/CMakeLanguageInformation.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake-3.16/Modules/Compiler/GNU-Fortran.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake-3.16/Modules/Compiler/GNU.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake-3.16/Modules/Platform/Linux-GNU-Fortran.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake-3.16/Modules/Platform/Linux-GNU.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake-3.16/Modules/CMakeCommonLanguageInclude.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake-3.16/Modules/FindPythonLibs.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake-3.16/Modules/CMakeFindFrameworks.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake-3.16/Modules/SelectLibraryConfigurations.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake-3.16/Modules/FindPackageHandleStandardArgs.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake-3.16/Modules/FindPackageMessage.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Trilinos/TrilinosConfigVersion.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Trilinos/TrilinosConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/NOX/NOXConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Teko/TekoConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Stratimikos/StratimikosConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Belos/BelosConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/AztecOO/AztecOOConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Epetra/EpetraConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Teuchos/TeuchosConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosKokkosComm/TeuchosKokkosCommConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosKokkosCompat/TeuchosKokkosCompatConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParameterList/TeuchosParameterListConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParser/TeuchosParserConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosCore/TeuchosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosCore/KokkosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosCore/KokkosCoreTargets.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosCore/KokkosCoreTargets-release.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosCore/TeuchosCoreTargets.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosCore/TeuchosCoreTargets-release.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosCore/KokkosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParser/TeuchosParserTargets.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParser/TeuchosParserTargets-release.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosCore/TeuchosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosCore/KokkosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParameterList/TeuchosParameterListTargets.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParameterList/TeuchosParameterListTargets-release.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParser/TeuchosParserConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosCore/TeuchosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosCore/KokkosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosKokkosCompat/TeuchosKokkosCompatTargets.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosKokkosCompat/TeuchosKokkosCompatTargets-release.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosComm/TeuchosCommConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParameterList/TeuchosParameterListConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParser/TeuchosParserConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosCore/TeuchosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosCore/KokkosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosComm/TeuchosCommTargets.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosComm/TeuchosCommTargets-release.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParameterList/TeuchosParameterListConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParser/TeuchosParserConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosCore/TeuchosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosCore/KokkosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosKokkosComm/TeuchosKokkosCommTargets.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosKokkosComm/TeuchosKokkosCommTargets-release.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosKokkosCompat/TeuchosKokkosCompatConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosRemainder/TeuchosRemainderConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosCore/TeuchosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosCore/KokkosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosRemainder/TeuchosRemainderTargets.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosRemainder/TeuchosRemainderTargets-release.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosNumerics/TeuchosNumericsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosComm/TeuchosCommConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParameterList/TeuchosParameterListConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParser/TeuchosParserConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosCore/TeuchosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosCore/KokkosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosNumerics/TeuchosNumericsTargets.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosNumerics/TeuchosNumericsTargets-release.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosComm/TeuchosCommConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParameterList/TeuchosParameterListConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParser/TeuchosParserConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosCore/TeuchosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosCore/KokkosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosKokkosComm/TeuchosKokkosCommConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosKokkosCompat/TeuchosKokkosCompatConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosRemainder/TeuchosRemainderConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosNumerics/TeuchosNumericsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosComm/TeuchosCommConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParameterList/TeuchosParameterListConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParser/TeuchosParserConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosCore/TeuchosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosCore/KokkosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Epetra/EpetraTargets.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Epetra/EpetraTargets-release.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Teuchos/TeuchosConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosKokkosComm/TeuchosKokkosCommConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosKokkosCompat/TeuchosKokkosCompatConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosRemainder/TeuchosRemainderConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosNumerics/TeuchosNumericsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosComm/TeuchosCommConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParameterList/TeuchosParameterListConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParser/TeuchosParserConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosCore/TeuchosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosCore/KokkosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/AztecOO/AztecOOTargets.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/AztecOO/AztecOOTargets-release.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Xpetra/XpetraConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Thyra/ThyraConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ThyraTpetraAdapters/ThyraTpetraAdaptersConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ThyraEpetraAdapters/ThyraEpetraAdaptersConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ThyraCore/ThyraCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/RTOp/RTOpConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosNumerics/TeuchosNumericsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosComm/TeuchosCommConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParameterList/TeuchosParameterListConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParser/TeuchosParserConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosCore/TeuchosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosCore/KokkosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/RTOp/RTOpTargets.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/RTOp/RTOpTargets-release.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosNumerics/TeuchosNumericsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosComm/TeuchosCommConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParameterList/TeuchosParameterListConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParser/TeuchosParserConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosCore/TeuchosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosCore/KokkosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ThyraCore/ThyraCoreTargets.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ThyraCore/ThyraCoreTargets-release.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Epetra/EpetraConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/RTOp/RTOpConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Teuchos/TeuchosConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosKokkosComm/TeuchosKokkosCommConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosKokkosCompat/TeuchosKokkosCompatConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosRemainder/TeuchosRemainderConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosNumerics/TeuchosNumericsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosComm/TeuchosCommConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParameterList/TeuchosParameterListConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParser/TeuchosParserConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosCore/TeuchosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosCore/KokkosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ThyraEpetraAdapters/ThyraEpetraAdaptersTargets.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ThyraEpetraAdapters/ThyraEpetraAdaptersTargets-release.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ThyraCore/ThyraCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Tpetra/TpetraConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TpetraCore/TpetraCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TpetraTSQR/TpetraTSQRConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TpetraClassic/TpetraClassicConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Teuchos/TeuchosConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosKokkosComm/TeuchosKokkosCommConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosKokkosCompat/TeuchosKokkosCompatConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosRemainder/TeuchosRemainderConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosNumerics/TeuchosNumericsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosComm/TeuchosCommConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParameterList/TeuchosParameterListConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParser/TeuchosParserConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosCore/TeuchosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosCore/KokkosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TpetraClassic/TpetraClassicTargets.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TpetraClassic/TpetraClassicTargets-release.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosKernels/KokkosKernelsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosAlgorithms/KokkosAlgorithmsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosContainers/KokkosContainersConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosCore/KokkosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosContainers/KokkosContainersTargets.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosContainers/KokkosContainersTargets-release.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosCore/KokkosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosAlgorithms/KokkosAlgorithmsTargets.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosAlgorithms/KokkosAlgorithmsTargets-release.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosContainers/KokkosContainersConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosCore/KokkosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosKernels/KokkosKernelsTargets.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosKernels/KokkosKernelsTargets-release.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Teuchos/TeuchosConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosKokkosComm/TeuchosKokkosCommConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosKokkosCompat/TeuchosKokkosCompatConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosRemainder/TeuchosRemainderConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosNumerics/TeuchosNumericsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosComm/TeuchosCommConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParameterList/TeuchosParameterListConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParser/TeuchosParserConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosCore/TeuchosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosAlgorithms/KokkosAlgorithmsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosContainers/KokkosContainersConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosCore/KokkosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TpetraTSQR/TpetraTSQRTargets.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TpetraTSQR/TpetraTSQRTargets-release.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TpetraClassic/TpetraClassicConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Epetra/EpetraConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosKernels/KokkosKernelsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Teuchos/TeuchosConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosKokkosComm/TeuchosKokkosCommConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosKokkosCompat/TeuchosKokkosCompatConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosRemainder/TeuchosRemainderConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosNumerics/TeuchosNumericsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosComm/TeuchosCommConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParameterList/TeuchosParameterListConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParser/TeuchosParserConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosCore/TeuchosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosAlgorithms/KokkosAlgorithmsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosContainers/KokkosContainersConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosCore/KokkosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TpetraCore/TpetraCoreTargets.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TpetraCore/TpetraCoreTargets-release.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TpetraTSQR/TpetraTSQRConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TpetraClassic/TpetraClassicConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Epetra/EpetraConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosKernels/KokkosKernelsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Teuchos/TeuchosConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosKokkosComm/TeuchosKokkosCommConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosKokkosCompat/TeuchosKokkosCompatConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosRemainder/TeuchosRemainderConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosNumerics/TeuchosNumericsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosComm/TeuchosCommConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParameterList/TeuchosParameterListConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParser/TeuchosParserConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosCore/TeuchosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosAlgorithms/KokkosAlgorithmsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosContainers/KokkosContainersConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosCore/KokkosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TpetraCore/TpetraCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TpetraTSQR/TpetraTSQRConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TpetraClassic/TpetraClassicConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Epetra/EpetraConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/RTOp/RTOpConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosKernels/KokkosKernelsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Teuchos/TeuchosConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosKokkosComm/TeuchosKokkosCommConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosKokkosCompat/TeuchosKokkosCompatConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosRemainder/TeuchosRemainderConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosNumerics/TeuchosNumericsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosComm/TeuchosCommConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParameterList/TeuchosParameterListConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParser/TeuchosParserConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosCore/TeuchosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosAlgorithms/KokkosAlgorithmsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosContainers/KokkosContainersConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosCore/KokkosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ThyraTpetraAdapters/ThyraTpetraAdaptersTargets.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ThyraTpetraAdapters/ThyraTpetraAdaptersTargets-release.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ThyraEpetraExtAdapters/ThyraEpetraExtAdaptersConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ThyraEpetraAdapters/ThyraEpetraAdaptersConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ThyraCore/ThyraCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/EpetraExt/EpetraExtConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Triutils/TriutilsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Epetra/EpetraConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Teuchos/TeuchosConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosKokkosComm/TeuchosKokkosCommConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosKokkosCompat/TeuchosKokkosCompatConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosRemainder/TeuchosRemainderConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosNumerics/TeuchosNumericsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosComm/TeuchosCommConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParameterList/TeuchosParameterListConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParser/TeuchosParserConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosCore/TeuchosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosCore/KokkosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Triutils/TriutilsTargets.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Triutils/TriutilsTargets-release.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Epetra/EpetraConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Teuchos/TeuchosConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosKokkosComm/TeuchosKokkosCommConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosKokkosCompat/TeuchosKokkosCompatConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosRemainder/TeuchosRemainderConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosNumerics/TeuchosNumericsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosComm/TeuchosCommConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParameterList/TeuchosParameterListConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParser/TeuchosParserConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosCore/TeuchosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosCore/KokkosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/EpetraExt/EpetraExtTargets.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/EpetraExt/EpetraExtTargets-release.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Triutils/TriutilsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Epetra/EpetraConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/RTOp/RTOpConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Teuchos/TeuchosConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosKokkosComm/TeuchosKokkosCommConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosKokkosCompat/TeuchosKokkosCompatConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosRemainder/TeuchosRemainderConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosNumerics/TeuchosNumericsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosComm/TeuchosCommConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParameterList/TeuchosParameterListConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParser/TeuchosParserConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosCore/TeuchosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosCore/KokkosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ThyraEpetraExtAdapters/ThyraEpetraExtAdaptersTargets.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ThyraEpetraExtAdapters/ThyraEpetraExtAdaptersTargets-release.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ThyraEpetraAdapters/ThyraEpetraAdaptersConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ThyraCore/ThyraCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Tpetra/TpetraConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TpetraCore/TpetraCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TpetraTSQR/TpetraTSQRConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TpetraClassic/TpetraClassicConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/EpetraExt/EpetraExtConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Triutils/TriutilsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Epetra/EpetraConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/RTOp/RTOpConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosKernels/KokkosKernelsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Teuchos/TeuchosConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosKokkosComm/TeuchosKokkosCommConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosKokkosCompat/TeuchosKokkosCompatConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosRemainder/TeuchosRemainderConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosNumerics/TeuchosNumericsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosComm/TeuchosCommConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParameterList/TeuchosParameterListConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParser/TeuchosParserConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosCore/TeuchosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosAlgorithms/KokkosAlgorithmsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosContainers/KokkosContainersConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosCore/KokkosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ThyraTpetraAdapters/ThyraTpetraAdaptersConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ThyraEpetraExtAdapters/ThyraEpetraExtAdaptersConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ThyraEpetraAdapters/ThyraEpetraAdaptersConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ThyraCore/ThyraCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Tpetra/TpetraConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TpetraCore/TpetraCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TpetraTSQR/TpetraTSQRConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TpetraClassic/TpetraClassicConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/EpetraExt/EpetraExtConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Triutils/TriutilsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Epetra/EpetraConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/RTOp/RTOpConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosKernels/KokkosKernelsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Teuchos/TeuchosConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosKokkosComm/TeuchosKokkosCommConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosKokkosCompat/TeuchosKokkosCompatConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosRemainder/TeuchosRemainderConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosNumerics/TeuchosNumericsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosComm/TeuchosCommConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParameterList/TeuchosParameterListConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParser/TeuchosParserConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosCore/TeuchosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosAlgorithms/KokkosAlgorithmsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosContainers/KokkosContainersConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosCore/KokkosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Xpetra/XpetraTargets.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Xpetra/XpetraTargets-release.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Thyra/ThyraConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ThyraTpetraAdapters/ThyraTpetraAdaptersConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ThyraEpetraExtAdapters/ThyraEpetraExtAdaptersConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ThyraEpetraAdapters/ThyraEpetraAdaptersConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ThyraCore/ThyraCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Tpetra/TpetraConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TpetraCore/TpetraCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TpetraTSQR/TpetraTSQRConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TpetraClassic/TpetraClassicConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/EpetraExt/EpetraExtConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Triutils/TriutilsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Epetra/EpetraConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/RTOp/RTOpConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosKernels/KokkosKernelsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Teuchos/TeuchosConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosKokkosComm/TeuchosKokkosCommConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosKokkosCompat/TeuchosKokkosCompatConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosRemainder/TeuchosRemainderConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosNumerics/TeuchosNumericsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosComm/TeuchosCommConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParameterList/TeuchosParameterListConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParser/TeuchosParserConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosCore/TeuchosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosAlgorithms/KokkosAlgorithmsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosContainers/KokkosContainersConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosCore/KokkosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Belos/BelosTargets.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Belos/BelosTargets-release.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ML/MLConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Ifpack/IfpackConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Amesos/AmesosConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TrilinosSS/TrilinosSSConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TrilinosSS/TrilinosSSTargets.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TrilinosSS/TrilinosSSTargets-release.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/EpetraExt/EpetraExtConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Triutils/TriutilsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Epetra/EpetraConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Teuchos/TeuchosConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosKokkosComm/TeuchosKokkosCommConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosKokkosCompat/TeuchosKokkosCompatConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosRemainder/TeuchosRemainderConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosNumerics/TeuchosNumericsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosComm/TeuchosCommConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParameterList/TeuchosParameterListConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParser/TeuchosParserConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosCore/TeuchosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosCore/KokkosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Amesos/AmesosTargets.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Amesos/AmesosTargets-release.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/AztecOO/AztecOOConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TrilinosSS/TrilinosSSConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/EpetraExt/EpetraExtConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Triutils/TriutilsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Epetra/EpetraConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Teuchos/TeuchosConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosKokkosComm/TeuchosKokkosCommConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosKokkosCompat/TeuchosKokkosCompatConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosRemainder/TeuchosRemainderConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosNumerics/TeuchosNumericsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosComm/TeuchosCommConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParameterList/TeuchosParameterListConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParser/TeuchosParserConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosCore/TeuchosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosCore/KokkosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Ifpack/IfpackTargets.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Ifpack/IfpackTargets-release.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Amesos/AmesosConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Galeri/GaleriConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Xpetra/XpetraConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Thyra/ThyraConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ThyraTpetraAdapters/ThyraTpetraAdaptersConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ThyraEpetraExtAdapters/ThyraEpetraExtAdaptersConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ThyraEpetraAdapters/ThyraEpetraAdaptersConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ThyraCore/ThyraCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Tpetra/TpetraConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TpetraCore/TpetraCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TpetraTSQR/TpetraTSQRConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TpetraClassic/TpetraClassicConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/EpetraExt/EpetraExtConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Triutils/TriutilsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Epetra/EpetraConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/RTOp/RTOpConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosKernels/KokkosKernelsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Teuchos/TeuchosConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosKokkosComm/TeuchosKokkosCommConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosKokkosCompat/TeuchosKokkosCompatConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosRemainder/TeuchosRemainderConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosNumerics/TeuchosNumericsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosComm/TeuchosCommConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParameterList/TeuchosParameterListConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParser/TeuchosParserConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosCore/TeuchosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosAlgorithms/KokkosAlgorithmsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosContainers/KokkosContainersConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosCore/KokkosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Galeri/GaleriTargets.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Galeri/GaleriTargets-release.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/AztecOO/AztecOOConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Isorropia/IsorropiaConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/EpetraExt/EpetraExtConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Triutils/TriutilsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Zoltan/ZoltanConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Zoltan/ZoltanTargets.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Zoltan/ZoltanTargets-release.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Epetra/EpetraConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Teuchos/TeuchosConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosKokkosComm/TeuchosKokkosCommConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosKokkosCompat/TeuchosKokkosCompatConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosRemainder/TeuchosRemainderConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosNumerics/TeuchosNumericsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosComm/TeuchosCommConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParameterList/TeuchosParameterListConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParser/TeuchosParserConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosCore/TeuchosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosCore/KokkosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Isorropia/IsorropiaTargets.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Isorropia/IsorropiaTargets-release.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Xpetra/XpetraConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Thyra/ThyraConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ThyraTpetraAdapters/ThyraTpetraAdaptersConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ThyraEpetraExtAdapters/ThyraEpetraExtAdaptersConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ThyraEpetraAdapters/ThyraEpetraAdaptersConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ThyraCore/ThyraCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TrilinosSS/TrilinosSSConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Tpetra/TpetraConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TpetraCore/TpetraCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TpetraTSQR/TpetraTSQRConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TpetraClassic/TpetraClassicConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/EpetraExt/EpetraExtConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Triutils/TriutilsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Zoltan/ZoltanConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Epetra/EpetraConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/RTOp/RTOpConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosKernels/KokkosKernelsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Teuchos/TeuchosConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosKokkosComm/TeuchosKokkosCommConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosKokkosCompat/TeuchosKokkosCompatConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosRemainder/TeuchosRemainderConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosNumerics/TeuchosNumericsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosComm/TeuchosCommConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParameterList/TeuchosParameterListConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParser/TeuchosParserConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosCore/TeuchosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosAlgorithms/KokkosAlgorithmsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosContainers/KokkosContainersConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosCore/KokkosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ML/MLTargets.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ML/MLTargets-release.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Ifpack/IfpackConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Amesos/AmesosConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Galeri/GaleriConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/AztecOO/AztecOOConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Isorropia/IsorropiaConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Xpetra/XpetraConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Thyra/ThyraConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ThyraTpetraAdapters/ThyraTpetraAdaptersConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ThyraEpetraExtAdapters/ThyraEpetraExtAdaptersConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ThyraEpetraAdapters/ThyraEpetraAdaptersConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ThyraCore/ThyraCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TrilinosSS/TrilinosSSConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Tpetra/TpetraConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TpetraCore/TpetraCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TpetraTSQR/TpetraTSQRConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TpetraClassic/TpetraClassicConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/EpetraExt/EpetraExtConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Triutils/TriutilsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Zoltan/ZoltanConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Epetra/EpetraConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/RTOp/RTOpConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosKernels/KokkosKernelsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Teuchos/TeuchosConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosKokkosComm/TeuchosKokkosCommConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosKokkosCompat/TeuchosKokkosCompatConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosRemainder/TeuchosRemainderConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosNumerics/TeuchosNumericsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosComm/TeuchosCommConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParameterList/TeuchosParameterListConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParser/TeuchosParserConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosCore/TeuchosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosAlgorithms/KokkosAlgorithmsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosContainers/KokkosContainersConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosCore/KokkosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Stratimikos/StratimikosTargets.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Stratimikos/StratimikosTargets-release.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Ifpack2/Ifpack2Config.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ShyLU_NodeHTS/ShyLU_NodeHTSConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosKernels/KokkosKernelsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosAlgorithms/KokkosAlgorithmsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosContainers/KokkosContainersConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosCore/KokkosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ShyLU_NodeHTS/ShyLU_NodeHTSTargets.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ShyLU_NodeHTS/ShyLU_NodeHTSTargets-release.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Belos/BelosConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Zoltan2/Zoltan2Config.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Xpetra/XpetraConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Thyra/ThyraConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ThyraTpetraAdapters/ThyraTpetraAdaptersConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ThyraEpetraExtAdapters/ThyraEpetraExtAdaptersConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ThyraEpetraAdapters/ThyraEpetraAdaptersConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ThyraCore/ThyraCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Tpetra/TpetraConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TpetraCore/TpetraCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TpetraTSQR/TpetraTSQRConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TpetraClassic/TpetraClassicConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/EpetraExt/EpetraExtConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Triutils/TriutilsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Zoltan/ZoltanConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Epetra/EpetraConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/RTOp/RTOpConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosKernels/KokkosKernelsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Teuchos/TeuchosConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosKokkosComm/TeuchosKokkosCommConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosKokkosCompat/TeuchosKokkosCompatConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosRemainder/TeuchosRemainderConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosNumerics/TeuchosNumericsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosComm/TeuchosCommConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParameterList/TeuchosParameterListConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParser/TeuchosParserConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosCore/TeuchosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosAlgorithms/KokkosAlgorithmsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosContainers/KokkosContainersConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosCore/KokkosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Zoltan2/Zoltan2Targets.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Zoltan2/Zoltan2Targets-release.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/AztecOO/AztecOOConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Xpetra/XpetraConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Thyra/ThyraConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ThyraTpetraAdapters/ThyraTpetraAdaptersConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ThyraEpetraExtAdapters/ThyraEpetraExtAdaptersConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ThyraEpetraAdapters/ThyraEpetraAdaptersConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ThyraCore/ThyraCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Tpetra/TpetraConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TpetraCore/TpetraCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TpetraTSQR/TpetraTSQRConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TpetraClassic/TpetraClassicConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/EpetraExt/EpetraExtConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Triutils/TriutilsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Zoltan/ZoltanConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Epetra/EpetraConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/RTOp/RTOpConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosKernels/KokkosKernelsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Teuchos/TeuchosConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosKokkosComm/TeuchosKokkosCommConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosKokkosCompat/TeuchosKokkosCompatConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosRemainder/TeuchosRemainderConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosNumerics/TeuchosNumericsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosComm/TeuchosCommConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParameterList/TeuchosParameterListConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParser/TeuchosParserConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosCore/TeuchosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosAlgorithms/KokkosAlgorithmsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosContainers/KokkosContainersConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosCore/KokkosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Ifpack2/Ifpack2Targets.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Ifpack2/Ifpack2Targets-release.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Anasazi/AnasaziConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Belos/BelosConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/AztecOO/AztecOOConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Xpetra/XpetraConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Thyra/ThyraConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ThyraTpetraAdapters/ThyraTpetraAdaptersConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ThyraEpetraExtAdapters/ThyraEpetraExtAdaptersConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ThyraEpetraAdapters/ThyraEpetraAdaptersConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ThyraCore/ThyraCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Tpetra/TpetraConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TpetraCore/TpetraCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TpetraTSQR/TpetraTSQRConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TpetraClassic/TpetraClassicConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/EpetraExt/EpetraExtConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Triutils/TriutilsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Epetra/EpetraConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/RTOp/RTOpConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosKernels/KokkosKernelsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Teuchos/TeuchosConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosKokkosComm/TeuchosKokkosCommConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosKokkosCompat/TeuchosKokkosCompatConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosRemainder/TeuchosRemainderConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosNumerics/TeuchosNumericsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosComm/TeuchosCommConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParameterList/TeuchosParameterListConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParser/TeuchosParserConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosCore/TeuchosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosAlgorithms/KokkosAlgorithmsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosContainers/KokkosContainersConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosCore/KokkosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Anasazi/AnasaziTargets.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Anasazi/AnasaziTargets-release.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ShyLU_NodeHTS/ShyLU_NodeHTSConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Belos/BelosConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ML/MLConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Ifpack/IfpackConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Zoltan2/Zoltan2Config.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Amesos/AmesosConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Galeri/GaleriConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/AztecOO/AztecOOConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Isorropia/IsorropiaConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Xpetra/XpetraConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Thyra/ThyraConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ThyraTpetraAdapters/ThyraTpetraAdaptersConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ThyraEpetraExtAdapters/ThyraEpetraExtAdaptersConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ThyraEpetraAdapters/ThyraEpetraAdaptersConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ThyraCore/ThyraCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TrilinosSS/TrilinosSSConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Tpetra/TpetraConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TpetraCore/TpetraCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TpetraTSQR/TpetraTSQRConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TpetraClassic/TpetraClassicConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/EpetraExt/EpetraExtConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Triutils/TriutilsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Zoltan/ZoltanConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Epetra/EpetraConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/RTOp/RTOpConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosKernels/KokkosKernelsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Teuchos/TeuchosConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosKokkosComm/TeuchosKokkosCommConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosKokkosCompat/TeuchosKokkosCompatConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosRemainder/TeuchosRemainderConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosNumerics/TeuchosNumericsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosComm/TeuchosCommConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParameterList/TeuchosParameterListConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParser/TeuchosParserConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosCore/TeuchosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosAlgorithms/KokkosAlgorithmsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosContainers/KokkosContainersConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosCore/KokkosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Teko/TekoTargets.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Teko/TekoTargets-release.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Stratimikos/StratimikosConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Ifpack2/Ifpack2Config.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Anasazi/AnasaziConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ShyLU_NodeHTS/ShyLU_NodeHTSConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Belos/BelosConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ML/MLConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Ifpack/IfpackConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Zoltan2/Zoltan2Config.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Amesos/AmesosConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Galeri/GaleriConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/AztecOO/AztecOOConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Isorropia/IsorropiaConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Xpetra/XpetraConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Thyra/ThyraConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ThyraTpetraAdapters/ThyraTpetraAdaptersConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ThyraEpetraExtAdapters/ThyraEpetraExtAdaptersConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ThyraEpetraAdapters/ThyraEpetraAdaptersConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ThyraCore/ThyraCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TrilinosSS/TrilinosSSConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Tpetra/TpetraConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TpetraCore/TpetraCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TpetraTSQR/TpetraTSQRConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TpetraClassic/TpetraClassicConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/EpetraExt/EpetraExtConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Triutils/TriutilsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Zoltan/ZoltanConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Epetra/EpetraConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/RTOp/RTOpConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosKernels/KokkosKernelsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Teuchos/TeuchosConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosKokkosComm/TeuchosKokkosCommConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosKokkosCompat/TeuchosKokkosCompatConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosRemainder/TeuchosRemainderConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosNumerics/TeuchosNumericsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosComm/TeuchosCommConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParameterList/TeuchosParameterListConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParser/TeuchosParserConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosCore/TeuchosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosAlgorithms/KokkosAlgorithmsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosContainers/KokkosContainersConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosCore/KokkosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/NOX/NOXTargets.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/NOX/NOXTargets-release.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Teko/TekoConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Stratimikos/StratimikosConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Ifpack2/Ifpack2Config.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Anasazi/AnasaziConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ShyLU_Node/ShyLU_NodeConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ShyLU_NodeHTS/ShyLU_NodeHTSConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Belos/BelosConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ML/MLConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Ifpack/IfpackConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Zoltan2/Zoltan2Config.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Pamgen/PamgenConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Pamgen/PamgenTargets.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Pamgen/PamgenTargets-release.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Amesos/AmesosConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Galeri/GaleriConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/AztecOO/AztecOOConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Isorropia/IsorropiaConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Xpetra/XpetraConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Thyra/ThyraConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ThyraTpetraAdapters/ThyraTpetraAdaptersConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ThyraEpetraExtAdapters/ThyraEpetraExtAdaptersConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ThyraEpetraAdapters/ThyraEpetraAdaptersConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/ThyraCore/ThyraCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TrilinosSS/TrilinosSSConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Tpetra/TpetraConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TpetraCore/TpetraCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TpetraTSQR/TpetraTSQRConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TpetraClassic/TpetraClassicConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/EpetraExt/EpetraExtConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Triutils/TriutilsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Zoltan/ZoltanConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Epetra/EpetraConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/RTOp/RTOpConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosKernels/KokkosKernelsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Teuchos/TeuchosConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosKokkosComm/TeuchosKokkosCommConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosKokkosCompat/TeuchosKokkosCompatConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosRemainder/TeuchosRemainderConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosNumerics/TeuchosNumericsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosComm/TeuchosCommConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParameterList/TeuchosParameterListConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosParser/TeuchosParserConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/TeuchosCore/TeuchosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/Kokkos/KokkosConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosCore/KokkosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosAlgorithms/KokkosAlgorithmsConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosContainers/KokkosContainersConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/Trilinos/12.12_new/lib/cmake/KokkosCore/KokkosCoreConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/fredwubs/hymls_tril_12.12_gnu_8.4/lib/cmake/HYMLS/HYMLSConfigVersion.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/fredwubs/hymls_tril_12.12_gnu_8.4/lib/cmake/HYMLS/HYMLSConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/fredwubs/hymls_tril_12.12_gnu_8.4/lib/cmake/HYMLS/HYMLSTargets.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/sourabh/fredwubs/hymls_tril_12.12_gnu_8.4/lib/cmake/HYMLS/HYMLSTargets-noconfig.cmake"
+		}
+	],
+	"kind" : "cmakeFiles",
+	"paths" : 
+	{
+		"build" : "/home/sourabh/fredwubs/NonlinDO/build",
+		"source" : "/home/sourabh/fredwubs/NonlinDO"
+	},
+	"version" : 
+	{
+		"major" : 1,
+		"minor" : 0
+	}
+}

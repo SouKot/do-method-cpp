@@ -1,0 +1,424 @@
+<ParameterList name="Driven Cavity using LOCA/HYMLS"><!--{-->
+
+  <ParameterList name="Model"><!--{-->
+  
+     <Parameter name="dim" type="int" value="3"/>
+    <Parameter name="dof" type="int" value="3"/>
+     
+     <!-- number of interior cells -->
+    <Parameter name="nx" type="int" value="50"/>
+    <Parameter name="ny" type="int" value="20"/>
+    <Parameter name="nz" type="int" value="1"/>
+
+    <Parameter name="xmin" type="double" value="122.0"/>
+    <Parameter name="xmax" type="double" value="240.0"/>
+    <Parameter name="ymin" type="double" value="5.0"/>
+    <Parameter name="ymax" type="double" value="55.0"/>
+    <Parameter name="zmin" type="double" value="0.0"/>
+    <Parameter name="zmax" type="double" value="1.0"/>
+    
+    <Parameter name="cell ratio (x)" type="double" value="4.0"/>
+    <Parameter name="cell ratio (y)" type="double" value="4.0"/>
+    <Parameter name="cell ratio (z)" type="double" value="4.0"/>
+
+
+    <Parameter name="Output Frequency" type="double" value="1.0"/>
+    <Parameter name="Backup Interval" type="double" value="-10.0"/>
+
+    <!-- restarts from the data specified in the XML file 'Restart File' -->
+    <!-- set to "None" to start from zero solution and default params    -->
+    <!-- the standard name for a restart file of cavity is restart.xml   -->
+    <Parameter name="Restart File" type="string" value="None"/>
+   
+    <!--{--> 
+    <ParameterList name="Starting Parameters">    
+     <!-- time - we set this to something non-zero so that   -->
+      <!-- the mnthly data is used instead of the annual mean -->
+      <Parameter name="Time" type="double" value="60"/>
+    <!-- PAR(16), Wind forcing factor                         -->
+      <Parameter name="Wind Forcing" type="double" value="1.0"/>
+    <!--  <Parameter name="Reynolds Number" type="double" value="1000"/> -->
+    </ParameterList><!--}-->
+  </ParameterList><!--}-->
+    
+  <!-- Nonlinear solver parameters { -->
+  <ParameterList name="NOX">
+
+    <!-- "Line Search Based" or "Trust Region Based" (not tested) -->
+    <Parameter name="Nonlinear Solver" type="string" value="Line Search Based"/>
+    <!-- convergence tolerance for the Newton process -->
+    <Parameter name="Convergence Tolerance" type="double" value="1.0e-4"/>
+
+    <!-- Line Search parameters { -->
+    <ParameterList name="Line Search">
+      <!-- "Full Step" is standard Newton's, "Backtrack" is a line search, -->
+      <!-- others exist as well -->
+      <Parameter name="Method" type="string" value="Full Step"/>
+      
+      <!-- maximum number of Newton iterations -->
+      <Parameter name="Max Iters" type="int" value="30"/>
+      
+      <ParameterList name="Backtrack">
+        <Parameter name="Default Step" type="double" value="0.5"/>
+        <Parameter name="Max Iters" type="int" value="10"/>
+        <Parameter name="Minimum Step" type="double" value="1e-6"/>
+        <Parameter name="Recovery Step" type="double" value="1e-3"/>
+      </ParameterList>
+    </ParameterList><!-- } Line Search -->
+    
+    <!-- Parameters for the actual Newton solver { -->
+    <ParameterList name="Direction">
+      <Parameter name="Method" type="string" value="Newton"/>
+      
+      <!-- { -->
+      <ParameterList name="Newton">
+        
+        <!-- Method to determine convergence tolerance for linear solver -->
+        <!-- "Constant", "Type 1" (fails!) or "Type 2" -->
+        <Parameter name="Forcing Term Method" type="string" value="Constant"/>
+        <Parameter name="Forcing Term Initial Tolerance" type="double" value="1.0e-8"/>
+        <Parameter name="Forcing Term Maximum Tolerance" type="double" value="1.0e-7"/>
+        <Parameter name="Forcing Term Minimum Tolerance" type="double" value="1.0e-10"/>
+        
+        <!-- Use Newton step even if linear solve failed (default 1)-->
+        <!-- If you say "0" here the continuation run _stops_ when  -->
+        <!-- the linear solver fails to achieve the requested tol   -->
+        <Parameter name="Rescue Bad Newton Solve" type="bool" value="1"/>
+        
+        <!-- Note: the docu for this list is in class NOX::Epetra::LinearSystemAztecOO { -->
+        <ParameterList name="Linear Solver">
+        
+          <Parameter name="Tolerance" type="double" value="1.0e-2"/>
+
+          <Parameter name="Write Linear System" type="bool" value="0"/>
+
+          <!-- choose a preconditioner for the linear solves during Newton steps        -->
+          <!-- "User Defined": hymls (see 'HYMLS' sublist)                              -->
+          <!-- "New Ifpack": incomplete factorizations, parameters are set below        -->
+          <!-- "ML": algebraic multigrid, parameters are set below                      -->
+          <Parameter name="Preconditioner" type="string" value="New Ifpack"/>
+
+          <!-- can be "Reuse", "Rebuild" or "Recompute"        -->
+          
+          <!-- "Rebuild" and "Recompute" are the same for most methods.           -->
+          <!-- "Reuse" keeps the preconditioner for k linear system solves.       -->
+          <!-- If you want to reuse the preconditioner at all, set this to "Reuse"-->
+          <Parameter name="Preconditioner Reuse Policy" type="string" value="Recompute"/>
+          
+          <!-- recompute preconditioner after K linear system solves. -->
+          
+          <!-- We have our own reuse-policy, controlled by the option -->
+          <!-- with the same name in thcm_params.xml. If you want to  -->
+          <!-- reuse the preconditioner, it's best to set this to -2  -->
+          <!-- and use that option to control the maximum age.        -->
+          <Parameter name="Max Age Of Prec" type="int" value="20"/>
+       
+          <ParameterList name="Belos">
+	    <Parameter name="Orthogonalization" type="string" value="ICGS"/>
+	    <Parameter name="Num Blocks" type="int" value="100"/>
+	    <Parameter name="Maximum Iterations" type="int" value="300"/>
+            <Parameter name="Maximum Restarts" type="int" value="10"/>
+            <Parameter name="Convergence Tolerance" type="double" value="1.0e-4"/>
+	       <!-- <Parameter name="Flexible Gmres" type="bool" value="1"/> -->
+	       <!-- <Parameter name="Output Frequency" type="int" value="0"/> -->
+	       <!-- <Parameter name="Show Maximum Residual Norm Only" type="bool" value="1"/> -->
+          </ParameterList><!--}-->
+          <!-- linear solver parameters                                         -->
+          <!-- the solver has a number of options that are set in class         -->
+          <!-- DrivenCavity and you shouldn't have to worry about them.         -->
+          <ParameterList name="HYMLS"><!--{-->
+
+            <!-- { -->
+            <ParameterList name="Solver">
+            
+              <Parameter name="Deflated Subspace Dimension" type="int" value="0"/>
+
+              <!-- "CG", "GMRES", "PCPG" (only GMRES actually supported by our solver right now) -->
+              <Parameter name="Krylov Method" type="string" value="GMRES"/>
+              
+              <!-- start vector to use for the Krylov sequence ("Zero","Previous","Random")-->
+              <Parameter name="Initial Vector" type="string" value="Zero"/>
+
+              <!-- parameters for the iterative solver (Belos) { -->
+              <ParameterList name="Iterative Solver">
+                <Parameter name="Maximum Iterations" type="int" value="150"/>
+                <Parameter name="Maximum Restarts" type="int" value="1"/>
+                <Parameter name="Flexible Gmres" type="bool" value="1"/>
+                <Parameter name="Convergence Tolerance" type="double" value="1.0e-8"/>
+                <Parameter name="Output Frequency" type="int" value="0"/>
+                <Parameter name="Show Maximum Residual Norm Only" type="bool" value="1"/>
+              </ParameterList><!--}-->
+            </ParameterList><!--}-->
+
+            <!-- { -->
+            <ParameterList name="Preconditioner">
+
+              <!-- write file hid_data.m -->
+              <Parameter name="Visualize Solver" type="bool" value="0"/>
+                
+              <!-- you can either set 'Separator Length' or 'Number of Subdomains' -->
+              <Parameter name="Separator Length" type="int" value="4"/>
+
+              <!-- number of levels to be created (1: direct solver for Schur complement, -->
+              <!-- 2: solve Schur iteratively and reduced Schur directly,                 -->
+              <!-- >2: not implemented.                                                   -->
+              <Parameter name="Number of Levels" type="int" value="4"/>
+
+              <!-- scale those rows of the Schur complement that are not coupled to -->
+              <!-- P-nodes so that they have ones on the diagonal                   -->
+              <Parameter name="Scale Schur-Complement" type="bool" value="0"/>
+
+              <ParameterList name="Sparse Solver"><!--{-->
+                <Parameter name="amesos: solver type" type="string" value="KLU"/>
+                <Parameter name="Custom Ordering" type="bool" value="1"/>
+                <Parameter name="Custom Scaling" type="bool" value="1"/>
+                <Parameter name="OutputLevel" type="int" value="0"/>
+              </ParameterList><!--}-->
+
+              <ParameterList name="Dense Solver"><!--{-->
+              </ParameterList><!--}-->
+
+              <ParameterList name="Coarse Solver"><!--{-->
+                <Parameter name="amesos: solver type" type="string" 
+                        value="Amesos_Superludist"/>
+                <Parameter name="OutputLevel" type="int" value="0"/>
+                <Parameter name="PrintTiming" type="bool" value="0"/>
+                <Parameter name="PrintStatus" type="bool" value="0"/>
+                <!--Parameter name="MaxProcs" type="int" value="8"/-->
+                <ParameterList name="Superludist">
+                  <Parameter name="PrintNonzeros" type="bool" value="1"/>
+                  <Parameter name="IterRefine" type="string" value="NONE"/>
+                </ParameterList>
+                <ParameterList name="mumps"><!--{-->
+                  <!-- output stream: stdout=6, none=-1 -->
+                  <Parameter name="ICNTL(1)" type="int" value="-1"/>
+                  <!-- error stream: stdout=6, none=-1 -->
+                  <Parameter name="ICNTL(2)" type="int" value="-1"/>
+                  <!-- global info stream: stdout=6, none=-1 -->
+                  <Parameter name="ICNTL(3)" type="int" value="-1"/>
+                  <!-- verbosity (-1..3) -->
+                  <Parameter name="ICNTL(4)" type="int" value="-1"/>
+                  <!-- ordering to be used - 0: AMD              -->
+                  <!--                       2: AMF              -->
+                  <!--                       3: SCOTCH           -->
+                  <!--                       4: PORD             -->
+                  <!--                       5: METIS            -->
+                  <!--                       6: QAMD             -->
+                  <!--                       7: automatic choice -->
+                  <Parameter name="ICNTL(7)" type="int" value="3"/>
+
+                  <!-- collect statistics (for optimal performance set it to 0!) -->
+                  <Parameter name="ICNTL(11)" type="int" value="1"/>
+                  <!-- allow more fill (default is 20%) -->
+                  <Parameter name="ICNTL(14)" type="int" value="100"/>
+                </ParameterList><!--}-->          
+              </ParameterList><!--}-->
+            </ParameterList><!--}-->
+          </ParameterList><!--}-->          
+          
+          <!-- Ifpack Preconditioner for complete system: --> 
+
+          <!-- can be "ILU","ILUT","Amesos" and others    -->
+          <!-- Only relevant if you chose "Ifpack" above. -->
+          <Parameter name="Ifpack Preconditioner" type="string" 
+                value="ILUT"/>
+
+          <!-- used by Ifpack Additive Schwarz preconditioners: -->
+          <Parameter name="Overlap" type="int" value="1"/>
+
+          <ParameterList name="Ifpack"><!--{-->
+
+            <!-- if you chose Amesos above, select the direct solver here:  -->
+            <!-- "Amesos_Klu" is always available                           -->
+            <!-- "Amesos_Mumps" is available on Aster at least              -->
+            <Parameter name="amesos: solver type" type="string" 
+            value="Amesos_Klu"/>
+              
+            <!-- general Amesos settings -->
+            <Parameter name="OutputLevel" type="int" value="0"/>
+            <Parameter name="PrintTiming" type="bool" value="0"/>
+            <Parameter name="PrintStatus" type="bool" value="0"/>
+            <Parameter name="NoDestroy" type="bool" value="0"/>
+
+            <ParameterList name="MRILU"><!--{-->
+              <Parameter name="blocksize" type="int" value="3"/>
+              <Parameter name="cutmck" type="int" value="0"/>
+              <Parameter name="scarow" type="int" value="1"/>
+              <Parameter name="xactelm" type="int" value="1"/>
+              <Parameter name="clsonce" type="int" value="0"/>
+              <Parameter name="nlsfctr" type="double" value="0.1"/>
+              <Parameter name="epsw" type="double" value="0.1"/>
+              <Parameter name="elmfctr" type="double" value="0.2"/>
+              <Parameter name="gusmod" type="int" value="1"/>
+              <Parameter name="gusfctr" type="double" value="0.95"/>
+              <Parameter name="redfctr" type="double" value="2.0"/>
+              <Parameter name="schtol" type="double" value="1.0e-6"/>
+              <Parameter name="denslim" type="double" value="0.9"/>
+              <Parameter name="globfrac" type="double" value="0.05"/>
+              <Parameter name="locfrac" type="double" value="0.0"/>
+              <Parameter name="sparslim" type="double" value="0.95"/>
+              <Parameter name="ilutype" type="int" value="9"/>
+              <Parameter name="droptol" type="double" value="1.0e-5"/>
+              <Parameter name="compfct" type="double" value="1.0"/>
+              <Parameter name="cpivtol" type="double" value="0.875"/>
+              <Parameter name="lutol" type="double" value="1.0e-10"/>
+              <Parameter name="singlu" type="int" value="1"/>
+              <Parameter name="Output Level" type="int" value="0"/> 
+
+              <ParameterList name="visualization">
+                <Parameter name="visasc" type="int" value="0"/>
+                <Parameter name="visnsc" type="int" value="0"/>
+                <Parameter name="vislsc" type="int" value="0"/>
+                <Parameter name="visildu" type="int" value="0"/> 
+                <Parameter name="visnro" type="int" value="0"/>
+              </ParameterList> 
+            </ParameterList><!-- } end of MRILU -->
+                
+            <!-- this is how to set MUMPS parameters in Amesos. See the  -->
+            <!-- MUMPS user's guide for details                          -->
+            <!-- In general the default settings made by Amesos are ok   -->
+            <ParameterList name="mumps">
+              <!-- error stream: stdout=6, none=-1 -->
+              <Parameter name="ICNTL(1)" type="int" value="6"/>
+              <!-- info stream: stdout=6, none=-1 -->
+              <Parameter name="ICNTL(2)" type="int" value="6"/>
+              <!-- global info stream: stdout=6, none=-1 -->
+              <Parameter name="ICNTL(3)" type="int" value="6"/>
+              <!-- verbosity (-1..3) -->
+              <Parameter name="ICNTL(4)" type="int" value="3"/>
+              <!-- collect statistics (for optimal performance set it to 0!) -->
+              <Parameter name="ICNTL(11)" type="int" value="1"/>               
+              <!-- this controls how much extra memory the solver may use, the -->
+              <!-- default (20%) is typically too small for our application    -->
+              <Parameter name="ICNTL(14)" type="int" value="80"/>
+              <!--Parameter name="CNTL(1)" type="double" value="?"/-->
+            </ParameterList>
+          </ParameterList><!-- } global Ifpack -->
+        </ParameterList><!-- } Linear Solver -->
+      </ParameterList><!-- } Newton -->
+    </ParameterList><!-- } direction -->    
+  </ParameterList><!-- } NOX -->
+
+   <ParameterList name="Time Stepping">
+
+    <!-- choose the time-stepping scheme.      -->
+    <!-- presently we support                  -->
+    <!--                                       -->
+    <!-- explicit schemes:                     -->
+    <!--            "Forward Euler"            -->
+    <!--                                       -->
+    <!-- implicit schemes:                     -->
+    <!--            "Theta", "Adaptive Theta"  -->
+    <!--                                       -->
+    <!-- the latter chooses theta smartly (?)  -->
+    <!-- as it was implemented in THCM         -->
+    <Parameter name="Scheme" type="string" value="Theta"/> 
+    
+    <!-- only relevant for "Theta" scheme -->
+    <Parameter name="Theta" type="double" value="1.0"/>
+
+    <!-- time is measured in dimensionless units -->
+    <!-- 1 unit is about 2 years (R/u0)          -->
+    <!-- 0.04 would be (roughly) a month,        -->
+    <!-- 0.0014 is a day                         -->
+    <Parameter name="Time Profiling" type="bool" value="0"/>
+
+    <Parameter name="Start Time" type="double" value="0"/>
+
+    <Parameter name="End Time" type="double" value="5219216000"/>
+
+    <Parameter name="Step Size" type="double" value="2.0"/>
+
+    <!-- the predictor can currently be                         -->
+    <!-- "Constant": start Newton with the previous slution u_n -->
+    <!-- "Secant":   start with u_n + dt*(u_n-u_{n-1})/dt_n     -->
+    <!-- In the first time-step or after a failed step, it is   -->
+    <!-- always "Constant".                                     -->
+    <Parameter name="Predictor" type="string" value="Constant"/>
+    
+    <!-- make sure the stepper satisfies the CFL condition. -->
+    <!-- for implicit time-stepping, you can choose CN>1    -->
+    <!-- to disable CFL checks, set CN<0.                   -->
+    <Parameter name="Courant Number" type="double" value="50.0"/>
+
+    <!-- this indicates when the time-stepper considers the flow slow -->
+    <!-- (i.e. when it is at factor*CN*cfl-number)                    -->
+    <Parameter name="Slow Flow Condition" type="double" value="0.4"/>
+    
+    <!-- after nslw steps of slow flow we allow the step-size to be increased -->
+    <Parameter name="Slow Flow Delay" type="int" value="3"/>
+    
+    <!-- slowly increase a parameter at the beginning of the simulation -->
+    <Parameter name="Gradual Start-Up" type="bool" value="0"/>
+    <!-- which parameter to turn on slowly? -->
+    <Parameter name="Start-Up Parameter" type="string" value="Wind Forcing"/>
+    <!-- by how much should the parameter be increased per unit time? -->
+    <Parameter name="Start-Up Rate" type="double" value="0.1"/>
+       
+    <!-- "Constant" or "Adaptive"                                                 -->
+    <!-- if "Constant", the time step is changed only based on success or         -->
+    <!-- failure of the Newton solve. "Adaptive" adjusts the time step based on   -->
+    <!-- an estimate of the local truncation error.                               -->
+    <!-- In case there is a stability condition, it is applied after step-size    -->
+    <!-- control based on error estimation                                        -->
+    <Parameter name="Step Size Control" type="string" value="Constant"/>
+    
+    <!-- this causes the program to terminate if the step-size becomes too small -->
+    <Parameter name="Minimum Step Size" type="double" value="1.0"/>
+    
+    <!-- puts an absolute bound on the step size           -->
+    <Parameter name="Maximum Step Size" type="double" value="3000.0"/>
+    
+    <!-- this is only for the "Constant" method above -->
+    <Parameter name="Failed Step Reduction Factor" type="double" value="0.25"/>
+
+    <!-- this is only for the "Constant" method above -->
+    <Parameter name="Successful Step Increase Factor" type="double" value="1.1"/>
+    
+    <!-- this is for the "Adaptive" mode only                    -->
+    <Parameter name="Error Tolerance" type="double" value="1.0"/>
+
+    <!-- stop the time-integration when a steady-state is detected. the following -->
+    <!-- criteria can be used:                                                    -->
+    <!-- "None": no convergence monitoring                                       -->
+    <!-- "Norm of F": ||F(u)||_1<tol                                              -->
+    <!-- "Overturning": monitor the meridional streamfunction, i.e.               -->
+    <!--                the maximum of the y-z streamfunction (v is averaged over x) -->
+    <Parameter name="Steady-State Monitor" type="string" value="Norm 0f F"/>    
+
+    <!-- criterion to stop if the monitor chosen above goes below a given  -->
+    <!-- tolerance, indicating that a steady state has been found and      -->
+    <!-- further time integration is of little use.                        -->
+    <Parameter name="Steady-State Tolerance" type="double" value="1.0e-7"/>
+    
+    <!-- currently the step counter is not incremented when a step fails, -->
+    <Parameter name="Max Num Steps" type="int" value="100000000"/>
+
+    <!-- Parameters for the 2D Poisson solver (for explicit time-stepping only) -->
+    <ParameterList name="Poisson Solver"><!--{-->
+      
+      <!-- up to now we only support "Red/Black SOR" here -->
+      <Parameter name="Scheme" type="string" value="Red/Black SOR"/>
+    
+      <!-- maximum number of iterations -->
+      <Parameter name="Max Num Iter" type="int" value="1000"/>
+    
+      <!-- convergence tolerance -->
+      <Parameter name="Tolerance" type="double" value="1.0e-10"/>
+    
+      <!-- relaxation parameter omega for SOR -->
+      <Parameter name="Relaxation Parameter" type="double" value="1.7"/>
+    
+      <!-- be verbose (output sent to info.txt) -->
+      <Parameter name="Output" type="bool" value="0"/>
+        
+    
+
+  </ParameterList><!--}-poisson solver -->
+
+</ParameterList><!--}time stepping--> 
+
+</ParameterList><!--}-->
+
+
+

@@ -1,0 +1,16 @@
+<ParameterList>
+
+      <Parameter name="AddZeroToDiag" type="bool" value="true"/>
+
+      <Parameter name="PrintStatus" type="bool" value="true"/>
+
+      <Parameter name="RCondThreshold" type="double" value="1.0e-6"/>
+
+      <Parameter name="ComputeVectorNorms" type="bool" value="false"/>
+
+      <Parameter name="ComputeTrueResidual" type="bool" value="false"/>
+      
+      <Parameter name="OutputLevel" type="int" value="1"/>
+    
+</ParameterList><!--} Amesos_Scalapack-->
+

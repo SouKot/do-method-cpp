@@ -1,0 +1,29 @@
+<ParameterList><!--{ -->
+    <Parameter name="Solver" type="string" value="BLOCK GMRES"/>
+    <Parameter name="Verbose" type="bool" value="false"/>
+    
+    <ParameterList name="BLOCK GMRES">
+	<Parameter name="Orthogonalization" type="string" value="DGKS"/>
+	<Parameter name="Block Size" type="int" value="4"/>
+	<Parameter name="Adaptive Block Size" type="bool" value="false"/>
+	<Parameter name="Num Blocks" type="int" value="120"/>
+	<Parameter name="Maximum Iterations" type="int" value="300"/>
+	<Parameter name="Maximum Restarts" type="int" value="15"/>
+	<Parameter name="Convergence Tolerance" type="double" value="1.0e-4"/>
+	<!-- set it to 'true' for detailed ouput at every step  -->
+	<Parameter name="Verbose" type="bool" value="false"/>
+	  <!-- <Parameter name="output frequency" type="int" value="1"/> -->
+    </ParameterList><!--} BLOCK_GMRES-->
+   
+    <Parameter name="Ifpack Preconditioner Name" type="string" value="ILU"/>
+    <Parameter name="Overlap Level" type="int" value="1"/>
+    
+    <ParameterList name="ILU">
+	<Parameter name="fact: level-of-fill" type="int" value="0"/>
+	<!-- the combine mode is on the following:
+        "Add", "Zero", "Insert", "InsertAdd", "Average", "AbsMax"
+        Their meaning is as defined in file Epetra_CombineMode.h    
+	sets the parameters -->
+	<Parameter name="schwarz: combine mode" type="string" value="Zero"/>
+    </ParameterList><!--} ILU-->
+</ParameterList><!--} AztecOO_GMRES-->

@@ -1,0 +1,88 @@
+!* ============================================================================ *
+!*
+!* Multi-Layer Shallow Water Model
+!*
+!* Version 1.4 - 20/05/2008 - ATvS
+!*
+!* ============================================================================ *
+!*     CONSTANTS
+      module m_usr
+      !use m_par
+      integer  :: n=0		! grid points in psi
+      integer  :: m=0      	! grid points in theta
+      integer  :: nl=0			! number of layers
+      integer :: nun=0		! unknowns per (i,j)-point
+      integer :: ndim=0		! total number of variables
+           integer,parameter :: nd=6*360, md=6*180
+      integer :: lwrk=0 , liwrk=0 
+!*     COMMON
+      integer,  parameter  ::   pmode=2 
+!*      common /mode/ pmode, ch
+      real,dimension(20)::      par
+      !* common /par/  par(20)
+      real          dx,dy,xmax,xmin,ymax,ymin,xgmax,xgmin,ygmax,ygmin
+      logical       periodic
+      !* common /grd/  xmax,xmin,ymax,ymin,dx,dy,x(n),y(m),yv(m),periodic
+      real,dimension(:),allocatable :: x
+      real,dimension(:),allocatable :: y, yv
+      real,dimension(:,:),allocatable :: taux,tauy,tx,ty
+      !* common /for/  Frc(ndim),taux(n,m),tauy(n,m),tx(n,m),ty(n,m)
+      real,dimension(:),allocatable :: Frc
+      integer       nopo,ndir
+      integer,dimension(:),allocatable :: dir
+      integer,dimension(:,:),allocatable :: lnd
+      !* common /lan/  nopo, ndir,dir(ndim),lnd(n,m)
+      real          tmax
+      !* common /lan2/ tmax, hb(n,m),hb1(n,m),davg(n,m)
+      real,dimension(:,:),allocatable  :: hb, hb1, davg
+
+      real ,dimension(:,:,:,:,:),allocatable ::  Lluu,Lluv,Lluh,Nluu,Nluv,Nluh
+      real ,dimension(:,:,:,:,:),allocatable  ::   Llvu,Llvv,Llvh,Nlvu,Nlvv,Nlvh
+      real ,dimension(:,:,:,:,:),allocatable  ::   Llhu,Llhv,Llhh,Nlhu,Nlhv,Nlhh
+      real ,dimension(:,:,:,:,:),allocatable  ::   Aluu,Aluv,Aluh
+      real ,dimension(:,:,:,:,:),allocatable  ::   Alvu,Alvv,Alvh
+      real ,dimension(:,:,:,:,:),allocatable  ::   Alhu,Alhv,Alhh
+           real,dimension(:,:),allocatable  ::  l_coef 
+      !common /lay/ l_coef(nl,nl+1) 
+
+      integer,dimension(:),allocatable  ::  num, inv, ngrp
+      !common /HRH/ num(ndim), inv(ndim)
+      
+      integer idim, maxgrp, mingrp
+      integer,dimension(:),allocatable  :: irow, icol
+      integer,dimension(:),allocatable  :: ipntr, jpntr
+      !common /MIX/ idim, irow(ndim*25), icol(ndim*25), ngrp(ndim),&
+       !           maxgrp, mingrp, ipntr(ndim+1), jpntr(ndim+1)
+       contains
+
+      subroutine allocate_usr(dim_n,dim_m,dim_l)
+
+      use m_par
+      !include 'param.com'
+      implicit none
+  
+      integer dim_n,dim_m,dim_l
+
+       n=dim_n 
+       m=dim_m
+       nl=dim_l
+       nun=3*nl
+       ndim=3*n*m*nl
+       lwrk=4*n+nd+4
+       liwrk=n+nd
+       allocate(x(n),y(m),yv(m),taux(n,m),tauy(n,m),tx(n,m),ty(n,m))
+       allocate(Frc(ndim),dir(ndim),lnd(n,m),hb(n,m),hb1(n,m),davg(n,m))
+       allocate(Lluu(n,m,np,nl,nl),Lluv(n,m,np,nl,nl),Lluh(n,m,np,nl,nl),Nluu(n,m,np,nl,nl))
+       allocate(Nluv(n,m,np,nl,nl),Nluh(n,m,np,nl,nl),Llvu(n,m,np,nl,nl),Llvv(n,m,np,nl,nl))
+       allocate(Llvh(n,m,np,nl,nl),Nlvu(n,m,np,nl,nl),Nlvv(n,m,np,nl,nl),Nlvh(n,m,np,nl,nl))
+       allocate(Llhu(n,m,np,nl,nl),Llhv(n,m,np,nl,nl),Llhh(n,m,np,nl,nl),Nlhu(n,m,np,nl,nl))
+       allocate(Nlhv(n,m,np,nl,nl),Nlhh(n,m,np,nl,nl),Aluu(n,m,np,nl,nl),Aluv(n,m,np,nl,nl),Aluh(n,m,np,nl,nl))
+       allocate(Alvu(n,m,np,nl,nl),Alvv(n,m,np,nl,nl),Alvh(n,m,np,nl,nl))
+       allocate(Alhu(n,m,np,nl,nl),Alhv(n,m,np,nl,nl),Alhh(n,m,np,nl,nl))
+       allocate(l_coef(nl,nl+1),irow(ndim*25),icol(ndim*25),ipntr(ndim+1),jpntr(ndim+1))
+       allocate(num(ndim),inv(ndim),ngrp(ndim))
+       end subroutine allocate_usr
+
+
+      
+        end module 

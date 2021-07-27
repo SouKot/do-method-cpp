@@ -1,0 +1,63 @@
+<ParameterList name="Driven Cavity using LOCA/HYMLS"><!--{-->
+
+  <ParameterList name="Model Parameters"><!--{-->
+    <!-- "nx" is number of elemnts in x-dimesion -->
+    <Parameter name="nx" type="int" value="128"/>
+    <Parameter name="mu" type="double" value="0.005"/>
+    <Parameter name="No. of vectors in stoch. forcing" type="int" value="1"/>
+    <Parameter name="theta" type="double" value="1.0"/>
+    <!--  NOTE: Only Solver Type = direct is supported for now!!!! -->
+    <Parameter name="Solver Type" type="string" value="direct"/>
+    <!-- If "Solver Type" value is "direct" then -->
+    <ParameterList name="direct"><!--{-->
+      <Parameter name="Solver name" type="string" value="Amesos_Scalapack"/>
+    </ParameterList><!--}direct--> 
+    <Parameter name="Testing" type="bool" value="false"/>
+    <Parameter name="Debugging" type="bool" value="false"/>
+  </ParameterList><!--}Model Parameters--> 
+ 
+  <ParameterList name="Time Stepping"><!--{-->
+    <!-- choose the time-stepping scheme.      -->
+    <!-- presently we support                  -->
+    <!-- explicit schemes:                     -->
+    <!--            "Forward Euler"            -->
+    <!-- implicit schemes:                     -->
+    <!--            "Theta", "Adaptive Theta"  -->
+    <!-- the latter chooses theta smartly (?)  -->
+    <!-- as it was implemented in THCM         -->
+    <Parameter name="Scheme" type="string" value="Theta"/> 
+    <!-- only relevant for "Theta" scheme -->
+    <Parameter name="Theta" type="double" value="1.0"/>
+    <Parameter name="Start Time" type="double" value="0.0"/>
+    <Parameter name="End Time" type="double" value="0.8"/>
+    <Parameter name="Step Size" type="double" value="0.001"/>
+    <Parameter name="time step increment" type="double" value="0.0"/>
+    <!-- the predictor can currently be                         -->
+    <!-- "Constant": start Newton with the previous slution u_n -->
+    <!-- "Secant":   start with u_n + dt*(u_n-u_{n-1})/dt_n     -->
+    <!-- In the first time-step or after a failed step, it is   -->
+    <!-- always "Constant".                                     -->
+    <Parameter name="Predictor" type="string" value="Constant"/>
+    <!-- "Constant" or "Adaptive"                                                 -->
+    <!-- if "Constant", the time step is changed only based on success or         -->
+    <!-- failure of the Newton solve. "Adaptive" adjusts the time step based on   -->
+    <!-- an estimate of the local truncation error.                               -->
+    <!-- In case there is a stability condition, it is applied after step-size    -->
+    <Parameter name="Error Tolerance" type="double" value="1.0"/>
+    <!-- stop the time-integration when a steady-state is detected. the following -->
+    <!-- criteria can be used:                                                    -->
+    <!-- "None": no convergence monitoring                                       -->
+    <!-- "Norm of F": ||F(u)||_1<tol                                              -->
+    <!-- "Overturning": monitor the meridional streamfunction, i.e.               -->
+    <!--                the maximum of the y-z streamfunction (v is averaged over x) -->
+    <Parameter name="Steady-State Monitor" type="string" value="Norm 0f F"/>    
+    <!-- criterion to stop if the monitor chosen above goes below a given  -->
+    <!-- tolerance, indicating that a steady state has been found and      -->
+    <!-- further time integration is of little use.                        -->
+    <Parameter name="Steady-State Tolerance" type="double" value="1.0e-10"/>
+  </ParameterList><!--}time stepping--> 
+
+</ParameterList><!--}-->
+
+
+

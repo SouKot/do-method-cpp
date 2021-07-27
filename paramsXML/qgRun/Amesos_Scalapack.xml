@@ -1,0 +1,21 @@
+<ParameterList>
+
+  <Parameter name="AddZeroToDiag" type="bool" value="true"/>
+
+  <Parameter name="PrintStatus" type="bool" value="false"/>
+
+  <Parameter name="RCondThreshold" type="double" value="1.0e-12"/>
+
+  <Parameter name="ComputeVectorNorms" type="bool" value="false"/>
+
+  <Parameter name="ComputeTrueResidual" type="bool" value="false"/>
+
+  <Parameter name="OutputLevel" type="int" value="1"/>
+  <Parameter name="DebugLevel" type="int" value="0"/>
+
+  <ParameterList name="Scalapack"><!--{-->
+    <Parameter name="grid_nb" type="int" value="40"/>
+  </ParameterList><!--} Scalapack-->
+
+</ParameterList><!--} Amesos_Scalapack-->
+

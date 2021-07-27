@@ -1,0 +1,9 @@
+<ParameterList><!--{ -->
+    <Parameter name="Solver" type="string" value="GMRES"/>
+    <Parameter name="Orthog" type="string" value="Classic"/>
+    <Parameter name="Precond" type="string" value="None"/>
+    <Parameter name="Diagnostics" type="string" value="None"/>
+    <Parameter name="Output" type="string" value="Warnings"/>
+    <Parameter name="Max_Iter" type="int" value="1000"/>
+    <Parameter name="Tol" type="double" value="1.0e-8"/>
+</ParameterList><!--} AztecOO_GMRES-->

@@ -1,0 +1,81 @@
+<ParameterList name="MOC"><!--{-->
+  <Parameter name="Problem Type" type="string" value="Convection-Diffusion"/>
+  <ParameterList name="StochModel"><!--{-->
+    <!-- set to "None" if no file is  provided for Massmatrix --> 
+    <Parameter name="MassMtxFile" type="string" value="None"/>
+    <!-- set to "None" if no file is  provided for Stochastic forcing --> 
+    <Parameter name="StochFrcFile" type="string" value="None"/>
+    <Parameter name="StochFrc Strength" type="double" value="1.0"/>
+    <!-- set to "None" if no file is  provided for stationary Jacobian --> 
+    <Parameter name="JacDetFile" type="string" value="None"/>
+    <!-- set to 'false' if no Scaling is provided  --> 
+    <Parameter name="Scaling" type="bool" value="false"/>
+    <!-- set to some value after which stochastic basis and coefficients are saved 
+	 in files. Choose interval based on time scale of your problem    --> 
+    <Parameter name="Save Solution Interval" type="double" value="0.5"/>
+    <!--**************************************************************** -->
+    <!-- PARAMETER LIST FOR STOCHASTIC BASIS PART --> 
+    <!--**************************************************************** -->
+    <ParameterList name="Stochastic Basis">
+      <Parameter name="Max. Stoch subspace Dimension" type="int" value="4"/>
+      <Parameter name="Initial Stoch subspace Dimension" type="int" value="2"/>
+      <!-- set to "None" if no file is  provided for inital values for basis --> 
+      <Parameter name="StochBasisFile" type="string" value="None"/>
+      <Parameter name="Class Testing" type="bool" value="false"/>
+      <Parameter name="Class Debugging" type="bool" value="false"/>
+      <!-- "Debug Level" only useful when "Class Debugging" is true. 
+	    DbgLvl == 2 for residual computation
+	    DbgLvl == 3 for solution norm
+	    DbgLvl == 5 for Orthogonality checking
+	    DbgLvl == 7 for various matrix blocks norms
+	    DbgLvl == 11 for norm of rhs and other terms in rhs
+	    To get multiple information just put DbgLvl equal to 
+	    the multiplication of respective values. For ex. to compute 
+	    residual and solution norm, put DbgLvl=2*3 -->
+      <Parameter name="Debug Level" type="int" value="6*5*7*11"/>
+      <!-- Used to choose solver type.
+      If value="Amesos" then "direct" sublist is used. 
+      if value="Belos" then itrative sublist is used. --> 
+      <Parameter name="Solver Package" type="string" value="Belos"/>
+      <!-- If  {
+	   "Solve Type"="direct" then  --> 
+      <ParameterList name="Amesos">
+	<!-- choose Amesos solver. An XML file defining paraeters 
+	     related to solver should be defined. For example if
+	     Amesos_Klu is chosen then a file named Amesos_Klu.xml
+	     should be present in the run directory. -->
+	<Parameter name="Solver name" type="string" value="Amesos_Scalapack"/>
+      </ParameterList><!-- } direct  -->
+      <!-- elseif {
+	      "Solve Type"="iterative" then  --> 
+      <ParameterList name="Belos">
+	<!-- choose AztecOO solver. An XML file defining parameters 
+	     related to solver should be defined. For example if
+	     GMRES is chosen then a file named AztecOO_GMRES.xml
+	     should be present in the run directory.
+	     (WARNING : Not Implemented!!!!!!) -->
+	<Parameter name="Solver name" type="string" value="PSEUDO_BLOCK_GMRES"/>
+      </ParameterList><!--} iterative-->
+    </ParameterList><!--} Stochastic Basis-->
+    <ParameterList name="Stochastic System">
+      <!-- Write the type of file you give for initializing Stoch. coeff.
+	   "None" = no file,
+	   "Variance" = a vector with initial variance(length should be "no. of stochastic_basis*1")      
+	   "StochCoeff" = matrix with size of "No.of stochastic basis*no. of stochastic iteration" --> 
+      <Parameter name="Type of Coeff File" type="string" value="None"/>
+      <!-- Following parameter is used when above parameter is NOT "None".
+	   Use it to give the name of the file--> 
+      <Parameter name="StochCoefFile" type="string" value="VarFile.mm"/>
+      <Parameter name="Stochastic Iterations" type="int" value="1000"/>
+      <Parameter name="Number of Sub Time Steps" type="int" value="1" />
+      <Parameter name="Max Num of Iter" type="int" value="50" />
+      <Parameter name="Use BackTracking" type="bool" value="true" />
+      <Parameter name="Max Num of BackTracking Steps" type="int" value="5" />
+      <Parameter name="Tolerance of RHS" type="double" value="10e-10" />
+      <Parameter name="Norm of RHS" type="double" value="1.0" />
+      <Parameter name="Class Testing" type="bool" value="false"/>
+      <Parameter name="Class Debugging" type="bool" value="false"/>
+      <Parameter name="Use Newton" type="bool" value="false"/>
+    </ParameterList><!--} Stochastic Coeff-->
+  </ParameterList><!--} Model-->
+</ParameterList><!--}-->
