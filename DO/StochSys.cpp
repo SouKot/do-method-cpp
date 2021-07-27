@@ -173,14 +173,15 @@ Y_Stoch::Y_Stoch(int NumStochIter,
     Teuchos::View, r_val, m_, m_, m_));
   ru = Epetra_SerialDenseMatrix(Epetra_DataAccess::View, r_val, m_, m_, m_);
   
+#if use_trng==1
   eng.split(A_->Comm().NumProc(), MyPID);
   gen = Teuchos::rcp(new GEN(0.0,1.0));
-
-  //std::random_device random_dev;
-  //eng = ENG(A_->Comm().MyPID() * 31 + random_dev());
-  //dist = DIST(0.0, 1.0);
-  //gen = Teuchos::rcp(new GEN(eng, dist));
-  
+#else
+  std::random_device random_dev;
+  eng = ENG(A_->Comm().MyPID() * 31 + random_dev());
+  dist = DIST(0.0, 1.0);
+  gen = Teuchos::rcp(new GEN(eng, dist));
+#endif 
   // WARNING: At present the 'TypeCoeffFile' can be either 'None' or
   // 'Variance'. Using 'CoeffMatrix' will result in an error !!!!
   std::string CoefFile; // =     CoefParams.get("StochCoefFile","y.mm");
@@ -224,7 +225,11 @@ Y_Stoch::Y_Stoch(int NumStochIter,
       CoefFile.c_str(), *map_x_, y_coeff);
     for (int i = 0; i < yTrans_->NumVectors(); i++) {
       for (int j = 0; j < yTrans_->MyLength(); j++) {
-        (*(*yTrans_)(i))[j] = sqrt((*(*y_coeff)(0))[i]) * (*gen)(eng);
+#if use_trng==1
+	(*(*yTrans_)(i))[j] = sqrt((*(*y_coeff)(0))[i]) * (*gen)(eng);
+#else
+        (*(*yTrans_)(i))[j] = sqrt((*(*y_coeff)(0))[i]) * (*gen)();
+#endif
       }
     }
     CreateLocMultiVec("y");
@@ -385,14 +390,14 @@ Y_Stoch::Y_Stoch(int NumStochIter,
     Teuchos::View, r_val, m_, m_, m_));
   ru = Epetra_SerialDenseMatrix(Epetra_DataAccess::View, r_val, m_, m_, m_);
   std::random_device random_dev;
-  
+#if use_trng==1
   eng.split(A_->Comm().NumProc(), MyPID);
   gen = Teuchos::rcp(new GEN(0.0,1.0));
-
-  //eng = ENG(A_->Comm().MyPID() * 31 + random_dev());
-  //dist = DIST(0.0, 1.0);
-  //gen = Teuchos::rcp(new GEN(eng, dist));
-  
+#else
+  eng = ENG(A_->Comm().MyPID() * 31 + random_dev());
+  dist = DIST(0.0, 1.0);
+  gen = Teuchos::rcp(new GEN(eng, dist));
+#endif
   std::string CoefFile; // =     CoefParams.get("StochCoefFile","y.mm");
   std::string TypeCoeffFile = CoefParams->get("Type of Coeff File", "None");
   test_ = CoefParams->get("Class Testing", false);
@@ -425,7 +430,11 @@ Y_Stoch::Y_Stoch(int NumStochIter,
       CoefFile.c_str(), *map_x_, y_coeff);
     for (int i = 0; i < yTrans_->NumVectors(); i++) {
       for (int j = 0; j < yTrans_->MyLength(); j++) {
+#if use_trng==1
         (*(*yTrans_)(i))[j] = sqrt((*(*y_coeff)(0))[i]) * (*gen)(eng);
+#else
+        (*(*yTrans_)(i))[j] = sqrt((*(*y_coeff)(0))[i]) * (*gen)();
+#endif
       }
     }
     CreateLocMultiVec("y");
@@ -986,8 +995,11 @@ Y_Stoch::StochasticIterations()
     for (int i = 0; i < B->NumVectors(); i++) {
       avrg[i] = 0;
       for (stochiter_ = 0; stochiter_ < yTrans_->MyLength(); stochiter_++) {
-        //(*(*zTrans_)(i))[stochiter_] = (*DIST2)(ENG2);//(*gen)();
-        (*(*zTrans_)(i))[stochiter_] = (*gen)(eng);
+#if use_trng==1
+       	(*(*zTrans_)(i))[stochiter_] = (*gen)(eng);
+#else
+        (*(*zTrans_)(i))[stochiter_] = (*gen)();
+#endif
         avrg[i] += (*(*zTrans_)(i))[stochiter_];
       }
       avrg[i] = avrg[i] / NumStochIter_;
