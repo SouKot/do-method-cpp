@@ -176,11 +176,13 @@ Y_Stoch::Y_Stoch(int NumStochIter,
 #if use_trng==1
   eng.split(A_->Comm().NumProc(), MyPID);
   gen = Teuchos::rcp(new GEN(0.0,1.0));
+  std::cout<<"\n USING TRNG LIBRARY\n";
 #else
   std::random_device random_dev;
   eng = ENG(A_->Comm().MyPID() * 31 + random_dev());
   dist = DIST(0.0, 1.0);
   gen = Teuchos::rcp(new GEN(eng, dist));
+  std::cout<<"\n USING BOOST LIBRARY\n";
 #endif 
   // WARNING: At present the 'TypeCoeffFile' can be either 'None' or
   // 'Variance'. Using 'CoeffMatrix' will result in an error !!!!
@@ -393,10 +395,12 @@ Y_Stoch::Y_Stoch(int NumStochIter,
 #if use_trng==1
   eng.split(A_->Comm().NumProc(), MyPID);
   gen = Teuchos::rcp(new GEN(0.0,1.0));
+  std::cout<<"\n USING TRNG LIBRARY\n";
 #else
   eng = ENG(A_->Comm().MyPID() * 31 + random_dev());
   dist = DIST(0.0, 1.0);
   gen = Teuchos::rcp(new GEN(eng, dist));
+  std::cout<<"\n USING BOOST LIBRARY\n";
 #endif
   std::string CoefFile; // =     CoefParams.get("StochCoefFile","y.mm");
   std::string TypeCoeffFile = CoefParams->get("Type of Coeff File", "None");
