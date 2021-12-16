@@ -31,6 +31,7 @@
 #include <iostream>
 #include <random>
 #include <sstream>
+#include <stdexcept>
 //#include <Epetra_SerialDenseSVD.h>
 #if need_locaInterface == 1
 #include "FVM_model_interface.h"
@@ -415,23 +416,31 @@ Y_Stoch::Y_Stoch(int NumStochIter,
   if (TypeCoeffFile != "None")
     CoefFile = CoefParams->get("StochCoefFile", "y.mm");
 
-  // y_->PutScalar(0.0001);
-  // if (TypeCoeffFile == "CoeffMatrix")
-  //{
-  //  std::cout << " Initializing Coeff.'s using " << CoefFile << ".\n";
-  //  Epetra_MultiVector* y_coeff;
-  //  EPETRA_CHK_ERR(EpetraExt::MatrixMarketFileToMultiVector(CoefFile.c_str(),
-  //      						    *map_, y_coeff));
-  //  y_= Teuchos::rcp(y_coeff);
-  //  std::cout << "\nIntial time = " << t << std::endl;
-  //}
+ if (TypeCoeffFile == "CoeffMatrix")
+{
+    if (MyPID == 0)
+      std::cout << " Initializing Coeff.'s using " << CoefFile << ".\n";
+    Epetra_MultiVector* y_coeff;
+    int success = EpetraExt::MatrixMarketFileToMultiVector(
+	CoefFile.c_str(), *Tmap, y_coeff);
+    std::string msg= "Error in reading file "+ CoefFile;
+    TEUCHOS_TEST_FOR_EXCEPTION(success!=0,std::logic_error,msg);
+    for (int i = 0; i < yTrans_->NumVectors(); i++) {
+      for (int j = 0; j < yTrans_->MyLength(); j++) {
+        (*(*yTrans_)(i))[j] = (*(*y_coeff)(i))[j];
+      }
+    }
+    CreateLocMultiVec("y");
+}
   if (TypeCoeffFile == "Variance") {
     if (MyPID == 0)
       std::cout << " Using provided variance vector for initializing Stoch. "
                 << "Coeff.'s \n";
     Epetra_MultiVector* y_coeff;
-    EpetraExt::MatrixMarketFileToMultiVector(
+    int success = EpetraExt::MatrixMarketFileToMultiVector(
       CoefFile.c_str(), *map_x_, y_coeff);
+    std::string msg= "Error in reading file "+ CoefFile;
+    TEUCHOS_TEST_FOR_EXCEPTION(success!=0,std::logic_error,msg);
     for (int i = 0; i < yTrans_->NumVectors(); i++) {
       for (int j = 0; j < yTrans_->MyLength(); j++) {
 #if use_trng==1
@@ -1093,12 +1102,21 @@ Y_Stoch::computeEyyTyT()
       ViewYY[i * YY->MyLength() + j] = ViewLocExpyyy[j];
     }
   }
-  double *cpyEyyy = nullptr, *globSumEyyy = nullptr;
+  double cpyEyyy[EyyTyT->NumVectors()*EyyTyT->MyLength()];
+  const int sz=EyyTyT->NumVectors()*EyyTyT->MyLength();
+  double globSumEyyy[EyyTyT->NumVectors()*EyyTyT->MyLength()];
   EyyTyT->Multiply('N', 'T', 1.0 / NumStochIter_, *YY, *y_, 0.0);
-  EyyTyT->ExtractCopy(cpyEyyy, y_->MyLength());
+
+  EyyTyT->ExtractCopy(cpyEyyy, EyyTyT->MyLength());
   int count = EyyTyT->NumVectors() * EyyTyT->MyLength();
   Comm_->SumAll(cpyEyyy, globSumEyyy, count);
-  EyyTyT->ResetView(&globSumEyyy);
+  for (int i=0; i< EyyTyT->NumVectors(); i++)
+  {
+      for (int j=0; j< EyyTyT->MyLength(); j++)
+      {
+        (*(*EyyTyT)(i))[j]=globSumEyyy[i*EyyTyT->MyLength()+j];
+      }
+  }
 }
 
 void

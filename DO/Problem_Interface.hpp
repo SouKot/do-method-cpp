@@ -87,7 +87,15 @@ public:
   {
     *y = yy;
   };
-  double dt_;
+  double& get_frcStrenth()
+  {
+    return stchFrcStren_;
+  };
+  void set_frcStrength(double stchfrcstren)
+  {
+    stchFrcStren_ = stchfrcstren;
+  };
+  double dt_, stchFrcStren_;
   int m_;
   Teuchos::RCP<Teuchos::ParameterList> SolverParams_;
   /*!

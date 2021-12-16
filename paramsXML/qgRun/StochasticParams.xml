@@ -5,7 +5,7 @@
     <Parameter name="MassMtxFile" type="string" value="None"/>
     <!-- set to "None" if no file is  provided for Stochastic forcing --> 
     <Parameter name="StochFrcFile" type="string" value="None"/>
-    <Parameter name="StochFrc Strength" type="double" value="1.0"/>
+    <Parameter name="StochFrc Strength" type="double" value="50.0"/>
     <!-- set to "None" if no file is  provided for stationary Jacobian --> 
     <Parameter name="JacDetFile" type="string" value="None"/>
     <!-- set to 'false' if no Scaling is provided  --> 
@@ -18,7 +18,7 @@
     <!--**************************************************************** -->
     <ParameterList name="Stochastic Basis">
       <Parameter name="Max. Stoch subspace Dimension" type="int" value="4"/>
-      <Parameter name="Initial Stoch subspace Dimension" type="int" value="2"/>
+      <Parameter name="Initial Stoch subspace Dimension" type="int" value="1"/>
       <!-- set to "None" if no file is  provided for inital values for basis --> 
       <Parameter name="StochBasisFile" type="string" value="None"/>
       <Parameter name="Class Testing" type="bool" value="false"/>
@@ -36,7 +36,7 @@
       <!-- Used to choose solver type.
       If value="Amesos" then "direct" sublist is used. 
       if value="Belos" then itrative sublist is used. --> 
-      <Parameter name="Solver Package" type="string" value="Belos"/>
+      <Parameter name="Solver Package" type="string" value="Amesos"/>
       <!-- If  {
 	   "Solve Type"="direct" then  --> 
       <ParameterList name="Amesos">
@@ -44,7 +44,7 @@
 	     related to solver should be defined. For example if
 	     Amesos_Klu is chosen then a file named Amesos_Klu.xml
 	     should be present in the run directory. -->
-	<Parameter name="Solver name" type="string" value="Amesos_Scalapack"/>
+	<Parameter name="Solver name" type="string" value="Amesos_Mumps"/>
       </ParameterList><!-- } direct  -->
       <!-- elseif {
 	      "Solve Type"="iterative" then  --> 
@@ -61,12 +61,12 @@
       <!-- Write the type of file you give for initializing Stoch. coeff.
 	   "None" = no file,
 	   "Variance" = a vector with initial variance(length should be "no. of stochastic_basis*1")      
-	   "StochCoeff" = matrix with size of "No.of stochastic basis*no. of stochastic iteration" --> 
+	   "CoeffMatrix" = matrix with size of "No.of stochastic basis*no. of stochastic iteration" --> 
       <Parameter name="Type of Coeff File" type="string" value="None"/>
       <!-- Following parameter is used when above parameter is NOT "None".
 	   Use it to give the name of the file--> 
-      <Parameter name="StochCoefFile" type="string" value="VarFile.mm"/>
-      <Parameter name="Stochastic Iterations" type="int" value="1000"/>
+      <Parameter name="StochCoefFile" type="string" value="None"/>
+      <Parameter name="Stochastic Iterations" type="int" value="10000"/>
       <Parameter name="Number of Sub Time Steps" type="int" value="1" />
       <Parameter name="Max Num of Iter" type="int" value="50" />
       <Parameter name="Use BackTracking" type="bool" value="true" />

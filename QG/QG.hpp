@@ -38,6 +38,7 @@ class QG
 
     Vector2D tx_;
     Vector2D ty_;
+    Vector2D topo_;
 
     Vector1D par_;
 
@@ -87,6 +88,7 @@ public:
 protected:
     double curl(double x, double y);
     void compute_forcing();
+    void compute_btmTopo();
     void compute_linear();
 
     void assembleA();

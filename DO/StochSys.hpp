@@ -176,6 +176,7 @@ public:
   bool Converged() { return isConverged_; }
   int Iterations() { return iter_; }
   Teuchos::RCP<Epetra_SerialDenseMatrix> getJacobian() { return Yjac; }
+  Teuchos::RCP<Epetra_MultiVector> getEyy(){return Exp_yy_;}
 
 #if use_trng==1
   trng::yarn2 eng;

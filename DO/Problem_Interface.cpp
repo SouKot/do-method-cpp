@@ -272,9 +272,26 @@ void Problem_Interface::init_v(double t)
   // else read from the file.
   if (InitFile_ == "None")
   {
-    V->Random(); 
-    for (int i = 0; i < W_->NumVectors(); i++)
-       *((*V)(i))=*((*W_)(i));
+    V->Random();
+//    V->PutScalar(.001);
+     int myln = V->MyLength();
+/*     for (int i = 0; i < V->NumVectors(); i++)
+ *     {
+ *       for (int j = 0; j < myln; j+=2)
+ *       {
+ * 	(*((*V)(i)))[j]=cos(j*M_PI* myln/2);
+ * 	(*((*V)(i)))[j+1]=1.0;
+ *       }
+ * 
+ *     }
+ */
+    if (abs(stchFrcStren_)>=10e-12)
+    {
+      for (int i = 0; i < std::min(W_->NumVectors(),V->NumVectors()) ; i++)
+        *((*V)(i))=*((*W_)(i));
+    }
+
+#if need_locaInterface == 1
     Epetra_Vector massDiag(V->Map());
     mass_->ExtractDiagonalCopy(massDiag);
     for (int i = 0; i < massDiag.MyLength(); i++)
@@ -287,6 +304,7 @@ void Problem_Interface::init_v(double t)
         }
       }
     }
+#endif
     //for (int i = 0; i < W_->NumVectors(); i++)
       //mass_->Multiply(false, *((*W_)(i)), *((*V)(i)));
     // if (solver_type == "direct") {

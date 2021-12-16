@@ -32,7 +32,8 @@ QG::QG(int m, int n)
   , y_(m)
   , tx_(n, m)
   , ty_(n, m)
-  , par_(21)
+  , topo_(n, m)
+  , par_(22)
   , Llzz_(n, m, 10)
   , Llzp_(n, m, 10)
   , Nlzz_(n, m, 10)
@@ -86,7 +87,7 @@ QG::QG(int m, int n)
   par_(7) = 0.0;
 
   par_(19) = 0.0;
-
+  par_(21) = 0.0; // bottom topography coefficient. 0.0 for no bottom profile
   compute_linear();
 }
 
@@ -98,6 +99,7 @@ void
 QG::compute_linear()
 {
   compute_forcing(); // definition windstress pattern (sin 2 pi y) on grid
+  compute_btmTopo(); // definition bottom topography pattern
 
   lin(); // linear part which is independent of the state
 }
@@ -290,11 +292,15 @@ QG::rhs(double const* un, double* b)
   Vector2D om(n_, m_);
   Vector2D ps(n_, m_);
   Vector1D Frc(ndim_);
+  Vector1D Topo(ndim_);
 
   double alpha_tau = par_(11) * par_(1);
+  double topo_coef = par_(21);
 
-  for (int i = 0; i < ndim_; i++)
+  for (int i = 0; i < ndim_; i++){
     Frc[i] = 0.0;
+    Topo[i] = 0.0;
+  }
 
   u_to_psi(un, om, ps);
   nlin_rhs(om, ps);
@@ -304,6 +310,8 @@ QG::rhs(double const* un, double* b)
       int row = 2 * (n_ * j + i);
       Frc(row) = alpha_tau * tx_(i, j);
       Frc(row + 1) = 0.0;
+      Topo(row) = topo_coef * topo_(i, j);
+      Topo(row + 1) = 0.0;
     }
   }
 
@@ -321,7 +329,7 @@ QG::rhs(double const* un, double* b)
   // This is the reverse of the fortran version!!!
   // B = Au - Frc
   for (int i = 0; i < ndim_; i++) {
-    b[i] = -Frc(i);
+    b[i] = -Frc(i) + Topo(i);
     for (int v = A_.beg[i]; v < A_.beg[i + 1]; v++)
       b[i] += A_.co[v] * un[A_.jco[v]];
   }
@@ -343,7 +351,7 @@ QG::bilin(double const* un, double const* vn, double* b)
     Alpp_[i] = 0.0;
   }
 
-  // boundariesNl();
+  // boundaries();
   assembleA();
   Asort();
 
@@ -391,7 +399,7 @@ QG::curl(double x, double y)
 {
   double asym = par_(19);
   double y2 = (y - ymin_) / (ymax_ - ymin_);
-  return -(1. - asym) * sin(2 * M_PI * y2) - asym * sin(M_PI * y2);
+  return -(1. - asym) * sin(2 * M_PI * (y2)) - asym * sin(M_PI * y2);
 }
 
 void
@@ -696,7 +704,6 @@ QG::compute_forcing()
     tx_[i] = 0.0;
     ty_[i] = 0.0;
   }
-
   for (int j = 1; j < m_ - 1; j++) {
     for (int i = 1; i < n_ - 1; i++) {
       tx_(i, j) = curl(x_(i), y_(j));
@@ -705,6 +712,19 @@ QG::compute_forcing()
   }
 }
 
+void
+QG::compute_btmTopo()
+{
+  for (int i = 0; i < topo_.size(); i++)
+    topo_[i]=0.0;
+
+  for (int j = 1; j < m_ - 1; j++) {
+    for (int i = 1; i < n_ - 1; i++) {
+      topo_(i, j) = exp(-32*((x_(i)-0.25)*(x_(i)-0.25)+(y_(j)-0.25)*(y_(j)-0.25)));
+    }
+  }
+
+}
 /*
  *  dx = coef(i,j,pos,unkn)
  *
@@ -880,13 +900,13 @@ QG::readfort(int irs, double* u)
       }
     }
 
-    for (int i = 0; i < 20; i++) {
+    for (int i = 0; i < 22; i++) {
       f >> par_[i + 1];
     }
   }
 
   std::cout << "Read parameters: ";
-  for (int i = 0; i < 20; i++)
+  for (int i = 0; i < 22; i++)
     std::cout << par_[i + 1] << " ";
   std::cout << std::endl;
 

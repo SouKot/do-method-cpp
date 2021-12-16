@@ -385,6 +385,28 @@ int main(int argc = 0, char *argv[] = NULL) {
 
 #endif
 
+    int glen = soln->GlobalLength();
+#if quasi_geo == 1
+   // NOTE: following settings are for very specific QG problem! 
+    double Re=MeanSolveList.get("Reynolds Number", 0.0);
+    int stableSol=MeanSolveList.get("Stable Solution", 0);
+    if(Re==40.0 && stableSol==1)
+    {
+      std::cout<<"\n setting the initial solution for Re = "<<Re;
+      std::cout<<" and looking for stable solution.\n";
+      for (int i=0; i<soln->MyLength();i++)
+	(*soln)[i]= exp(cos(M_PI*double(i)/double(glen)));
+    }
+    else if(Re==40.0 && stableSol==0)
+    {
+      std::cout<<"\n setting the initial solution for Re = "<<Re;
+      std::cout<<" and looking for unstable solution.\n";
+      soln->PutScalar(0.0);
+    }
+    else
+      soln->PutScalar(0.0);
+#endif
+
     bool increase_dt = false;
 
     /////////////////////////////////////////////////////////////////////////////
@@ -481,8 +503,6 @@ int main(int argc = 0, char *argv[] = NULL) {
       std::cout << "\n A is not filled\n";
       A->FillComplete();
     }
-    int glen = soln->GlobalLength();
-    printnormMV(*soln, 2, "inital norm of soln");
 
     //    soln->PutScalar(0.0);
     //    for (int i = 2; i < soln->MyLength(); i += 3)
@@ -563,7 +583,7 @@ int main(int argc = 0, char *argv[] = NULL) {
 
     // std::string frcfile = "frc.mm";
     //    EpetraExt::MultiVectorToMatrixMarketFile(frcfile.c_str(), Wbase);
-
+    Vstoch->set_frcStrength(StochFrcStren);
     Vstoch->init_v(t);
 
     /*****************************************************************************************************/
@@ -572,7 +592,6 @@ int main(int argc = 0, char *argv[] = NULL) {
     int NumGlobalElements =
       numvecV; // should be equal to the no of bases given to Vstoch class
 
-    Teuchos::RCP<Epetra_MultiVector> expyy = Vstoch->getExp_yy();
     Teuchos::RCP<Epetra_MultiVector> Vn = Vstoch->V;
 
     if (MyPID == 0)
@@ -629,12 +648,23 @@ int main(int argc = 0, char *argv[] = NULL) {
     y_interface->computeEyyTyT();
     model->setExpVyVy(y_interface->getEVyVy());
     double count = t;
+    int yycount = 0;
     if (MyPID == 0) {
       cout << "\n end time = " << t_end;
       cout << "\n start time = " << t;
       cout << "\n starting time iterations:"
            << "\n";
     }
+    printnormMV(*soln, 2, "inital norm of soln");
+#if quasi_geo == 1
+    model->setSolution(*soln);
+#endif
+    Teuchos::RCP<Epetra_MultiVector> expyy = y_interface->getEyy();
+    double saveEyyintrvl=0.2;
+    int nv = round(saveEyyintrvl/dt);
+    std::cout<< "\n nv = "<<nv<<"\n";
+    int ttlelmnt=expyy->NumVectors()*expyy->GlobalLength();
+    Epetra_MultiVector Eyy(Epetra_Map(ttlelmnt,0,*Comm),nv);
     INFO("Start Time integration");
     /*****************************************************************************************************/
     // START time integration loop
@@ -657,6 +687,7 @@ int main(int argc = 0, char *argv[] = NULL) {
       // go a little too far (may want to fix
       // this)
       soln_old = *soln;
+      
 #if need_locaInterface == 1
       if (t + dt > t_end) {
         dt = std::max(dt_min, t_end - t);
@@ -733,6 +764,7 @@ int main(int argc = 0, char *argv[] = NULL) {
       if (timeProf)
         meanTime->start();
       bool success = model->NewtonSolver();
+      //bool success = model->newtonLineSearchSolve(*soln);
       if (timeProf)
         meanTime->stop();
       meanTime->incrementNumCalls();
@@ -796,11 +828,27 @@ int main(int argc = 0, char *argv[] = NULL) {
       if (success) {
         if (MyPID == 0) {
           std::flush(cout << "+");
+//          std::flush(cout << yycount<<" ");
         }
         t += dt;
         pVector->setValue("Time", t);
         model->setParameters(*pVector);
         std::string Filename;
+	double cpyeyy[ttlelmnt];
+	expyy->ExtractCopy(cpyeyy,expyy->MyLength());
+	for(int i=0; i<expyy->NumVectors();i++)
+	{
+	  for(int j=0; j<expyy->MyLength();j++)
+	  {
+	    Eyy.ReplaceGlobalValue(i*expyy->MyLength()+j,yycount,(*expyy)[i][j]);
+	  }
+	}
+	yycount=yycount+1;
+	if (yycount==nv ) {
+	  Filename = "tsEyy_" + Teuchos::toString(float(t)) + ".mm";
+	  HYMLS::MatrixUtils::mmwrite(Filename, Eyy);
+	  yycount=0;
+	}
         if ((t - count - prntintvl) >= 0) {
 	  Filename = "v_" + Teuchos::toString(float(t)) + ".mm";
 	  HYMLS::MatrixUtils::mmwrite(Filename, *Vn);
@@ -892,6 +940,21 @@ int main(int argc = 0, char *argv[] = NULL) {
         dt = min(dtIncrmnt + dt, t_end - t);
 
         std::string Filename;
+	double cpyeyy[ttlelmnt];
+	expyy->ExtractCopy(cpyeyy,expyy->MyLength());
+	for(int i=0; i<expyy->NumVectors();i++)
+	{
+	  for(int j=0; j<expyy->MyLength();j++)
+	  {
+	    Eyy.ReplaceGlobalValue(i*expyy->MyLength()+j,yycount,(*expyy)[i][j]);
+	  }
+	}
+	yycount=yycount+1;
+	if (yycount==nv ) {
+	  Filename = "tsEyy_" + Teuchos::toString(float(t)) + ".mm";
+	  HYMLS::MatrixUtils::mmwrite(Filename, Eyy);
+	  yycount=0;
+	}
         if ((t - count - prntintvl) >= 0) {
 	  
           Filename = "v_" + Teuchos::toString(float(t)) + ".mm";
@@ -899,7 +962,7 @@ int main(int argc = 0, char *argv[] = NULL) {
           Filename = "yT_" + Teuchos::toString(float(t)) + ".mm";
           EpetraExt::MultiVectorToMatrixMarketFile(Filename.c_str(),
                                                    *(y_interface->yTrans_));
-          Filename = "mean" + Teuchos::toString(float(t)) + ".mm";
+          Filename = "mean_" + Teuchos::toString(float(t)) + ".mm";
           EpetraExt::MultiVectorToMatrixMarketFile(Filename.c_str(), *soln);
           count = count + prntintvl; // getchar();
         }
@@ -952,7 +1015,7 @@ int main(int argc = 0, char *argv[] = NULL) {
     model->WriteConfiguration("MeanSolnFinal.txt", *pVector, *soln);
 #else
 
-    HYMLS::MatrixUtils::Dump(*soln, "MeanSolnFinal.txt");
+    HYMLS::MatrixUtils::Dump(*soln, "MeanSolnFinal.mm");
 #endif
     INFO(" Time-stepping run finished, store solution...");
     INFO("done!");
