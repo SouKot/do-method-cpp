@@ -20,6 +20,7 @@
 #include "Mean.hpp"
 #include "Amesos_Klu.h"
 #include "Amesos_Scalapack.h"
+#include "EpetraExt_MultiVectorOut.h"
 #include "EpetraExt_RowMatrixOut.h"
 #include "HYMLS_MatrixUtils.hpp"
 #include <AztecOO.h>
@@ -41,7 +42,7 @@ Mean::Mean(RCP<Teuchos::ParameterList> PrmLst, double* t, double* dt,
   : t_(t)
   , dt_(dt)
   , toleranceRHS_(1.0e-10)
-  , maxNumIterations_(30)
+  , maxNumIterations_(50)
   , numBackTrackingSteps_(20)
   , backTracking_(true)
 {
@@ -50,10 +51,12 @@ Mean::Mean(RCP<Teuchos::ParameterList> PrmLst, double* t, double* dt,
   nx = PrmLst->get("nx", 200); // global number of elements in the map
   ny = PrmLst->get("ny", 200); // global number of elements in the map
   rynldsNum = PrmLst->get("Reynolds Number",0.0); // Reynolds Numbers
+  double topography = PrmLst->get("Topography",0.0); // Reynolds Numbers
   n = nx * ny * 2;
   qg = Teuchos::rcp(new QG::QG(nx, ny));
   double zeta = 1 / n;
   qg->set_par(20, zeta);
+  qg->set_par(21, topography);
   qg->set_par(5, rynldsNum);
   qg->set_par(11, 1);
   theta = PrmLst->get("theta", 0.5);
@@ -181,6 +184,8 @@ Mean::createW(Epetra_Vector& diagmass)
       (*(*W_)(col))[i] = 0.0;
     }
   }
+  const char* flnm="forcing.mm";
+  EpetraExt::MultiVectorToMatrixMarketFile(flnm,*W_);
   if (debug_)
     printnormMV(*W_, 2, "norm of Original W :");
 }

@@ -123,7 +123,6 @@ Problem_Interface::Problem_Interface(Teuchos::RCP<Epetra_CrsMatrix> A,
 
     // Create the Belos preconditioned operator from the Ifpack preconditioner.
     belosPrec = rcp(new Belos::EpetraPrecOp(prec));
-
     bool success = true;
     bool leftprec = true; // left preconditioning or right.
     int numrhs= m_;

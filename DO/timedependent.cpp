@@ -169,14 +169,11 @@ int main(int argc = 0, char *argv[] = NULL) {
   (*info) << std::setw(15) << std::setprecision(15);
 
   Teuchos::RCP<std::ostream> outstream;
-  Teuchos::RCP<std::ostream> outstream2;
 
   if (MyPID == 0) {
     outstream = Teuchos::rcp(new std::ofstream("timestepping.out"));
-    outstream2 = Teuchos::rcp(new std::ofstream("time_dt_norm_Evyvy.txt"));
   } else {
     outstream = Teuchos::rcp(new Teuchos::oblackholestream());
-    outstream2 = Teuchos::rcp(new Teuchos::oblackholestream());
   }
   // this allows us to use the DEBUG macro, the Tools::Out function etc.
   // HYMLS::Tools::InitializeIO_std(Comm, outstream);
@@ -386,26 +383,53 @@ int main(int argc = 0, char *argv[] = NULL) {
 #endif
 
     int glen = soln->GlobalLength();
+
+  Teuchos::RCP<std::ostream> outstream2;
+  if (MyPID == 0) {
+    if (fabs(t_start-0.0)<.000001)
+      outstream2 = Teuchos::rcp(new std::ofstream("time_dt_norm_Evyvy.txt"));
+    else{
+      cout<<"\n***********************************************************************\n";
+      cout<<"NOTE : Will APPEND \"time_dt_norm_Evyvy.txt\" file if already present !!! \n";
+      cout<<"***********************************************************************\n";
+      outstream2 = Teuchos::rcp(new std::ofstream("time_dt_norm_Evyvy.txt", ios::app));
+    }
+  } else {
+    outstream2 = Teuchos::rcp(new Teuchos::oblackholestream());
+  }
+  std::string initSolnFile=MeanSolveList.get("Initial Solution File", "None");
+
 #if quasi_geo == 1
-   // NOTE: following settings are for very specific QG problem! 
-    double Re=MeanSolveList.get("Reynolds Number", 0.0);
-    int stableSol=MeanSolveList.get("Stable Solution", 0);
-    if(Re==40.0 && stableSol==1)
-    {
-      std::cout<<"\n setting the initial solution for Re = "<<Re;
-      std::cout<<" and looking for stable solution.\n";
-      for (int i=0; i<soln->MyLength();i++)
-	(*soln)[i]= exp(cos(M_PI*double(i)/double(glen)));
-    }
-    else if(Re==40.0 && stableSol==0)
-    {
-      std::cout<<"\n setting the initial solution for Re = "<<Re;
-      std::cout<<" and looking for unstable solution.\n";
-      soln->PutScalar(0.0);
-    }
-    else
-      soln->PutScalar(0.0);
+  // NOTE: following settings are for very specific QG problem and when no
+  // initial solution is provided! 
+  double Re=MeanSolveList.get("Reynolds Number", 0.0);
+  int stableSol=MeanSolveList.get("Stable Solution", 0);
+  if(Re==40.0 && stableSol==1)
+  {
+    std::cout<<"\n setting the initial solution for Re = "<<Re;
+    std::cout<<" and looking for stable solution.\n";
+    for (int i=0; i<soln->MyLength();i++)
+      (*soln)[i]= exp(cos(M_PI*double(i)/double(glen)));
+  }
+  else if(Re==40.0 && stableSol==0)
+  {
+    std::cout<<"\n setting the initial solution for Re = "<<Re;
+    std::cout<<" and looking for unstable solution.\n";
+    soln->PutScalar(0.0);
+  }
+  else
+    soln->PutScalar(0.0);
 #endif
+// when initial solution is provided.
+  if(initSolnFile.compare("None")!=0)
+  {
+    Epetra_MultiVector *initsol;
+    EpetraExt::MatrixMarketFileToMultiVector(initSolnFile.c_str(), soln->Map(), initsol);
+    *soln=*(*initsol)(0);
+
+  }
+
+
 
     bool increase_dt = false;
 

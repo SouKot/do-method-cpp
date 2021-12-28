@@ -46,3 +46,5 @@ make
 
 folder __paramsXML__ contains three directories containing the essential xml files for the respective problems. All three directories contain __params.xml__ (states the values related to mean solver) and __StochasticParams.xml__ ( DO solver parameter).  
 
+## To Do
+* Change `Topography` parameter in __params.xml__ for QG to `Bottom Topograpgy coefficient` or somethig similar. 
