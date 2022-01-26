@@ -4,7 +4,7 @@
     <!-- "nx" is number of elemnts in x-dimesion -->
     <Parameter name="nx" type="int" value="64"/>
     <Parameter name="ny" type="int" value="64"/>
-    <Parameter name="Reynolds Number" type="double" value="40.0"/>
+    <Parameter name="Reynolds Number" type="double" value="3.0"/>
     <Parameter name="Initial Solution File" type="string" value="None"/>
     <Parameter name="Topography" type="double" value="0.0"/>
     <Parameter name="Stable Solution" type="int" value="1"/>
@@ -34,7 +34,7 @@
     <!-- only relevant for "Theta" scheme -->
     <Parameter name="Start Time" type="double" value="0.0"/>
     <Parameter name="End Time" type="double" value="1.0"/>
-    <Parameter name="Step Size" type="double" value="0.0004"/>
+    <Parameter name="Step Size" type="double" value="0.0"/>
     <Parameter name="time step increment" type="double" value="0.0"/>
     <!-- the predictor can currently be                         -->
     <!-- "Constant": start Newton with the previous slution u_n -->

@@ -397,7 +397,6 @@ int main(int argc = 0, char *argv[] = NULL) {
   } else {
     outstream2 = Teuchos::rcp(new Teuchos::oblackholestream());
   }
-  std::string initSolnFile=MeanSolveList.get("Initial Solution File", "None");
 
 #if quasi_geo == 1
   // NOTE: following settings are for very specific QG problem and when no
@@ -421,6 +420,8 @@ int main(int argc = 0, char *argv[] = NULL) {
     soln->PutScalar(0.0);
 #endif
 // when initial solution is provided.
+#if need_locaInterface==0
+  std::string initSolnFile=MeanSolveList.get("Initial Solution File", "None");
   if(initSolnFile.compare("None")!=0)
   {
     Epetra_MultiVector *initsol;
@@ -428,6 +429,7 @@ int main(int argc = 0, char *argv[] = NULL) {
     *soln=*(*initsol)(0);
 
   }
+#endif
 
 
 

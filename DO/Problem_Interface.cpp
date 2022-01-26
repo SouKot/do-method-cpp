@@ -272,8 +272,8 @@ void Problem_Interface::init_v(double t)
   if (InitFile_ == "None")
   {
     V->Random();
-//    V->PutScalar(.001);
-     int myln = V->MyLength();
+//    int myln = V->GlobalLength();
+//    V->Scale(1.0/myln);
 /*     for (int i = 0; i < V->NumVectors(); i++)
  *     {
  *       for (int j = 0; j < myln; j+=2)
@@ -284,11 +284,12 @@ void Problem_Interface::init_v(double t)
  * 
  *     }
  */
-    if (abs(stchFrcStren_)>=10e-12)
-    {
-      for (int i = 0; i < std::min(W_->NumVectors(),V->NumVectors()) ; i++)
-        *((*V)(i))=*((*W_)(i));
-    }
+/*     if (abs(stchFrcStren_)>=10e-12)
+ *     {
+ *       for (int i = 0; i < std::min(W_->NumVectors(),V->NumVectors()) ; i++)
+ *         *((*V)(i))=*((*W_)(i));
+ *     }
+ */
 
 #if need_locaInterface == 1
     Epetra_Vector massDiag(V->Map());

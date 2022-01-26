@@ -58,7 +58,7 @@ Mean::Mean(RCP<Teuchos::ParameterList> PrmLst, double* t, double* dt,
   qg->set_par(20, zeta);
   qg->set_par(21, topography);
   qg->set_par(5, rynldsNum);
-  qg->set_par(11, 1);
+  qg->set_par(11, 1.0);
   theta = PrmLst->get("theta", 0.5);
   NumStchFrcVec_ = PrmLst->get("No. of vectors in stoch. forcing",
                                2); // global number of elements in the map

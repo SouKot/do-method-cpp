@@ -5,14 +5,14 @@
     <Parameter name="MassMtxFile" type="string" value="None"/>
     <!-- set to "None" if no file is  provided for Stochastic forcing --> 
     <Parameter name="StochFrcFile" type="string" value="None"/>
-    <Parameter name="StochFrc Strength" type="double" value="50.0"/>
+    <Parameter name="StochFrc Strength" type="double" value="1.0"/>
     <!-- set to "None" if no file is  provided for stationary Jacobian --> 
     <Parameter name="JacDetFile" type="string" value="None"/>
     <!-- set to 'false' if no Scaling is provided  --> 
     <Parameter name="Scaling" type="bool" value="false"/>
     <!-- set to some value after which stochastic basis and coefficients are saved 
 	 in files. Choose interval based on time scale of your problem    --> 
-    <Parameter name="Save Solution Interval" type="double" value="0.5"/>
+    <Parameter name="Save Solution Interval" type="double" value="0.02"/>
     <!--**************************************************************** -->
     <!-- PARAMETER LIST FOR STOCHASTIC BASIS PART --> 
     <!--**************************************************************** -->
@@ -67,7 +67,7 @@
 	   Use it to give the name of the file--> 
       <Parameter name="StochCoefFile" type="string" value="None"/>
       <Parameter name="Stochastic Iterations" type="int" value="10000"/>
-      <Parameter name="Number of Sub Time Steps" type="int" value="1" />
+      <Parameter name="Number of Sub Time Steps" type="int" value="4" />
       <Parameter name="Max Num of Iter" type="int" value="50" />
       <Parameter name="Use BackTracking" type="bool" value="true" />
       <Parameter name="Max Num of BackTracking Steps" type="int" value="5" />

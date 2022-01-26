@@ -63,7 +63,7 @@ QG::QG(int m, int n)
     y_[i] = i * dy_ + ymin_;
 
   /******************************************************************************
-   *     1:   alpha_tau
+   *     1:   alpha
    *     2:   beta parameter
    *     3:   bottom friction r
    *     4:   aspect ratio (B/L)
@@ -78,10 +78,10 @@ QG::QG(int m, int n)
   // par_(3) = bfdim*Lxdim/udim;
   par_(3) = 0.0; // no bottom friction
   par_(4) = Lydim_ / Lxdim_;
-  par_(5) = udim_ * Lxdim_ / Ahdim_;
+  par_(5) = 20; // udim_ * Lxdim_ / Ahdim_;
   // par_(10) = (f0dim*Lxdim)**2/(gdim*hdim);
   par_(10) = 0.0;
-  par_(11) = 0.0;
+  par_(11) = 1.0; // alpha_tau = par_(11)*par_(1);
 
   par_(6) = 1.0;
   par_(7) = 0.0;
