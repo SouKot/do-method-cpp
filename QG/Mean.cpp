@@ -62,7 +62,7 @@ Mean::Mean(RCP<Teuchos::ParameterList> PrmLst, double* t, double* dt,
   theta = PrmLst->get("theta", 0.5);
   NumStchFrcVec_ = PrmLst->get("No. of vectors in stoch. forcing",
                                2); // global number of elements in the map
-  solver_type = PrmLst->get("Solver Type", "direct");
+  solver_type = PrmLst->get("Solver Package", "Amesos2");
   test_ = PrmLst->get("Testing", true);
   debug_ = PrmLst->get("Debugging", true);
   if (debug_) {
@@ -90,7 +90,7 @@ Mean::Mean(RCP<Teuchos::ParameterList> PrmLst, double* t, double* dt,
   MyPID = mass_->Comm().MyPID();
   Teuchos::ParameterList& SolverSublist = PrmLst->sublist(solver_type);
   std::string solver_name =
-    SolverSublist.get("Solver name", "Amesos_Scalapack");
+    SolverSublist.get("Solver name", "Mumps");
   const Teuchos::RCP<Teuchos::ParameterList> SolParams =
     Teuchos::getParametersFromXmlFile(solver_name + ".xml");
   if (MyPID == 0)
@@ -120,7 +120,7 @@ Mean::Mean(RCP<Teuchos::ParameterList> PrmLst, double* t, double* dt,
     getchar();
   }
   Prblm = Teuchos::rcp(new Epetra_LinearProblem);
-  if (solver_type == "direct") {
+  if (solver_type == "Amesos") {
     Prblm->SetOperator(ThetaJac.get());
     Amesos Factory;
     v_solve = Teuchos::rcp(Factory.Create(solver_name.c_str(), *Prblm), false);
@@ -131,6 +131,22 @@ Mean::Mean(RCP<Teuchos::ParameterList> PrmLst, double* t, double* dt,
     Epetra_Time timer(ThetaJac->Comm());
     v_solve->SymbolicFactorization();
     v_solve->NumericFactorization();
+    double time;
+    if (test_) {
+      double LocTime = timer.ElapsedTime();
+      if (ThetaJac->Comm().MyPID() == 0) {
+        std::cout << "\n*******************************************\n";
+        std::cout << "*******************************************\n"
+                  << std::endl;
+      }
+    }
+  }
+  else if (solver_type == "Amesos2") {
+    amesos2_solve = Amesos2::create<MAT,MV>(solver_name,ThetaJac);
+    amesos2_solve->setParameters(SolParams); 
+    Epetra_Time timer(ThetaJac->Comm());
+    amesos2_solve->symbolicFactorization();
+    amesos2_solve->numericFactorization();
     double time;
     if (test_) {
       double LocTime = timer.ElapsedTime();
@@ -364,15 +380,20 @@ Mean::ThetaStepper(Teuchos::RCP<Epetra_Vector> rhs_u0)
 int
 Mean::LinSolve(Epetra_Vector* LHS, Epetra_Vector* RHS)
 {
-  //  if (solver_type == "direct")
-  //  {
+  if (solver_type == "Amesos")
+  {
   Prblm->SetLHS(LHS);
   Prblm->SetRHS(RHS);
   // AMESOS_CHK_ERR(v_solve->SymbolicFactorization());
   AMESOS_CHK_ERR(v_solve->NumericFactorization());
   AMESOS_CHK_ERR(v_solve->Solve());
+  }
+  else if (solver_type == "Amesos2")
+  {
+    amesos2_solve->numericFactorization();
+    amesos2_solve->solve(LHS,RHS);
+  }
   return 0;
-  //  }
 }
 //========================================================================
 bool

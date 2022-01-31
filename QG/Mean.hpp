@@ -43,6 +43,8 @@
 #include "Amesos.h"
 #include "Amesos_ConfigDefs.h"  //#include <random>
 #include "Amesos_BaseSolver.h"
+#include "Amesos2.hpp"
+#include "Amesos2_Version.hpp"
 // Include header to define eigenproblem Ax = \lambda*x
 #include "AnasaziBasicEigenproblem.hpp"
 // Include header to provide Anasazi with Epetra adapters.  If you
@@ -110,6 +112,9 @@ void BilinearTerm(RCP<Epetra_Vector> u1,
   RCP<Epetra_LinearProblem> Prblm;
   Teuchos::RCP<Amesos_BaseSolver> v_solve;
   Teuchos::RCP<AztecOO> v_solve_iter;
+  typedef Epetra_MultiVector MV;
+  typedef Epetra_CrsMatrix MAT;
+  Teuchos::RCP<Amesos2::Solver<MAT,MV> > amesos2_solve;
   Teuchos::RCP<QG::QG> qg;
   //virtual ~Mean();
   void printnormMV(Epetra_MultiVector &mv, int normType, string str);

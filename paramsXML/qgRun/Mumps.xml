@@ -1,0 +1,4 @@
+<ParameterList name="Amesos2">
+  <Parameter name="ICNTL(1)" type="int" value="-1"/>
+</ParameterList><!--} Mumps-->
+

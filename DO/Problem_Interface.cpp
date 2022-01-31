@@ -1,4 +1,5 @@
-// ----------   Includes   ---------- #include <iostream>
+// ----------   Includes   ---
+// ------- #include <iostream>
 #include "Problem_Interface.hpp"
 
 #include <EpetraExt_MatrixMatrix.h>
@@ -84,6 +85,26 @@ Problem_Interface::Problem_Interface(Teuchos::RCP<Epetra_CrsMatrix> A,
     v_solve->SetParameters(*SolParams);
     Epetra_Time timer(A_->Comm());
     v_solve->SymbolicFactorization();
+    double time;
+    if (test_)
+    {
+      double LocTime = timer.ElapsedTime();
+      A_->Comm().SumAll(&LocTime, &time, 1);
+      if (A_->Comm().MyPID() == 0)
+      {
+        cout << "\n*******************************************\n";
+        cout << "Average time per proc. for factorization"
+             << " = " << (time) / (A_->Comm().NumProc()) << " sec\n";
+        cout << "*******************************************\n" << std::endl;
+      }
+    }
+  }
+  else if (solver_type == "Amesos2")
+  {
+    amesos2_solver = Amesos2::create<MAT,MV>(solver_name,LHS_block_1_);
+    amesos2_solver->setParameters(SolParams); 
+    Epetra_Time timer(A_->Comm());
+    amesos2_solver->symbolicFactorization();
     double time;
     if (test_)
     {
@@ -200,6 +221,10 @@ int Problem_Interface::SolveV(Epetra_MultiVector& LHS, Epetra_MultiVector& RHS, 
     {
       v_solve->PrintStatus();
     }
+  }
+  else if (solver_type == "Amesos2")
+  {
+    amesos2_solver->solve(&LHS,&RHS);
   }
   else
   {
@@ -440,6 +465,13 @@ int Problem_Interface::v_stoch_init(Epetra_MultiVector *Vold)
     // std::flush(std::cout<<"\n HELLO1!!
     // "<<v_solve->NumericFactorization()<<"\n");
     AMESOS_CHK_ERR(v_solve->NumericFactorization());
+  }
+  else if (solver_type == "Amesos2")
+  {
+    // std::flush(std::cout<<"\n HELLO1!! \n");
+    // std::flush(std::cout<<"\n HELLO1!!
+    // "<<v_solve->NumericFactorization()<<"\n");
+    (amesos2_solver->numericFactorization());
   }
   else
   {

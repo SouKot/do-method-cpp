@@ -5,6 +5,7 @@
 //#include "BorderedSolver_EpetraHouseholder.H"
 //#include "LinearSystem_AztecOO.H"
 //#include "NOX_TestCompare.H"
+#include "Amesos2_Solver_decl.hpp"
 #include "Teuchos_Array.hpp"
 #include "Teuchos_LAPACK.hpp"
 #include "Teuchos_Ptr.hpp"
@@ -25,6 +26,8 @@
 #include "Amesos.h"
 #include "Amesos_BaseSolver.h"
 #include "Amesos_ConfigDefs.h" //#include <random>
+#include "Amesos2.hpp"
+#include "Amesos2_Version.hpp"
 #include "BelosBlockGmresSolMgr.hpp"
 #include "BelosConfigDefs.hpp"
 #include "BelosEpetraAdapter.hpp"
@@ -141,11 +144,15 @@ public:
   typedef SCT::magnitudeType MT;
   typedef Epetra_MultiVector MV;
   typedef Epetra_Operator OP;
+  typedef Epetra_CrsMatrix MAT;
   typedef Belos::MultiVecTraits<ST, MV> MVT;
   typedef Belos::OperatorTraits<ST, MV, OP> OPT;
   Teuchos::RCP<Ifpack_Preconditioner> prec;
   Teuchos::RCP<Belos::EpetraPrecOp> belosPrec;
   Teuchos::RCP<Belos::LinearProblem<double, MV, OP>> problem;
   Teuchos::RCP<Belos::SolverManager<double, MV, OP>> v_solve_iter;
+
+  Teuchos::RCP<Amesos2::Solver<MAT,MV> > amesos2_solver;
+
 };
 #endif

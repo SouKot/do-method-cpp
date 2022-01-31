@@ -36,7 +36,7 @@
       <!-- Used to choose solver type.
       If value="Amesos" then "direct" sublist is used. 
       if value="Belos" then itrative sublist is used. --> 
-      <Parameter name="Solver Package" type="string" value="Amesos"/>
+      <Parameter name="Solver Package" type="string" value="Amesos2"/>
       <!-- If  {
 	   "Solve Type"="direct" then  --> 
       <ParameterList name="Amesos">
@@ -46,8 +46,17 @@
 	     should be present in the run directory. -->
 	<Parameter name="Solver name" type="string" value="Amesos_Scalapack"/>
       </ParameterList><!-- } direct  -->
+      <!-- elseIf  {
+	   "Solve Type"="Amesos2" then  --> 
+      <ParameterList name="Amesos2">
+	<!-- choose Amesos solver. An XML file defining paraeters 
+	     related to solver should be defined. For example if
+	     Amesos_Klu is chosen then a file named Amesos_Klu.xml
+	     should be present in the run directory. -->
+	<Parameter name="Solver name" type="string" value="Mumps"/>
+      </ParameterList><!-- } Amesos2  -->
       <!-- elseif {
-	      "Solve Type"="iterative" then  --> 
+	      "Solve Type"="Belos" then  --> 
       <ParameterList name="Belos">
 	<!-- choose AztecOO solver. An XML file defining parameters 
 	     related to solver should be defined. For example if
