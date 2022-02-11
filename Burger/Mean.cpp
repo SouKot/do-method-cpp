@@ -18,8 +18,7 @@
  * =====================================================================================
  */
 #include "Mean.hpp"
-#include "Amesos_Klu.h"
-#include "Amesos_Scalapack.h"
+#include <Epetra_Time.h>
 #include "EpetraExt_RowMatrixOut.h"
 #include "HYMLS_MatrixUtils.hpp"
 #include <AztecOO.h>
@@ -78,6 +77,13 @@ Mean::Mean(RCP<Teuchos::ParameterList> PrmLst, double* t, double* dt,
   Teuchos::ParameterList& SolverSublist = PrmLst->sublist(solver_type);
   std::string solver_name =
     SolverSublist.get("Solver name", "Amesos_Scalapack");
+  int numProc = Comm->NumProc();
+
+  if (numProc == 1 && solver_type == "Amesos")
+    solver_name = "Amesos_Klu";
+  else if (numProc == 1 && solver_type == "Amesos2")
+    solver_name = "KLU2";
+
   const Teuchos::RCP<Teuchos::ParameterList> SolParams =
     Teuchos::getParametersFromXmlFile(solver_name + ".xml");
   if (MyPID == 0)

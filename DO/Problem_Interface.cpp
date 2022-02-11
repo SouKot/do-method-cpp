@@ -4,9 +4,7 @@
 
 #include <EpetraExt_MatrixMatrix.h>
 
-#include "Amesos_Klu.h"
 #include "Amesos_Lapack.h"
-#include "Amesos_Scalapack.h"
 #include "AnasaziBasicOrthoManager.hpp"
 #include "AnasaziEpetraAdapter.hpp"
 #include "AztecOO.h"
@@ -16,7 +14,6 @@
 #include "EpetraExt_MultiVectorIn.h"
 #include "EpetraExt_MultiVectorOut.h"
 #include "EpetraExt_RowMatrixOut.h"
-#include "Epetra_LAPACK.h"
 #include "HYMLS_MatrixUtils.hpp"
 #include "Teuchos_RCPDecl.hpp"
 #include "Teuchos_XMLParameterListCoreHelpers.hpp"
@@ -37,13 +34,21 @@ Problem_Interface::Problem_Interface(Teuchos::RCP<Epetra_CrsMatrix> A,
       v_prob(), v_solve()
 {
   MyPID = A_->Comm().MyPID();
+  int numProc = A_->Comm().NumProc();
   InitFile_ = SolverParams_->get("StochBasisFile", "v2.mm");
   solver_type = SolverParams_->get("Solver Package", "any");
   test_ = SolverParams_->get("Class Testing", false);
   debug_ = SolverParams_->get("Class Debugging", false);
   DbgLvl_ = SolverParams_->get("Debug Level", 0);
   Teuchos::ParameterList &SolverSublist = SolverParams_->sublist(solver_type);
+  
   std::string solver_name = SolverSublist.get("Solver name", "any");
+  
+  if (numProc == 1 && solver_type == "Amesos")
+    solver_name = "Amesos_Klu";
+  else if (numProc == 1 && solver_type == "Amesos2")
+    solver_name = "KLU2";
+
   const Teuchos::RCP<Teuchos::ParameterList> SolParams = Teuchos::getParametersFromXmlFile(solver_name + ".xml");
   if (MyPID == 0)
     cout << solver_type << " solver(" << solver_name << ") has been chosen as stoch basis solver";

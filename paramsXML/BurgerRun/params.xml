@@ -10,11 +10,11 @@
     <Parameter name="Solver Type" type="string" value="Amesos2"/>
     <!-- If "Solver Type" value is "direct" then -->
     <ParameterList name="Amesos"><!--{-->
-      <Parameter name="Solver name" type="string" value="Amesos_Scalapack"/>
+      <Parameter name="Solver name" type="string" value="Amesos_Mumps"/>
     </ParameterList><!--}Amesos--> 
     <!-- else if "Solver Type" value is "Amesos2" then -->
     <ParameterList name="Amesos2"><!--{-->
-      <Parameter name="Solver name" type="string" value="Mumps"/>
+      <Parameter name="Solver name" type="string" value="SuperLU_DIST"/>
     </ParameterList><!--}Amesos2--> 
     <Parameter name="Testing" type="bool" value="false"/>
     <Parameter name="Debugging" type="bool" value="false"/>
@@ -30,6 +30,7 @@
     <!-- the latter chooses theta smartly (?)  -->
     <!-- as it was implemented in THCM         -->
     <Parameter name="Scheme" type="string" value="Theta"/> 
+    <Parameter name="Time Profiling" type="bool" value="1"/>
     <!-- only relevant for "Theta" scheme -->
     <Parameter name="Theta" type="double" value="1.0"/>
     <Parameter name="Start Time" type="double" value="0.0"/>

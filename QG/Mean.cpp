@@ -18,8 +18,7 @@
  * =====================================================================================
  */
 #include "Mean.hpp"
-#include "Amesos_Klu.h"
-#include "Amesos_Scalapack.h"
+#include <Epetra_Time.h>
 #include "EpetraExt_MultiVectorOut.h"
 #include "EpetraExt_RowMatrixOut.h"
 #include "HYMLS_MatrixUtils.hpp"
