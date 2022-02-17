@@ -9,6 +9,7 @@
 #include "Teuchos_RCP.hpp"
 #include "NOX_Epetra_Group.H"
 #include "NOX_Epetra_LinearSystem_Hymls.hpp"
+#include "NOX_Epetra_LinearSystem_Amesos.hpp"
 #include "NOX.H"
 #include "BelosTypes.hpp"
 #include "Ifpack_Preconditioner.h"
@@ -17,7 +18,7 @@
 #include "FVM_LocaInterface.H"
 #include "FVM_Domain.H"
 #include "FVM_model_interface.h"
-#include "ImplicitTimeStepper.H"
+#include "ImplicitTimeStepper.hpp"
 #include "ThetaStepperEvaluator.H"
 #include "globdefs.H"
 #include "HYMLS_Tools.hpp"
@@ -151,9 +152,10 @@ ImplicitTimeStepper::ImplicitTimeStepper(
 
     //      linsys = Teuchos::rcp(new NOX::Epetra::LinearSystemBelos(printParams,
     //                        lsParams, iJac, A, iPrec, myPrecOperator, soln, scaling));
-    linSys = Teuchos::rcp(new NOX::Epetra::LinearSystemHymls(nlPrintParams,
-	  lsParams, iJac, model->getJacobian(), iPrec, myPrecOperator,soln , scaling,
-	  model->getMassMatrix()));
+/*     linSys = Teuchos::rcp(new NOX::Epetra::LinearSystemHymls(nlPrintParams,
+ * 	  lsParams, iJac, model->getJacobian(), iPrec, myPrecOperator,soln , scaling,
+ * 	  model->getMassMatrix()));
+ */
     /*LinearSystemAztecOO(nlPrintParams, lsParams, 
       iJac, jacobian, iPrec, preconditioner, cloneVector, s),
       massMatrix_(massMatrix)*/
@@ -161,8 +163,23 @@ ImplicitTimeStepper::ImplicitTimeStepper(
   else
   {
     DEBUG("Trilinos preconditioning");
-    linSys = Teuchos::rcp(new NOX::Epetra::LinearSystemBelos(nlPrintParams, 
-	  lsParams, iReq, iJac, model->getJacobian(), soln,scaling));
+    std::string solver_type = lsParams.get("Solver Type","Direct");
+    if (solver_type == "Direct")
+    {
+      std::cout<<"\n===================================================\n";
+      std::cout<<"USING AMESOS SOLVER FOR MEAN";
+      std::cout<<"\n===================================================\n";
+      linSys = Teuchos::rcp(new NOX::Epetra::LinearSystemAmesos(nlPrintParams,
+	    lsParams, iReq, iJac, model->getJacobian(), soln, scaling));
+    }
+    else
+    {
+      std::cout<<"\n===================================================\n";
+      std::cout<<"USING BELOS SOLVER FOR MEAN";
+      std::cout<<"\n===================================================\n";
+      linSys = Teuchos::rcp(new NOX::Epetra::LinearSystemBelos(nlPrintParams, 
+	    lsParams, iReq, iJac, model->getJacobian(), soln,scaling));
+    }
   }
 
 

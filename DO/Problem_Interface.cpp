@@ -4,9 +4,7 @@
 
 #include <EpetraExt_MatrixMatrix.h>
 
-#include "Amesos_Klu.h"
 #include "Amesos_Lapack.h"
-#include "Amesos_Scalapack.h"
 #include "AnasaziBasicOrthoManager.hpp"
 #include "AnasaziEpetraAdapter.hpp"
 #include "AztecOO.h"

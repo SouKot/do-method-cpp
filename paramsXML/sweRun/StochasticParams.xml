@@ -15,7 +15,7 @@
     <Parameter name="Save Solution Interval" type="double" value="5250000.0"/>
     <!-- ****PARAMETER LIST FOR STOCHASTIC BASIS PART  --> 
     <ParameterList name="Stochastic Basis">
-      <Parameter name="Max. Stoch subspace Dimension" type="int" value="4"/>
+      <Parameter name="Max. Stoch subspace Dimension" type="int" value="8"/>
       <Parameter name="Initial Stoch subspace Dimension" type="int" value="4"/>
       <!-- set to "None" if no file is  provided for inital values for basis --> 
       <Parameter name="StochBasisFile" type="string" value="None"/>
@@ -42,8 +42,17 @@
 	     related to solver should be defined. For example if
 	     Amesos_Klu is chosen then a file named Amesos_Klu.xml
 	     should be present in the run directory. -->
-	<Parameter name="Solver name" type="string" value="Amesos_Scalapack"/>
+	<Parameter name="Solver name" type="string" value="Amesos_Mumps"/>
       </ParameterList><!-- } direct  -->
+      <!-- elseIf  {
+	   "Solve Type"="Amesos2" then  --> 
+      <ParameterList name="Amesos2">
+	<!-- choose Amesos solver. An XML file defining paraeters 
+	     related to solver should be defined. For example if
+	     Amesos_Klu is chosen then a file named Klu.xml
+	     should be present in the run directory. -->
+	<Parameter name="Solver name" type="string" value="SuperLU_DIST"/>
+      </ParameterList><!-- } Amesos2  -->
       <!-- elseif {
 	      "Solve Type"="iterative" then  --> 
       <ParameterList name="Belos">
