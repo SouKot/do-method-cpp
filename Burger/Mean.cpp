@@ -21,8 +21,9 @@
 #include <Epetra_Time.h>
 #include "EpetraExt_RowMatrixOut.h"
 #include "HYMLS_MatrixUtils.hpp"
-#include <AztecOO.h>
 #include <EpetraExt_MatrixMatrix.h>
+#include "BelosTypes.hpp"
+#include "Teuchos_RCPDecl.hpp"
 //#include "Galeri_Maps.h"
 
 // using namespace Galeri;
@@ -87,8 +88,10 @@ Mean::Mean(RCP<Teuchos::ParameterList> PrmLst, double* t, double* dt,
   const Teuchos::RCP<Teuchos::ParameterList> SolParams =
     Teuchos::getParametersFromXmlFile(solver_name + ".xml");
   if (MyPID == 0)
-    std::cout << solver_type << " solver(" << solver_name
-              << ") has been chosen as stoch basis solver";
+    std::cout <<"================================================\n"
+              << solver_type << " solver(" << solver_name
+              << ") has been chosen as mean solver\n"
+              <<"================================================\n";
 
   LinJac = rcp(new Epetra_CrsMatrix(Epetra_DataAccess::Copy, *Map, 3));
   NlinJac = rcp(new Epetra_CrsMatrix(Epetra_DataAccess::Copy, *Map, 3));
@@ -222,21 +225,74 @@ Mean::Mean(RCP<Teuchos::ParameterList> PrmLst, double* t, double* dt,
       }
     }
   }
-  /*   else
-   *   {
-   *     v_solve_iter = Teuchos::rcp(new AztecOO(*Prblm));
-   *     v_solve_iter->SetUserMatrix(ThetaJac.get());
-   *     v_solve_iter->SetParameters(*SolParams, true);
-   *     MaxIter_ = SolParams->get("Max_Iter", 500);
-   *     Tol_ = SolParams->get("Tol", .00000001);
-   *     //v_solve_iter->SetAztecOption(AZ_precond, AZ_Jacobi);
-   *     // v_solve_iter->CheckInput();getchar();
-   *   }
-   */
+  else if (solver_type == "Belos") 
+  {
+    // allocates an IFPACK factory. No data is associated
+    // to this object (only method Create()).
+    Ifpack Factory;
 
-  //    eye_->Print(std::cout);
-  //    std::cout<<"\n mass matrix above"<<std::endl;
-  //    getchar();
+    // create the preconditioner. For valid precType values,
+    // please check the documentation
+    std::string precType = SolParams->get("Ifpack Preconditioner Name", "any");
+    int OverlapLevel = SolParams->get("Overlap Level", 0);
+    // it is ignored.
+
+    prec = Teuchos::rcp(Factory.Create(precType, ThetaJac.get(), OverlapLevel));
+    assert(prec != Teuchos::null);
+    
+    Teuchos::ParameterList ifpackList=SolParams->sublist(precType);
+
+    (prec->SetParameters(ifpackList));
+
+    // initialize the preconditioner. At this point the matrix must
+    // have been FillComplete()'d, but actual values are ignored.
+    (prec->Initialize());
+
+    // Create the Belos preconditioned operator from the Ifpack preconditioner.
+    belosPrec = rcp(new Belos::EpetraPrecOp(prec));
+    bool success = true;
+    bool leftprec = true; // left preconditioning or right.
+    const int numrhs= u_->NumVectors();
+    std::string solverType = SolParams->get("Solver","any");
+    ParameterList belosList = SolParams->sublist(solverType);
+    MT tol = belosList.get("Convergence Tolerance",1.0);
+    belosList.set("Convergence Tolerance", tol); // Relative convergence tolerance requested
+    if (numrhs > 1)
+    {
+      belosList.set("Show Maximum Residual Norm Only",
+                    true); // Show only the maximum residual norm
+    }
+    bool verbose = belosList.get("Verbose",false) ;
+    if (verbose)
+    {
+      belosList.set("Verbosity", Belos::Errors + Belos::Warnings + Belos::TimingDetails + Belos::StatusTestDetails);
+      int frequency = belosList.get("output frequency",0);   // frequency of status test output.
+      if (frequency > 0)
+        belosList.set("Output Frequency", frequency);
+    }
+    else
+      belosList.set("Verbosity", Belos::Errors + Belos::Warnings);
+
+    problem = rcp(new Belos::LinearProblem<double, MV, OP>());
+    problem->setOperator(ThetaJac); // set the operator for belos
+    
+    if (leftprec)
+    {
+      problem->setLeftPrec(belosPrec);
+    }
+    else
+    {
+      problem->setRightPrec(belosPrec);
+    }
+    belosList.set("Block Size",numrhs); // set the number of rhs to 1.
+    Teuchos::writeParameterListToXmlFile(belosList,"meanStoredBelosList.xml"); 
+    Teuchos::writeParameterListToXmlFile(ifpackList,"meanStoredpreconList.xml"); 
+    // Create an iterative solver manager.
+    
+    Belos::SolverFactory<double,MV,OP> belosFactory;
+    v_solve_iter = belosFactory.create(solverType, rcp(&belosList,false));
+    //v_solve_iter = rcp(new Belos::BlockGmresSolMgr<double, MV, OP>(problem, rcp(&belosList, false)));
+  }
 
 } /* end of constructor */
 
@@ -454,19 +510,42 @@ Mean::ThetaStepper()
   }
 }
 int
-Mean::LinSolve(Epetra_Vector* LHS, Epetra_Vector* RHS)
+Mean::LinSolve(Epetra_Vector& LHS, Epetra_Vector& RHS)
 {
   if (solver_type == "Amesos")
   {
-  Prblm->SetLHS(LHS);
-  Prblm->SetRHS(RHS);
+  Prblm->SetLHS(&LHS);
+  Prblm->SetRHS(&RHS);
   AMESOS_CHK_ERR(v_solve->NumericFactorization());
   AMESOS_CHK_ERR(v_solve->Solve());
   }
   else if (solver_type == "Amesos2")
   {
     amesos2_solve->numericFactorization();
-    amesos2_solve->solve(LHS,RHS);
+    amesos2_solve->solve(&LHS,&RHS);
+  }
+  else if (solver_type == "Belos")
+  {
+    // Builds the preconditioners, by looking for the values of
+    // the matrix.
+    //v_solve_iter->reset(Belos::Problem);
+    IFPACK_CHK_ERR(prec->Compute());
+    problem->setOperator(ThetaJac);
+   // problem->setProblem(Teuchos::rcp(LHS), Teuchos::rcp(RHS));
+    problem->setLHS(Teuchos::rcpFromRef(LHS));
+    problem->setRHS(Teuchos::rcpFromRef(RHS));
+    problem->setProblem();
+    v_solve_iter->setProblem(problem);
+    v_solve_iter->solve(); // TODO: Parameteres Should come from xml file!!!!
+
+    if (v_solve_iter->isLOADetected())
+      std::flush(std::cout << "\n Loss of accuracy detected!!! \n" 
+	  <<"achieved tol = " << v_solve_iter->achievedTol());
+
+    if (debug_ && MyPID == 0)
+      std::cout << "\nIterative solution\n"
+                << "Solver performed " << v_solve_iter->getNumIters() << " iterations." << std::endl
+                << "Achieved tolerance = " << v_solve_iter->achievedTol() << std::endl;
   }
   return 0;
 }
@@ -484,7 +563,7 @@ Mean::NewtonSolver()
     std::cout << "\nMean:: Newton:      initial norm: " << NormRHS_;
   for (iter_ = 0; iter_ != maxNumIterations_; ++iter_) {
     computeJac(u_);
-    LinSolve(dx_.get(), ThetaRHS.get());
+    LinSolve(*dx_, *ThetaRHS);
     u_->Update(1.0, *dx_, 1.0);
     ThetaStepper();
     ThetaRHS->Scale(-1.0);

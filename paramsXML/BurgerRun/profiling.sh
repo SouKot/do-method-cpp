@@ -26,11 +26,11 @@ proc=(16 8 4 2 1) # number of total processors
 basis=(40) # number of stochastic basis
 it=(12800) # number of stochastic iterations
 nx=(12800) # number of grid points
-
-for j in ${proc[@]}; do
+len=${#proc[@]}
+for ((j=0; j<${len}; j++)); do
   for k in ${basis[@]}; do
     for i in ${it[@]}; do
-      dirname="solution_proc_${j}_m_${k}_iter_${i}_nx_${nx[0]}"
+      dirname="solution_proc_${proc[$j]}_m_${k}_iter_${i}_nx_${nx[0]}"
       # make directory
       if [ -d $dirname ]
       then 
@@ -54,9 +54,9 @@ for j in ${proc[@]}; do
 	ln -s ../../BRGRDO brgrdo
       fi
       # start run 
-      echo "running for numproc = ${j}, numbasis = ${k}, nx = ${nx[0]} and NumStochIter = ${i}"
-      srun -n ${proc[${j}]} -N ${node[${j}]} ./brgrdo > output.log
-      #mpirun -np ${j} brgrdo 2>&1 | tee output.log
+      echo "running for numproc = ${proc[$j]}, numbasis = ${k}, nx = ${nx[0]} and NumStochIter = ${i}"
+      srun -n ${node[$j]} -N ${node[$j]} ./brgrdo > output.log
+      #mpirun -np ${proc[$j]} brgrdo 2>&1 | tee output.log
       echo "done"
       echo "*********************************************************************************"
       cd ${dir}

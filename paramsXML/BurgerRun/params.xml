@@ -7,7 +7,7 @@
     <Parameter name="No. of vectors in stoch. forcing" type="int" value="1"/>
     <Parameter name="theta" type="double" value="1.0"/>
     <!--  NOTE: Only Solver Type = direct is supported for now!!!! -->
-    <Parameter name="Solver Type" type="string" value="Amesos2"/>
+    <Parameter name="Solver Package" type="string" value="Belos"/>
     <!-- If "Solver Type" value is "direct" then -->
     <ParameterList name="Amesos"><!--{-->
       <Parameter name="Solver name" type="string" value="Amesos_Mumps"/>
@@ -15,6 +15,10 @@
     <!-- else if "Solver Type" value is "Amesos2" then -->
     <ParameterList name="Amesos2"><!--{-->
       <Parameter name="Solver name" type="string" value="SuperLU_DIST"/>
+    </ParameterList><!--}Amesos2--> 
+    <!-- else if "Solver Type" value is "Belos" then -->
+    <ParameterList name="Belos"><!--{-->
+      <Parameter name="Solver name" type="string" value="PSEUDO_BLOCK_GMRES"/>
     </ParameterList><!--}Amesos2--> 
     <Parameter name="Testing" type="bool" value="false"/>
     <Parameter name="Debugging" type="bool" value="false"/>
