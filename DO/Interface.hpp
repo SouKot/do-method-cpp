@@ -25,6 +25,6 @@
 #include "NOX_Epetra_LinearSystem_Amesos.H"
 #include "NOX_Epetra_ModelEvaluatorInterface.H"
 #include "../swe/FVM_LocaInterface.H"
-#include "../swe/ImplicitTimeStepper.H"
+#include "../swe/ImplicitTimeStepper.hpp"
 #include "../swe/ThetaStepperEvaluator.H"
 #endif
