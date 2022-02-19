@@ -9,7 +9,7 @@
     <!-- set to "None" if no file is  provided for stationary Jacobian --> 
     <Parameter name="JacDetFile" type="string" value="None"/>
     <!-- set to 'false' if no Scaling is provided  --> 
-    <Parameter name="Scaling" type="bool" value="false"/>
+    <Parameter name="Scaling" type="bool" value="true"/>
     <!-- set to some value after which stochastic basis and coefficients are saved 
 	 in files. Choose interval based on time scale of your problem    --> 
     <Parameter name="Save Solution Interval" type="double" value="5250000.0"/>

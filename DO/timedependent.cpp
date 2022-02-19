@@ -733,7 +733,7 @@ int main(int argc = 0, char *argv[] = NULL) {
       if (timeProf)
         coeffTime->start();
 
-//      y_interface->StochasticIterations();
+      y_interface->StochasticIterations();
 
       if (timeProf)
         coeffTime->stop();
@@ -752,27 +752,32 @@ int main(int argc = 0, char *argv[] = NULL) {
       if (timeProf)
         basisTime->start();
 
-/*       for (int i = 0; i < 1; i = i + 1) {
- *         Vstoch->computeBlocks(dt);
- *         Vstoch->v_stoch_init(&Vtemp);
- *       }
- *       Vstoch->TransferNorm();
- * 
- */
+      for (int i = 0; i < 1; i = i + 1) {
+        Vstoch->computeBlocks(dt);
+        Vstoch->v_stoch_init(&Vtemp);
+      }
+      Vstoch->TransferNorm();
+
+
       if (timeProf)
+      {
         basisTime->stop();
+	basisTime->incrementNumCalls();
+      }
 
       if (timeProf)
         coeffTime2->start();
 
-/*       y_interface->HBilinV();
- *       y_interface->computeEyyTyT();
- *       y_interface->computeEVyVy();
- *       
- */
+      y_interface->HBilinV();
+      y_interface->computeEyyTyT();
+      y_interface->computeEVyVy();
+      
+
       if (timeProf)
+      {
         coeffTime2->stop();
-      coeffTime2->incrementNumCalls();
+	coeffTime2->incrementNumCalls();
+      }
         /******************************************************
           SOLVE FOR Udet!!!!!!
          *****************************************************/
@@ -785,8 +790,10 @@ int main(int argc = 0, char *argv[] = NULL) {
       bool success = stepper->Step(soln_old, t, *soln, dt);
       
       if (timeProf)
+      {
         meanTime->stop();
-      meanTime->incrementNumCalls();
+	meanTime->incrementNumCalls();
+      }
         // std::flush(cout << "\nsuccess = " << success);
 #else
       if (timeProf)
@@ -794,8 +801,10 @@ int main(int argc = 0, char *argv[] = NULL) {
       bool success = model->NewtonSolver();
       //bool success = model->newtonLineSearchSolve(*soln);
       if (timeProf)
-        meanTime->stop();
-      meanTime->incrementNumCalls();
+      {
+      	meanTime->stop();
+	meanTime->incrementNumCalls();
+      }
 #endif
      EpetraExt::MatrixMatrix::Add(*A, false, 1.0, detA, 0.0);
       if (Scaling && ProbName == "SWE") {
