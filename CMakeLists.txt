@@ -88,8 +88,9 @@ set(SWE_SOURCES
   swe/splinefit.F90 
   swe/fitpack-dierckx.F90 
   swe/FVM_LocaInterface.C
-  swe/ImplicitTimeStepper.C 
+  swe/ImplicitTimeStepper.cpp
   swe/ThetaStepperEvaluator.C
+  swe/NOX_Epetra_LinearSystem_Amesos.cpp
 )
 
 include_directories(includes)
@@ -107,7 +108,7 @@ if (DEFINED ENV{TRNG_HOME})
 endif()
 
 if (DEFINED ENV{TRILINOS_HOME})
-  set(Trilinos_DIR "$ENV{TRILINOS_HOME}/lib/cmake/Trilinos")
+ set(Trilinos_DIR "$ENV{TRILINOS_HOME}/lib/cmake/Trilinos")
 endif()
 find_package(Trilinos)
 
@@ -180,10 +181,10 @@ if(SCALAPACK_found GREATER -1)
   add_executable(SWEDO ${DO_SOURCES})
   target_compile_definitions(SWEDO PRIVATE brgr=0 quasi_geo=0 need_locaInterface=1 use_trng=${istrng})
   target_link_libraries(SWEDO SWE)
-  target_link_libraries(SWEDO ${PYTHON_LIBRARIES})
   target_link_libraries(SWEDO ${HYMLS_LIBRARIES})
   target_link_libraries(SWEDO ${Trilinos_TPL_LIBRARIES})
   target_link_libraries(SWEDO ${Trilinos_LIBRARIES})
+  target_link_libraries(SWEDO ${PYTHON_LIBRARIES})
   target_link_libraries(SWEDO ${trng_lib})
   target_link_libraries(SWEDO gen)
 endif()
