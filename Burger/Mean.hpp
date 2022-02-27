@@ -34,7 +34,7 @@
 #include "Epetra_Operator.h"
 //#include "Epetra_SerialDenseMatrix.h"
 #include "Epetra_Vector.h"
-#include "Ifpack_Preconditioner.h"
+#include "Ifpack.h"
 #include "Teuchos_Array.hpp"
 #include "Teuchos_BLAS.hpp"
 #include "Teuchos_RCP.hpp"
@@ -45,6 +45,11 @@
 #include "Amesos_BaseSolver.h"
 #include "Amesos2.hpp"
 #include "Amesos2_Version.hpp"
+#include "BelosConfigDefs.hpp"
+#include "BelosOutputManager.hpp"
+#include "BelosSolverFactory.hpp"
+#include "BelosEpetraAdapter.hpp"
+#include "BelosLinearProblem.hpp"
 // Include header to define eigenproblem Ax = \lambda*x
 #include "AnasaziBasicEigenproblem.hpp"
 // Include header to provide Anasazi with Epetra adapters.  If you
@@ -58,7 +63,6 @@
 #else
 #include "Epetra_SerialComm.h"
 #endif
-class AztecOO;
 using namespace Teuchos;
 class Mean
 {
@@ -86,7 +90,7 @@ void BilinearTerm(RCP<Epetra_Vector> u1,
   }
   RCP<Epetra_CrsMatrix> getJacobian(){ return jac;}
   void ThetaStepper();
-  int LinSolve(Epetra_Vector* LHS, Epetra_Vector* RHS);
+  int LinSolve(Epetra_Vector& LHS, Epetra_Vector& RHS);
   bool NewtonSolver();
   void RunBackTracking();
   RCP<Epetra_Vector> get_Xdim(){return x_;}
@@ -119,10 +123,20 @@ void BilinearTerm(RCP<Epetra_Vector> u1,
   RCP<Epetra_Vector> rhs, uu, tmp2, ThetaRHS;
   RCP<Epetra_LinearProblem> Prblm;
   Teuchos::RCP<Amesos_BaseSolver> v_solve;
-  Teuchos::RCP<AztecOO> v_solve_iter;
   typedef Epetra_MultiVector MV;
   typedef Epetra_CrsMatrix MAT;
   Teuchos::RCP<Amesos2::Solver<MAT,MV> > amesos2_solve;
+  typedef double ST;
+  typedef Teuchos::ScalarTraits<ST> SCT;
+  typedef SCT::magnitudeType MT;
+  typedef Epetra_Operator OP;
+  typedef Belos::MultiVecTraits<ST, MV> MVT;
+  typedef Belos::OperatorTraits<ST, MV, OP> OPT;
+  Teuchos::RCP<Ifpack_Preconditioner> prec;
+  Teuchos::RCP<Belos::EpetraPrecOp> belosPrec;
+  Teuchos::RCP<Belos::LinearProblem<double, MV, OP>> problem;
+  Teuchos::RCP<Belos::SolverManager<double, MV, OP>> v_solve_iter;
+
   //virtual ~Mean();
   private:
   RCP<Epetra_Comm> Comm_;
