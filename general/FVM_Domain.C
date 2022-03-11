@@ -45,7 +45,7 @@ Domain::Domain(int N, int M, int L, int dof,
     label_("Domain")
   {
   HYMLS_PROF3(label_,"Constructor");
-  std::cerr << "n = "<<n<<std::endl<<std::flush;
+  //std::cerr << "n = "<<n<<std::endl<<std::flush;
   HYMLS_DEBUG(n);
   HYMLS_DEBUG(m);
   HYMLS_DEBVAR(l);
@@ -235,9 +235,9 @@ int Domain::Decomp3D()
     {
     HYMLS_PROF2(label_,"CommonSetup");
 
-HYMLS::Tools::out()<<"processor position: (N,M,L) = ("<<pidN<<","<<pidM<<","<<pidL<<")"<<std::endl;
-HYMLS::Tools::out()<<"subdomain offsets: "<<Noff0<<","<<Moff0<<","<<Loff0<<std::endl;
-HYMLS::Tools::out()<<"grid dimension on subdomain: "<<nloc0<<"x"<<mloc0<<"x"<<lloc0<<std::endl;
+//HYMLS::Tools::out()<<"processor position: (N,M,L) = ("<<pidN<<","<<pidM<<","<<pidL<<")"<<std::endl;
+//HYMLS::Tools::out()<<"subdomain offsets: "<<Noff0<<","<<Moff0<<","<<Loff0<<std::endl;
+//HYMLS::Tools::out()<<"grid dimension on subdomain: "<<nloc0<<"x"<<mloc0<<"x"<<lloc0<<std::endl;
 HYMLS_DEBUG("processor position: (N,M,L) = ("<<pidN<<","<<pidM<<","<<pidL<<")");
 HYMLS_DEBUG("subdomain offsets: "<<Noff0<<","<<Moff0<<","<<Loff0);
 HYMLS_DEBUG("grid dimension on subdomain: "<<nloc0<<"x"<<mloc0<<"x"<<lloc0);

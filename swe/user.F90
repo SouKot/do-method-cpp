@@ -19,7 +19,7 @@
         real dnsm
 
         pi = 4.0*atan(1.0)
-        print *, 'pmin, pmax, thmin, thmax :',pgmin, pgmax, tghmin, tghmax
+        !print *, 'pmin, pmax, thmin, thmax :',pgmin, pgmax, tghmin, tghmax
         !pause
         ! conversion deg -> rad
         xmin = pmin*pi/180.0
@@ -281,11 +281,11 @@ implicit none
                   endif
                   par(12) = 0.0
                   if ( par(2) .ne. par(8) ) then
-                    print *, '!!!!!'
-                    print *, 'For a n.5-layer model, par(2) (bfric) and ',&
-                      'par(8) (ifric) should be the same. par(2) will be ',&
-                      'changed!'
-                    print *, '!!!!!'
+                   ! print *, '!!!!!'
+                   ! print *, 'For a n.5-layer model, par(2) (bfric) and ',&
+                   !   'par(8) (ifric) should be the same. par(2) will be ',&
+                   !   'changed!'
+                   ! print *, '!!!!!'
                   endif
                   par(2) = par(8)
                   l_coef(nl, 1:nl)=par(3)*par(6)*(l_den(nl+1)-l_den(nl))/rhodim

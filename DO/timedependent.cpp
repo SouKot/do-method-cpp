@@ -96,9 +96,12 @@ void printnormMV(Epetra_MultiVector &mv, int normType, string str) {
     mv.Norm1(&nrm1[0]);
   else if (normType == 2)
     mv.Norm2(&nrm1[0]);
-  std::cout << "\n" << str << std::endl;
-  for (int i = 0; i < mv.NumVectors(); i++)
-    std::cout << "  " << nrm1[i];
+  if (mv.Comm().MyPID()==0)
+  {
+    std::cout << "\n" << str << std::endl;
+    for (int i = 0; i < mv.NumVectors(); i++)
+      std::cout << "  " << nrm1[i];
+  }
 }
 const double r0dim = 6370.0e3;
 const double udim = 0.1;
@@ -576,8 +579,8 @@ int main(int argc = 0, char *argv[] = NULL) {
     Epetra_MultiVector fortStochFrc(*fortMap, 1);
     double* W_ptr;
     int ierr;
-    std::cout << "\nnumber of rows in W_ = " << fortStochFrc.GlobalLength()
-              << "\n";
+    // std::cout << "\nnumber of rows in W_ = " << fortStochFrc.GlobalLength()
+    //          << "\n";
     int n = fortStochFrc.MyLength();
     for (int col = 0; col < fortStochFrc.NumVectors(); col++) {
       fortStochFrc(col)->ExtractView(&W_ptr);
@@ -594,8 +597,8 @@ int main(int argc = 0, char *argv[] = NULL) {
 #endif
     delete frc;
     Wbase->Scale(StochFrcStren);
-    std::flush(std::cout << "\n frob. norm of detA = " << detA.NormFrobenius()
-                         << std::endl);
+    //std::flush(std::cout << "\n frob. norm of detA = " << detA.NormFrobenius()
+    //                     << std::endl);
     Teuchos::RCP<Problem_Interface> Vstoch =
       Teuchos::rcp(new Problem_Interface(Teuchos::rcpFromRef(detA),
                                          Teuchos::rcpFromRef(BasisParams),
@@ -688,7 +691,7 @@ int main(int argc = 0, char *argv[] = NULL) {
     Teuchos::RCP<Epetra_MultiVector> expyy = y_interface->getEyy();
     double saveEyyintrvl=0.2;
     int nv = round(saveEyyintrvl/dt);
-    std::cout<< "\n nv = "<<nv<<"\n";
+    //std::cout<< "\n nv = "<<nv<<"\n";
     int ttlelmnt=expyy->NumVectors()*expyy->GlobalLength();
     Epetra_MultiVector Eyy(Epetra_Map(ttlelmnt,0,*Comm),nv);
     INFO("Start Time integration");

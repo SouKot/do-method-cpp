@@ -5,17 +5,19 @@
     <ParameterList name="BLOCK GMRES">
 	<Parameter name="Orthogonalization" type="string" value="DGKS"/>
 	<Parameter name="Block Size" type="int" value="4"/>
-	<Parameter name="Adaptive Block Size" type="bool" value="false"/>
+	<Parameter name="Adaptive Block Size" type="bool" value="true"/>
 	<Parameter name="Num Blocks" type="int" value="120"/>
-	<Parameter name="Maximum Iterations" type="int" value="300"/>
+	<Parameter name="Maximum Iterations" type="int" value="200"/>
 	<Parameter name="Maximum Restarts" type="int" value="15"/>
 	<Parameter name="Convergence Tolerance" type="double" value="1.0e-4"/>
+	<Parameter name="Flexible Gmres" type="bool" value="false"/>
+	<Parameter name="Left Preconditioner" type="bool" value="false"/>
 	<!-- set it to 'true' for detailed ouput at every step  -->
 	<Parameter name="Verbose" type="bool" value="false"/>
 	  <!-- <Parameter name="output frequency" type="int" value="1"/> -->
     </ParameterList><!--} BLOCK_GMRES-->
    
-    <Parameter name="Ifpack Preconditioner Name" type="string" value="ILU"/>
+    <Parameter name="Ifpack Preconditioner Name" type="string" value="Amesos"/>
     <Parameter name="Overlap Level" type="int" value="1"/>
     
     <ParameterList name="ILU">
@@ -25,5 +27,32 @@
         Their meaning is as defined in file Epetra_CombineMode.h    
 	sets the parameters -->
 	<Parameter name="schwarz: combine mode" type="string" value="Zero"/>
-    </ParameterList><!--} ILU-->
+</ParameterList><!--} ILU-->
+   <ParameterList name="Amesos">
+	<Parameter name="amesos: solver type" type="string" value="Amesos_Klu"/>
+	<Parameter name="schwarz: reordering type" type="string" value="none"/>
+	<!-- the combine mode is on the following:
+        "Add", "Zero", "Insert", "InsertAdd", "Average", "AbsMax"
+        Their meaning is as defined in file Epetra_CombineMode.h    
+	sets the parameters -->
+	<Parameter name="schwarz: combine mode" type="string" value="Zero"/>
+</ParameterList><!--} block Jacobi-->
+   <ParameterList name="block relaxation">
+	<Parameter name="relaxation: type" type="string" value="Jacobi"/>
+	<Parameter name="partitioner: type" type="string" value="metis"/>
+	<Parameter name="partitioner: overlap" type="int" value="1"/>
+	<!-- the combine mode is on the following:
+        "Add", "Zero", "Insert", "InsertAdd", "Average", "AbsMax"
+        Their meaning is as defined in file Epetra_CombineMode.h    
+	sets the parameters -->
+	<Parameter name="schwarz: combine mode" type="string" value="Zero"/>
+</ParameterList><!--} block Jacobi-->
+   <ParameterList name="block relaxation stand-alone">
+	<Parameter name="relaxation: type" type="string" value="Jacobi"/>
+	<Parameter name="partitioner: type" type="string" value="metis"/>
+	<!-- the combine mode is on the following:
+        "Add", "Zero", "Insert", "InsertAdd", "Average", "AbsMax"
+        Their meaning is as defined in file Epetra_CombineMode.h    
+	sets the parameters -->
+</ParameterList><!--} block Jacobi-->
 </ParameterList><!--} AztecOO_GMRES-->

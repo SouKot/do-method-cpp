@@ -6,8 +6,8 @@
     <Parameter name="dof" type="int" value="3"/>
      
      <!-- number of interior cells -->
-    <Parameter name="nx" type="int" value="200"/>
-    <Parameter name="ny" type="int" value="80"/>
+    <Parameter name="nx" type="int" value="500"/>
+    <Parameter name="ny" type="int" value="200"/>
     <Parameter name="nz" type="int" value="1"/>
 
     <Parameter name="xmin" type="double" value="122.0"/>
@@ -99,7 +99,7 @@
           <Parameter name="Preconditioner" type="string" value="New Ifpack"/>
           
 	  <!-- Use "Direct" if Amesos should be used. Otherwise Belos will be used--> 
-	  <Parameter name="Solver Type" type="string" value="iter"/>
+	  <Parameter name="Solver Type" type="string" value="Direct"/>
 	  
 	  <Parameter name="Amesos Solver" type="string" value="Amesos_Mumps"/>
 
@@ -330,7 +330,7 @@
 
     <Parameter name="Start Time" type="double" value="0"/>
 
-    <Parameter name="End Time" type="double" value="2000000"/>
+    <Parameter name="End Time" type="double" value="200.0"/>
 
     <Parameter name="Step Size" type="double" value="2.0"/>
 

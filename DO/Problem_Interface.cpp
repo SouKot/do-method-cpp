@@ -53,7 +53,7 @@ Problem_Interface::Problem_Interface(Teuchos::RCP<Epetra_CrsMatrix> A,
   if (MyPID == 0)
     cout << solver_type << " solver(" << solver_name << ") has been chosen as stoch basis solver";
   // Set up the LU factorization for M-dt*A
-  std::flush(cout << "\n no. of global rows in jacobian " << A_->NumMyRows());
+  //std::flush(cout << "\n no. of global rows in jacobian " << A_->NumMyRows());
   Epetra_Map rowmap(A_->RowMap());
   V = Teuchos::rcp(new Epetra_MultiVector(rowmap, m_));
   map_ = Teuchos::rcp(new Epetra_Map(m_, 0, A_->Comm()));
@@ -150,11 +150,11 @@ Problem_Interface::Problem_Interface(Teuchos::RCP<Epetra_CrsMatrix> A,
     // Create the Belos preconditioned operator from the Ifpack preconditioner.
     belosPrec = rcp(new Belos::EpetraPrecOp(prec));
     bool success = true;
-    bool leftprec = true; // left preconditioning or right.
     int numrhs= m_;
     std::string solverType = SolParams->get("Solver","any");
     ParameterList belosList = SolParams->sublist(solverType);
     MT tol = belosList.get("Convergence Tolerance",1.0);
+    bool leftprec = belosList.get("Left Preconditioner",true); // left preconditioning or right.
     belosList.set("Convergence Tolerance", tol); // Relative convergence tolerance requested
     if (numrhs > 1)
     {

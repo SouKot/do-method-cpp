@@ -1,0 +1,34 @@
+<ParameterList name="ANONYMOUS">
+  <Parameter docString="" id="0" isDefault="false" isUsed="true" name="Solver" type="string" value="PSEUDO BLOCK GMRES"/>
+  <Parameter docString="" id="1" isDefault="false" isUsed="true" name="Verbose" type="bool" value="false"/>
+  <ParameterList id="12" name="PSEUDO BLOCK GMRES">
+    <Parameter docString="" id="2" isDefault="false" isUsed="true" name="Orthogonalization" type="string" value="ICGS"/>
+    <Parameter docString="" id="3" isDefault="false" isUsed="true" name="Block Size" type="int" value="4"/>
+    <Parameter docString="" id="4" isDefault="false" isUsed="true" name="Num Blocks" type="int" value="100"/>
+    <Parameter docString="" id="5" isDefault="false" isUsed="true" name="Maximum Iterations" type="int" value="150"/>
+    <Parameter docString="" id="6" isDefault="false" isUsed="true" name="Maximum Restarts" type="int" value="4"/>
+    <Parameter docString="" id="7" isDefault="false" isUsed="true" name="Deflation Quorum" type="int" value="-1"/>
+    <Parameter docString="" id="8" isDefault="false" isUsed="true" name="Convergence Tolerance" type="double" value="9.99999999999999955e-07"/>
+    <Parameter docString="" id="9" isDefault="false" isUsed="true" name="Adaptive Block Size" type="bool" value="true"/>
+    <Parameter docString="" id="10" isDefault="false" isUsed="true" name="Left Preconditioner" type="bool" value="false"/>
+    <Parameter docString="" id="11" isDefault="false" isUsed="true" name="Verbose" type="bool" value="false"/>
+  </ParameterList>
+  <Parameter docString="" id="13" isDefault="false" isUsed="true" name="Ifpack Preconditioner Name" type="string" value="Amesos"/>
+  <Parameter docString="" id="14" isDefault="false" isUsed="true" name="Overlap Level" type="int" value="1"/>
+  <ParameterList id="18" name="Amesos">
+    <Parameter docString="" id="15" isDefault="false" isUsed="true" name="amesos: solver type" type="string" value="Amesos_Klu"/>
+    <Parameter docString="" id="16" isDefault="false" isUsed="true" name="schwarz: reordering type" type="string" value="none"/>
+    <Parameter docString="" id="17" isDefault="false" isUsed="true" name="schwarz: combine mode" type="string" value="Zero"/>
+  </ParameterList>
+  <ParameterList id="21" name="ILU">
+    <Parameter docString="" id="19" isDefault="false" isUsed="true" name="fact: level-of-fill" type="int" value="1"/>
+    <Parameter docString="" id="20" isDefault="false" isUsed="true" name="schwarz: combine mode" type="string" value="Zero"/>
+  </ParameterList>
+  <ParameterList id="25" name="block Jacobi">
+    <Parameter docString="" id="22" isDefault="false" isUsed="true" name="partitioner: type" type="string" value="metis"/>
+    <Parameter docString="" id="23" isDefault="false" isUsed="true" name="partitioner: overlap" type="int" value="2"/>
+    <Parameter docString="" id="24" isDefault="false" isUsed="true" name="schwarz: combine mode" type="string" value="Zero"/>
+  </ParameterList>
+  <Validators/>
+</ParameterList>
+

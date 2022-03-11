@@ -91,9 +91,9 @@ else
   // create a parallel map.
   map_=domain_->GetSolveMap();
   Teuchos::RCP<Epetra_Map> localMap=domain_->GetAssemblyMap();    
-  std::flush(std::cout<<"\n!!!!!!*****"<<__FILE__<<" "<<__LINE__);
+  //std::flush(std::cout<<"\n!!!!!!*****"<<__FILE__<<" "<<__LINE__);
   //DEBVAR(*map_);
-  std::flush(std::cout<<"\n!!!!!!*****"<<__FILE__<<" "<<__LINE__);
+  //std::flush(std::cout<<"\n!!!!!!*****"<<__FILE__<<" "<<__LINE__);
   //DEBVAR(*localMap);
 
   sol_=Teuchos::rcp(new Epetra_Vector(*map_));
@@ -756,8 +756,9 @@ void ModelEvaluator::evalModel( const InArgs& inArgs, const OutArgs& outArgs ) c
     
      if (Alpha!=0.0)
       {
-	cout <<" Adapting diagonal " << std::endl; 
-     Epetra_Vector diag(jac_->RowMap());
+  	if (comm_->MyPID()==0)
+	  cout <<" Adapting diagonal " << std::endl; 
+      Epetra_Vector diag(jac_->RowMap());
       CHECK_ZERO(jac_->ExtractDiagonalCopy(diag));
       CHECK_ZERO(diag.Update(-Alpha,*mass_,1.0));
       // for Navier-Stokes this returns 1 for the P-rows
@@ -895,8 +896,8 @@ int ModelEvaluator::ReadParameters(Teuchos::ParameterList& List, LOCA::Parameter
     
     if (pos<0) 
       {
-      HYMLS::Tools::Warning("Your parameter '"+label+"' is not among the model's"
-        " valid continuation parameters and will be ignored.",__FILE__,__LINE__);
+      //HYMLS::Tools::Warning("Your parameter '"+label+"' is not among the model's"
+      //  " valid continuation parameters and will be ignored.",__FILE__,__LINE__);
       }
     else
       {

@@ -166,17 +166,19 @@ ImplicitTimeStepper::ImplicitTimeStepper(
     std::string solver_type = lsParams.get("Solver Type","Direct");
     if (solver_type == "Direct")
     {
+      if (model->get_x_map()->Comm().MyPID()==0){
       std::cout<<"\n===================================================\n";
       std::cout<<"USING AMESOS SOLVER FOR MEAN";
-      std::cout<<"\n===================================================\n";
+      std::cout<<"\n===================================================\n";}
       linSys = Teuchos::rcp(new NOX::Epetra::LinearSystemAmesos(nlPrintParams,
 	    lsParams, iReq, iJac, model->getJacobian(), soln, scaling));
     }
     else
     {
+      if (model->get_x_map()->Comm().MyPID()==0){
       std::cout<<"\n===================================================\n";
       std::cout<<"USING BELOS SOLVER FOR MEAN";
-      std::cout<<"\n===================================================\n";
+      std::cout<<"\n===================================================\n";}
       linSys = Teuchos::rcp(new NOX::Epetra::LinearSystemBelos(nlPrintParams, 
 	    lsParams, iReq, iJac, model->getJacobian(), soln,scaling));
     }
