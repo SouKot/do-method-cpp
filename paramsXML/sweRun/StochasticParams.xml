@@ -2,7 +2,7 @@
   <Parameter name="Problem Type" type="string" value="SWE"/>
   <ParameterList name="StochModel"><!--{-->
     <!-- set to "false" DO stocahstic part is not needed --> 
-    <Parameter name="Use Stochastic" type="bool" value="false"/>
+    <Parameter name="Use Stochastic" type="bool" value="true"/>
     <!-- set to "None" if no file is  provided for Massmatrix --> 
     <Parameter name="MassMtxFile" type="string" value="None"/>
     <!-- set to "None" if no file is  provided for Stochastic forcing --> 
