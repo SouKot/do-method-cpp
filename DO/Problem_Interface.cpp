@@ -375,6 +375,9 @@ void Problem_Interface::init_v(double t)
   }
   else
   {
+    if (A_->Comm().MyPID()==0)
+      std::cout<<"\nInitializing basis from "<<InitFile_<<"\n";
+
     Epetra_MultiVector *vt;
     EpetraExt::MatrixMarketFileToMultiVector(InitFile_.c_str(), (V->Map()), vt);
     V = Teuchos::rcp(vt);

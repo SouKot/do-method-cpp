@@ -516,8 +516,8 @@ ret = 0
 !if (nz .ne. 2) STOP 'number of layers not two'
 do j = 1, ny
   do i = 1, nx
-    ret(row)= C*exp(-2. * ((x(i)-xc) * (x(i)-xc) + (y(j)-yc) * (y(j)-yc)) / (4. * l*l))*tx(i, j)
-    !ret(row+1)= C*exp(-2. * ((x(i)-xc) * (x(i)-xc) + (y(j)-yc) * (y(j)-yc)) / (4. * l*l))
+    !ret(row)= C*exp(-2. * ((x(i)-xc) * (x(i)-xc) + (y(j)-yc) * (y(j)-yc)) / (4. * l*l))*tx(i, j)
+    ret(row)= C*exp(-2. * ((x(i)-xc) * (x(i)-xc) + (y(j)-yc) * (y(j)-yc)) / (4. * l*l))
     ret(row+1)=0
     ret(row+2)=0
     row = row+3; 

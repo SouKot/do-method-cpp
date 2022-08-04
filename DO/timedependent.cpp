@@ -294,7 +294,7 @@ int main(int argc = 0, char *argv[] = NULL) {
     double inc_fac = transParams.get("Successful Step Increase Factor", 1.5);
 
     int step = 1;
-    double maxEffort = 0.9; // prevent increasing step size if more than
+    double maxEffort = 0.8; // prevent increasing step size if more than
     // 90% of the maximum Newton steps were needed.
     double PsiMaxOld = -1.0;
 #else
@@ -462,6 +462,8 @@ int main(int argc = 0, char *argv[] = NULL) {
     std::string FrcFile = stochModelList.get("StochFrcFile", "frc.mm");
     double StochFrcStren = stochModelList.get("StochFrc Strength", 1.0);
     bool Scaling = stochModelList.get("Scaling", false);
+    bool isStochOn = stochModelList.get("Use Stochastic", true);
+
     // std::string JacFile  =     stochModelList.get("JacDetFile","jac.mm");
     // Get the "Time Stepping" sublist
     Teuchos::ParameterList& BasisParams =
@@ -679,6 +681,9 @@ int main(int argc = 0, char *argv[] = NULL) {
     double count = t;
     int yycount = 0;
     if (MyPID == 0) {
+      if (!isStochOn)    
+      cout << "\n WARNING!!! STOCHASTIC CLASSES HAVES BEEN INITIALZED BUT THEY WON'T BE"
+	   <<"\n USED AS \"Use Stochastic\" IS SET TO FALSE in STOCHATIC PARAMETER LIST.\n";	    
       cout << "\n end time = " << t_end;
       cout << "\n start time = " << t;
       cout << "\n starting time iterations:"
@@ -689,9 +694,10 @@ int main(int argc = 0, char *argv[] = NULL) {
     model->setSolution(*soln);
 #endif
     Teuchos::RCP<Epetra_MultiVector> expyy = y_interface->getEyy();
-    double saveEyyintrvl=0.2;
+    double saveEyyintrvl=0.4;
     int nv = round(saveEyyintrvl/dt);
-    //std::cout<< "\n nv = "<<nv<<"\n";
+    if (MyPID == 0)
+      std::cout<< "\n number of Eyy time steps per tsEyy_* file = "<<nv<<"\n";
     int ttlelmnt=expyy->NumVectors()*expyy->GlobalLength();
     Epetra_MultiVector Eyy(Epetra_Map(ttlelmnt,0,*Comm),nv);
     INFO("Start Time integration");
@@ -733,6 +739,8 @@ int main(int argc = 0, char *argv[] = NULL) {
        *****************************************************************/
       // if (MyPID == 0)
       // std::flush(std::cout << "\n solving for Y");
+      if (isStochOn)
+      {
       if (timeProf)
         coeffTime->start();
 
@@ -780,6 +788,7 @@ int main(int argc = 0, char *argv[] = NULL) {
       {
         coeffTime2->stop();
 	coeffTime2->incrementNumCalls();
+      }
       }
         /******************************************************
           SOLVE FOR Udet!!!!!!
@@ -884,17 +893,20 @@ int main(int argc = 0, char *argv[] = NULL) {
 	  }
 	}
 	yycount=yycount+1;
-	if (yycount==nv ) {
+	if (yycount==nv && isStochOn ) {
 	  Filename = "tsEyy_" + Teuchos::toString(float(t)) + ".mm";
 	  HYMLS::MatrixUtils::mmwrite(Filename, Eyy);
 	  yycount=0;
 	}
         if ((t - count - prntintvl) >= 0) {
+	  if (isStochOn)
+	  {
 	  Filename = "v_" + Teuchos::toString(float(t)) + ".mm";
 	  HYMLS::MatrixUtils::mmwrite(Filename, *Vn);
           // EpetraExt::MultiVectorToMatrixMarketFile(Filename.c_str(), *Vn);
           Filename = "yT_" + Teuchos::toString(float(t)) + ".mm";
 	  HYMLS::MatrixUtils::mmwrite(Filename, *(y_interface->yTrans_));
+	  }
           // EpetraExt::MultiVectorToMatrixMarketFile(Filename.c_str(),
           //                                         *(y_interface->yTrans_));
 	  Filename = "mean_" + Teuchos::toString(float(t)) + ".mm";
@@ -996,12 +1008,13 @@ int main(int argc = 0, char *argv[] = NULL) {
 	  yycount=0;
 	}
         if ((t - count - prntintvl) >= 0) {
-	  
+	  if(isStochOn){
           Filename = "v_" + Teuchos::toString(float(t)) + ".mm";
           EpetraExt::MultiVectorToMatrixMarketFile(Filename.c_str(), *Vn);
           Filename = "yT_" + Teuchos::toString(float(t)) + ".mm";
           EpetraExt::MultiVectorToMatrixMarketFile(Filename.c_str(),
                                                    *(y_interface->yTrans_));
+	  }
           Filename = "mean_" + Teuchos::toString(float(t)) + ".mm";
           EpetraExt::MultiVectorToMatrixMarketFile(Filename.c_str(), *soln);
           count = count + prntintvl; // getchar();

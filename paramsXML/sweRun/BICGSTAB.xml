@@ -3,31 +3,45 @@
     <Parameter name="Verbose" type="bool" value="false"/>
     
     <ParameterList name="BICGSTAB">
-	<Parameter name="Orthogonalization" type="string" value="ICGS"/>
-	<Parameter name="Block Size" type="int" value="4"/>
+	<Parameter name="Orthogonalization" type="string" value="IMGS"/>
+	<Parameter name="Block Size" type="int" value="8"/>
 	<Parameter name="Num Blocks" type="int" value="100"/>
 	<Parameter name="Maximum Iterations" type="int" value="150"/>
 	<Parameter name="Maximum Restarts" type="int" value="4"/>
 	<Parameter name="Deflation Quorum" type="int" value="-1"/>
-	<Parameter name="Convergence Tolerance" type="double" value="1.0e-6"/>
-	<Parameter name="Adaptive Block Size" type="bool" value="false"/>
+	<Parameter name="Convergence Tolerance" type="double" value="1.0e-8"/>
+	<Parameter name="Adaptive Block Size" type="bool" value="True"/>
+	<Parameter name="Left Preconditioner" type="bool" value="false"/>
 	<!-- set it to 'true' for detailed ouput at every step  -->
 	<Parameter name="Verbose" type="bool" value="false"/>
 	  <!-- <Parameter name="output frequency" type="int" value="1"/> -->
     </ParameterList><!--} BLOCK_GMRES-->
-   
-    <Parameter name="Ifpack Preconditioner Name" type="string" value="block Jacobi"/>
+    
+    <Parameter name="Ifpack Preconditioner Name" type="string" value="ILUT stand-alone"/>
     <Parameter name="Overlap Level" type="int" value="1"/>
     
-    <ParameterList name="ILU">
-	<Parameter name="fact: level-of-fill" type="int" value="1"/>
+   <ParameterList name="Amesos">
+	<Parameter name="amesos: solver type" type="string" value="Amesos_Klu"/>
+	<Parameter name="schwarz: reordering type" type="string" value="none"/>
+	<!-- the combine mode is on the following:
+        "Add", "Zero", "Insert", "InsertAdd", "Average", "AbsMax"
+        Their meaning is as defined in file Epetra_CombineMode.h    
+	sets the parameters -->
+	<Parameter name="schwarz: combine mode" type="string" value="Zero"/>
+    </ParameterList><!--} block Jacobi-->
+    <ParameterList name="ILUT stand-alone">
+	<Parameter name="fact: ilut level-of-fill" type="double" value="3"/>
+	<Parameter name="fact: relax value" type="double" value="1"/>
+	<Parameter name="schwarz: reordering type" type="string" value="metis"/>
+	<Parameter name="fact: absolute threshold" type="double" value="1.0e-4"/>
 	<!-- the combine mode is on the following:
         "Add", "Zero", "Insert", "InsertAdd", "Average", "AbsMax"
         Their meaning is as defined in file Epetra_CombineMode.h    
 	sets the parameters -->
 	<Parameter name="schwarz: combine mode" type="string" value="Zero"/>
     </ParameterList><!--} ILU-->
-    <ParameterList name="block Jacobi">
+    <ParameterList name="block relaxation stand-alone">
+	<Parameter name="relaxation: type" type="string" value="Jacobi"/>
 	<Parameter name="partitioner: type" type="string" value="metis"/>
 	<Parameter name="partitioner: overlap" type="int" value="2"/>
 	<!-- the combine mode is on the following:
@@ -35,5 +49,6 @@
         Their meaning is as defined in file Epetra_CombineMode.h    
 	sets the parameters -->
 	<Parameter name="schwarz: combine mode" type="string" value="Zero"/>
-</ParameterList><!--} block Jacobi-->
+     </ParameterList><!--} block Jacobi-->
 </ParameterList><!--} AztecOO_GMRES-->
+   

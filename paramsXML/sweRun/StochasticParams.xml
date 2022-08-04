@@ -1,21 +1,23 @@
 <ParameterList name="MOC"><!--{-->
   <Parameter name="Problem Type" type="string" value="SWE"/>
   <ParameterList name="StochModel"><!--{-->
+    <!-- set to "false" DO stocahstic part is not needed --> 
+    <Parameter name="Use Stochastic" type="bool" value="false"/>
     <!-- set to "None" if no file is  provided for Massmatrix --> 
     <Parameter name="MassMtxFile" type="string" value="None"/>
     <!-- set to "None" if no file is  provided for Stochastic forcing --> 
     <Parameter name="StochFrcFile" type="string" value="None"/>
-    <Parameter name="StochFrc Strength" type="double" value="0.1"/>
+    <Parameter name="StochFrc Strength" type="double" value="0.01"/>
     <!-- set to "None" if no file is  provided for stationary Jacobian --> 
     <Parameter name="JacDetFile" type="string" value="None"/>
     <!-- set to 'false' if no Scaling is provided  --> 
     <Parameter name="Scaling" type="bool" value="false"/>
     <!-- set to some value after which stochastic basis and coefficients are saved 
 	 in files. Choose interval based on time scale of your problem    --> 
-    <Parameter name="Save Solution Interval" type="double" value="5250000.0"/>
+    <Parameter name="Save Solution Interval" type="double" value="100000.0"/>
     <!-- ****PARAMETER LIST FOR STOCHASTIC BASIS PART  --> 
     <ParameterList name="Stochastic Basis">
-      <Parameter name="Max. Stoch subspace Dimension" type="int" value="8"/>
+      <Parameter name="Max. Stoch subspace Dimension" type="int" value="4"/>
       <Parameter name="Initial Stoch subspace Dimension" type="int" value="4"/>
       <!-- set to "None" if no file is  provided for inital values for basis --> 
       <Parameter name="StochBasisFile" type="string" value="None"/>
@@ -34,7 +36,7 @@
       <!-- Used to choose solver type.
       If value="Amesos" then "direct" sublist is used. 
       if value="Belos" then itrative sublist is used. --> 
-      <Parameter name="Solver Package" type="string" value="Belos"/>
+      <Parameter name="Solver Package" type="string" value="Amesos"/>
       <!-- If  {
 	   "Solve Type"="direct" then  --> 
       <ParameterList name="Amesos">
@@ -59,7 +61,8 @@
 	<!-- choose AztecOO solver. An XML file defining parameters 
 	     related to solver should be defined. For example if
 	     GMRES is chosen then a file named AztecOO_GMRES.xml
-	     should be present in the run directory.
+		should be present in the run directory.
+		PSEUDO_BLOCK_GMRES
 	     (WARNING : Not Implemented!!!!!!) -->
 	<Parameter name="Solver name" type="string" value="PSEUDO_BLOCK_GMRES"/>
       </ParameterList><!--} iterative-->
@@ -72,13 +75,13 @@
       <Parameter name="Type of Coeff File" type="string" value="None"/>
       <!-- This is used when above parameter is != "None".
 	   Use it to give the name of the file--> 
-      <Parameter name="StochCoefFile" type="string" value=" "/>
-      <Parameter name="Stochastic Iterations" type="int" value="32000"/>
-      <Parameter name="Number of Sub Time Steps" type="int" value="10" />
+      <Parameter name="StochCoefFile" type="string" value="yT_2.25005379e+01.mm"/>
+      <Parameter name="Stochastic Iterations" type="int" value="8000"/>
+      <Parameter name="Number of Sub Time Steps" type="int" value="1" />
       <Parameter name="Max Num of Iter" type="int" value="50" />
       <Parameter name="Use BackTracking" type="bool" value="true" />
       <Parameter name="Max Num of BackTracking Steps" type="int" value="5" />
-      <Parameter name="Tolerance of RHS" type="double" value="10e-6" />
+      <Parameter name="Tolerance of RHS" type="double" value="10e-8" />
       <Parameter name="Norm of RHS" type="double" value="1.0" />
       <Parameter name="Class Testing" type="bool" value="false"/>
       <Parameter name="Class Debugging" type="bool" value="false"/>

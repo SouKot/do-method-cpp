@@ -47,7 +47,7 @@
     <!-- "Line Search Based" or "Trust Region Based" (not tested) -->
     <Parameter name="Nonlinear Solver" type="string" value="Line Search Based"/>
     <!-- convergence tolerance for the Newton process -->
-    <Parameter name="Convergence Tolerance" type="double" value="1.0e-4"/>
+    <Parameter name="Convergence Tolerance" type="double" value="1.0e-8"/>
 
     <!-- Line Search parameters { -->
     <ParameterList name="Line Search">
@@ -56,11 +56,11 @@
       <Parameter name="Method" type="string" value="Full Step"/>
       
       <!-- maximum number of Newton iterations -->
-      <Parameter name="Max Iters" type="int" value="30"/>
+      <Parameter name="Max Iters" type="int" value="50"/>
       
       <ParameterList name="Backtrack">
         <Parameter name="Default Step" type="double" value="0.5"/>
-        <Parameter name="Max Iters" type="int" value="10"/>
+        <Parameter name="Max Iters" type="int" value="20"/>
         <Parameter name="Minimum Step" type="double" value="1e-6"/>
         <Parameter name="Recovery Step" type="double" value="1e-3"/>
       </ParameterList>
@@ -320,19 +320,19 @@
     <Parameter name="Scheme" type="string" value="Theta"/> 
     
     <!-- only relevant for "Theta" scheme -->
-    <Parameter name="Theta" type="double" value="1.0"/>
+    <Parameter name="Theta" type="double" value="0.55"/>
 
     <!-- time is measured in dimensionless units -->
     <!-- 1 unit is about 2 years (R/u0)          -->
     <!-- 0.04 would be (roughly) a month,        -->
     <!-- 0.0014 is a day                         -->
-    <Parameter name="Time Profiling" type="bool" value="1"/>
+    <Parameter name="Time Profiling" type="bool" value="0"/>
 
-    <Parameter name="Start Time" type="double" value="0"/>
+    <Parameter name="Start Time" type="double" value="3822020409.48"/>
 
-    <Parameter name="End Time" type="double" value="200.0"/>
+    <Parameter name="End Time" type="double" value="5.203e+9"/>
 
-    <Parameter name="Step Size" type="double" value="2.0"/>
+    <Parameter name="Step Size" type="double" value="1000"/>
 
     <!-- the predictor can currently be                         -->
     <!-- "Constant": start Newton with the previous slution u_n -->
@@ -369,13 +369,13 @@
     <Parameter name="Step Size Control" type="string" value="Constant"/>
     
     <!-- this causes the program to terminate if the step-size becomes too small -->
-    <Parameter name="Minimum Step Size" type="double" value="1.0"/>
+    <Parameter name="Minimum Step Size" type="double" value="100.0"/>
     
     <!-- puts an absolute bound on the step size           -->
-    <Parameter name="Maximum Step Size" type="double" value="3000.0"/>
+    <Parameter name="Maximum Step Size" type="double" value="4000"/>
     
     <!-- this is only for the "Constant" method above -->
-    <Parameter name="Failed Step Reduction Factor" type="double" value="0.25"/>
+    <Parameter name="Failed Step Reduction Factor" type="double" value="0.5"/>
 
     <!-- this is only for the "Constant" method above -->
     <Parameter name="Successful Step Increase Factor" type="double" value="1.1"/>
@@ -388,7 +388,7 @@
     <!-- "None": no convergence monitoring                                       -->
     <!-- "Norm of F": ||F(u)||_1<tol                                              -->
     <!-- "Overturning": monitor the meridional streamfunction, i.e.               -->
-    <!--                the maximum of the y-z streamfunction (v is averaged over x) -->
+	    <!--                the maximum of the y-z streamfunction (v is averaged over x) -->
     <Parameter name="Steady-State Monitor" type="string" value="Norm 0f F"/>    
 
     <!-- criterion to stop if the monitor chosen above goes below a given  -->
@@ -409,7 +409,7 @@
       <Parameter name="Max Num Iter" type="int" value="1000"/>
     
       <!-- convergence tolerance -->
-      <Parameter name="Tolerance" type="double" value="1.0e-10"/>
+      <Parameter name="Tolerance" type="double" value="1.0e-6"/>
     
       <!-- relaxation parameter omega for SOR -->
       <Parameter name="Relaxation Parameter" type="double" value="1.7"/>

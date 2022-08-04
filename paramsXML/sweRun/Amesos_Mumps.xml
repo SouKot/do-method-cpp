@@ -4,7 +4,7 @@
 
   <Parameter name="PrintStatus" type="bool" value="false"/>
 
-  <Parameter name="RCondThreshold" type="double" value="1.0e-12"/>
+  <Parameter name="RCondThreshold" type="double" value="1.0e-8"/>
 
   <Parameter name="ComputeVectorNorms" type="bool" value="false"/>
 

@@ -156,14 +156,14 @@ implicit none
             ! are defined in param.com.
             tmax = 1.
             par(1) = taudim*tmax/(2*omegadim*hdim*udim*rhodim)    ! windstress coef.
+            !par(1) = taudim/rhodim    ! windstress coef.
             par(2) = bfric                                        ! bottom friction
             par(3) = udim/(2*omegadim*r0dim)                      ! rossby number
             par(4) = Ahdim/(2.0*omegadim*r0dim**2)                ! ekman number
-            par(5) = r0dim/udim                                   ! time scale
+            par(5) = r0dim/udim                 ! time scale
             par(6) = hdim*gdim/(udim*udim)  ! xoxgdim*hdim/(udim*udim)  ! froud number
             par(7) = 1.0e+00                                      ! eq. value h
             par(8) = ifric                                        ! interface friction
-
             if ( windfromdata ) then  ! sine/data windstress [0/1]
               par(9) = 1.0e+00 
             else
@@ -1297,7 +1297,8 @@ implicit none
      call usol(un, u, v, h)       ! conversion state -> u, v, h
 
      mix = 0.0
-
+     print *, nl,l_hth(1),l_hth(2)
+      
      do i = 1, nl-1
      h(0  ,:  ,i)=l_hth(i)-l_hth(i+1)
      h(n+1, :  ,i)=l_hth(i)-l_hth(i+1)

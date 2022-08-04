@@ -25,13 +25,13 @@
 
 
 ! Conversion quantities:
-        real,    parameter:: hdim = 4.0e+03		! Layer heigth
+        real,    parameter:: hdim = 5.0e+02		! Layer heigth
         real,    parameter:: omegadim = 7.292e-05		! Angular velocity of the earth
         real,    parameter:: r0dim = 6.37e+06		! Radius of the earth
         real,    parameter:: udim = 1.0e-01		! Velocity scale
         real,    parameter:: gdim = 9.8		! Gravity
-        real,    parameter:: rhodim = 1.02810575e+03		! Densiity
-        real,    parameter:: taudim = 1.0e+01		! Amplitude of the windstress
+        real,    parameter:: rhodim = 1.0235e+03		! Densiity
+        real,    parameter:: taudim = 1.0		! Amplitude of the windstress
         real,    parameter:: Ahdim = 2.20e+2
         real,    parameter:: bfric = 0.0e-0		! Bottom friction
         real,    parameter:: ifric = 5.0e-4		! Interfacial friction
@@ -69,7 +69,7 @@
         ! layer densities
         !   note: for n.5 layer model, density of the n+1-th layer is equal to rhodim
         !   note: for n.5 layer model, make sure rhodim > density of n-th layer
-        double precision, dimension(2):: l_den = (/ 1.0235e+3, rhodim/)
+        double precision, dimension(2):: l_den = (/ 1.0235e+3, 1.02810575e+03/)
 !contains
 
         !subroutine allocate_grid(Xmin, Xmax, Ymin, Ymax)

@@ -85,7 +85,7 @@
         elseif (yyd .ge. 37.0) then
           aphi = cos(k2*(yyd-37.0))
         endif
-        windfun = 0.0462*aphi*bx-0.004
+        windfun = 0.046*aphi*bx-0.004
 
         end
 

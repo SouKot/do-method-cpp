@@ -266,7 +266,9 @@ else
       HYMLS::Tools::Error("restart failed - xml file has no 'State Vector' entry",
         __FILE__,__LINE__);
       }
-    HYMLS::Tools::out() <<" RESTART FROM: "<<vecFile<<std::endl;
+    if(comm_->MyPID()==0)
+      HYMLS::Tools::out() <<" RESTART FROM: "<<vecFile<<std::endl;
+    
     CHECK_ZERO(this->read_vector(*sol_,vecFile));
     }  
   
