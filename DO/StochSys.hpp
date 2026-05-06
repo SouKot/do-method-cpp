@@ -49,6 +49,7 @@
 #include "Teuchos_BLAS.hpp"
 #include "Teuchos_RCP.hpp"
 #include "globdefs.H"
+#include "DOUtils.hpp"
 #if need_locaInterface == 1
 #include "FVM_Domain.H"
 #else /* -----  not NEED_LOCAINTERFACE  ----- */
@@ -153,7 +154,8 @@ public:
    *		  (TODO:: how to call it in y_jac for non-linear term????!!!)
    * =====================================================================================
    **/
-  void Bilinear(Teuchos::RCP<Epetra_MultiVector> u,
+  void Bilinear(Teuchos::RCP<Epetra_Vector> ud,
+                Teuchos::RCP<Epetra_MultiVector> u,
                 Teuchos::RCP<Epetra_MultiVector> v,
                 Teuchos::RCP<Epetra_MultiVector> uv);
   void HBilinV();
@@ -206,7 +208,7 @@ public:
     viv; //*********************************************FILL IT With the
          // value of bases
   //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*****************
-  Teuchos::RCP<Epetra_Vector> udet;
+  Teuchos::RCP<Epetra_Vector> udet,fortudet;
   Teuchos::RCP<Epetra_MultiVector> AV;
   Teuchos::RCP<Epetra_MultiVector> VAV;
   Teuchos::RCP<Epetra_MultiVector> udet_mtimes;
@@ -257,7 +259,6 @@ public:
   Teuchos::RCP<MV> evecs;
   Anasazi::Eigensolution<double, MV> EigSol;
 
-  void printnormMV(Epetra_MultiVector& mv, int normType, std::string str);
   void printTransNormMV(Epetra_MultiVector& mv, int normType, std::string str);
   void computeEVyVy();
   void computeCrossVariance();
@@ -266,6 +267,8 @@ public:
   void computeEyyTyT();
   void SymMatPseudoInverse(Epetra_MultiVector& mat, Epetra_MultiVector& matInv);
 
+  void test_jac_billin();
+  
 private:
   // /////////////////////////////////////
   // Private member data

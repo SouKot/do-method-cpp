@@ -9,7 +9,6 @@ using std::endl;
 #include <fstream>
 using std::ofstream;
 #include <iomanip>
-
 #include "Teuchos_oblackholestream.hpp"
 #include "Teuchos_StrUtils.hpp"
 #include "Teuchos_StandardCatchMacros.hpp"
@@ -70,8 +69,7 @@ ModelEvaluator::ModelEvaluator(Teuchos::RCP<Epetra_Comm> comm,
   ymin_=paramList_.get("ymin",0.0);
   ymax_=paramList_.get("ymax",1.0);
   zmin_=paramList_.get("zmin",0.0);
-  zmax_=paramList_.get("zmax",1.0);
-  
+  zmax_=paramList_.get("zmax",1.0); 
   // this does most of the parallel setup like domain decomposition,
   // map generation etc.  
   domain_ = Teuchos::rcp(new Domain(nx_,ny_,nz_,dof_,
@@ -231,6 +229,7 @@ else
   LOCA::ParameterVector pCopy = *pVector_;
   
   HYMLS::MatrixUtils::Random(*SOL);
+  SOL->PutScalar(1.0);
   for (int i=0;i<npar_;i++)
     {
     (*p_values_)[i]=Teuchos::ScalarTraits<double>::random();

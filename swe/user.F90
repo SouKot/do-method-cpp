@@ -814,11 +814,10 @@ implicit none
      enddo   
      enddo
      enddo
-
+     !print *, "norm of coA", Norm2(coA)
      end
 !*****************************************************************************
      subroutine jacob(un, sig)
-
      use m_par
      use m_usr
      implicit none
@@ -829,6 +828,9 @@ implicit none
      real    u(0:n, 0:m+1, 1:nl), v(0:n+1, 0:m, 1:nl), h(0:n+1, 0:m+1, 1:nl)
      real    eps2
      integer i, j, k
+     
+     !print *, "inside jacob"
+     !pause
 
      eps2 = par(3)
      cpnluh = 0
@@ -841,7 +843,6 @@ implicit none
      call nlin_rhs(u, v, h)
      call nlin_jac(u, v, h)
 
-
      Aluu = Lluu+Nluu
      Aluv = Lluv+Nluv
      Aluh = Lluh+Nluh
@@ -851,6 +852,16 @@ implicit none
      Alhu = Llhu+Nlhu
      Alhv = Llhv+Nlhv
      Alhh = Llhh+Nlhh
+
+     !Aluu = Nluu
+     !Aluv = Nluv
+     !Aluh = Nluh
+     !Alvu = Nlvu
+     !Alvv = Nlvv
+     !Alvh = Nlvh
+     !Alhu = Nlhu
+     !Alhv = Nlhv
+     !Alhh = Nlhh
 
      do k = 1, nl
      Aluu(:,:,4, k, k) = Aluu(:,:,4, k, k) + sig*eps2
@@ -871,6 +882,8 @@ implicit none
      call land2mat(Frc)
      if (pmode .eq. 3) call intcond(Frc)
      call packa       ! Remove very small elements.
+     !call writemat
+     !pause 
 100   format(3i4, 2es12.4)
      end
 !*****************************************************************************
@@ -1116,7 +1129,7 @@ implicit none
 !*     local
      real    uux(n, m, np), vuy(n, m, np)
      real    uvx(n, m, np), vvy(n, m, np)
-     real     uv(n, m, np), uu(n, m, np)
+     real    uv(n, m, np), uu(n, m, np)
      real    uhx(n, m, np), vhy(n, m, np)
      real    txh(n, m, np), tyh(n, m, np)
      real    lxh(n, m, np), lyh(n, m, np)
@@ -1183,6 +1196,15 @@ implicit none
      call hnlin(4, vhy, u(:,:,k), v(:,:,k), h(:,:,k))
      nlhh(:,:,:,k, k) = uhx+vhy
      enddo
+     !nluu = 0.0
+     !nluv = 0.0
+     !nluh = 0.0
+     !nlvu = 0.0
+     !nlvv = 0.0
+     !nlvh = 0.0
+     !nlhu = 0.0
+     !nlhv = 0.0
+     !nlhh = 0.0
      end
 !*****************************************************************************
      subroutine nlin_jac(u, v, h)
@@ -1271,7 +1293,19 @@ implicit none
      call wind( 2, tyh, u(:,:,k), v(:,:,k), h(:,:,k))
      nlvh(:,:,:,k, k) =nlvh(:,:,:,k, k)+sig*tyh
    endif
-
+     
+    ! print *, "uru"
+    ! print *, eps2*uru
+    ! print *, "urvx"
+    ! print *, eps2*urvx
+    ! print *, "uvrx"
+    ! print *, eps2*uvrx
+    ! print *, "vvry"
+    ! print *, eps2*vvry
+    ! print *, "vrvy"
+    ! print *, eps2*vrvy
+     
+     
      call hnlin(1, urhx, u(:,:,k), v(:,:,k), h(:,:,k))
      call hnlin(2, uhrx, u(:,:,k), v(:,:,k), h(:,:,k))
      call hnlin(3, vrhy, u(:,:,k), v(:,:,k), h(:,:,k))
@@ -1280,6 +1314,22 @@ implicit none
      nlhv(:,:,:,k, k) = vrhy
      nlhh(:,:,:,k, k) = uhrx+vhry
      enddo
+     
+     !print *, "nlvu"
+     !print *, nlvu 
+     !print *, "nlvv"
+     !print *, nlvv 
+     !nluu = 0.0
+     !nluv = 0.0
+     !nluh = 0.0
+     !nlvu = 0.0
+     !nlvv = 0.0
+     !nlvh = 0.0
+     !nlhu = 0.0
+     !nlhv = 0.0
+     !nlhh = 0.0
+     !print *, "nlin_jac : norm of nlhh", Norm2(nlhh+nlhu+nlhv)
+     !print *, nlhu(2, 1, :,:,:)+nlhv(2, 1, :,:,:)+nlhh(2, 1, :,:,:)
      end
 !*****************************************************************************
      subroutine mixing(un, mix)
@@ -1297,7 +1347,7 @@ implicit none
      call usol(un, u, v, h)       ! conversion state -> u, v, h
 
      mix = 0.0
-     print *, nl,l_hth(1),l_hth(2)
+     print *, nl, l_hth(1), l_hth(2)
       
      do i = 1, nl-1
      h(0  ,:  ,i)=l_hth(i)-l_hth(i+1)
@@ -1816,6 +1866,9 @@ implicit none
      do i = 1, begA(ndim+1)-1
      write(13, *) coA(i)
      enddo
+     close(11)
+     close(12)
+     close(13)
 
 
 
@@ -2202,6 +2255,7 @@ implicit none
      integer vv, v, begin, i, j, k, l, row, oldsize, cpoldsize, cpvv, cpbegin, ccvv, ccoldsize, ccbegin
      integer bn, bs
      logical q
+     real nrm1
 !*
 !*     indikken van a door alleen elementen > 1e-12 mee
 !*     te nemen
@@ -2211,6 +2265,7 @@ implicit none
 
 
      ! remove small elements
+     !nrm1 = 0
      vv = 1
      cpvv = 1
      ccvv = 1
@@ -2221,6 +2276,25 @@ implicit none
      oldsize = begA(ndim+1)-1
      cpoldsize = cpbegA(ndim+1)-1
      ccoldsize = ccbegA(ndim+1)-1 
+     
+    !print *, "1-frobenius norm of coA = ",Norm2(coA)
+     !print *, " coA = ",Norm2(coA)
+  !   do k = 1, nl
+  !   do j = 1, m
+  !   do i = 1, n
+  !   do l = 1, 3
+  !   row = 3*(n*m*(k-1)+n*(j-1)+i-1)+l
+  !   do v = begA(row), begA(row+1)-1
+  !   if (abs(coA(v)).gt.1.0e-12) then
+  !   print *, coA(v), v
+  ! endif
+  !   enddo
+  !   enddo
+  !   enddo
+  !   enddo
+  !   enddo
+    !print *, "2-frobenius norm of coA = ",Norm2(coA)
+     
      do k = 1, nl
      do j = 1, m
      do i = 1, n
@@ -2229,17 +2303,24 @@ implicit none
      begin = vv
      do v = begA(row), begA(row+1)-1
      if (abs(coA(v)).gt.1.0e-12) then
+     !write(*, '(1e1.8)') coA(vv)
      coA(vv) = coA(v)
      jcoA(vv)=jcoA(v)
+    ! print *, coA(vv), v
      vv = vv+1
+    ! nrm1 = nrm1+abs(coA(v))**2
    endif
      enddo
      begA(row)= begin
+     !print *, "frobenius norm of coA = ",Norm2(coA), j, i, l
      enddo
      enddo
      enddo
      enddo
+    !print *, "3-frobenius norm of coA = ",Norm2(coA)
      begA(ndim+1)=vv
+
+    !print *, "4-frobenius norm of coA = ",Norm2(coA)
      do k = 1, nl
      do j = 1, m
      do i = 1, n
@@ -2259,6 +2340,10 @@ implicit none
      enddo
      enddo
 
+    !print *, "5-frobenius norm of coA = ",Norm2(coA)
+     !DO i = 1, ndim
+     !write (*,*) (coA(v), v = begA(i), begA(i+1)-1)
+     !ENDDO
 
 
      do k = 1, nl
@@ -2281,6 +2366,8 @@ implicit none
      enddo
      cpbegA(ndim+1)=cpvv 
      ccbegA(ndim+1)=ccvv
+     
+    !print *, "frobenius norm of coA = ",Norm2(coA)
 
 
 
@@ -2314,6 +2401,7 @@ implicit none
      ! ENDDO
 
      ENDDO
+     
      ! do i = 1, ndim        
      ! print *,v1(i), v2(i)
      ! enddo

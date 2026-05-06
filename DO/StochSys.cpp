@@ -100,6 +100,7 @@ Y_Stoch::Y_Stoch(int NumStochIter,
   rhs = rcp(new Epetra_MultiVector(*map_x_, MyLDA));
   rhs->ExtractView(&ViewRHS, &m_);
   Teuchos::RCP<Epetra_Map> fortMap = domain_->GetAssemblyMap();
+  fortudet = Teuchos::rcp(new Epetra_Vector(*fortMap));
   fortVn = Teuchos::rcp(new Epetra_MultiVector(*fortMap, m_));
   fortviv = Teuchos::rcp(new Epetra_MultiVector(*fortMap, m_));
   AV = rcp(new Epetra_MultiVector(*Vnew));
@@ -141,7 +142,7 @@ Y_Stoch::Y_Stoch(int NumStochIter,
       GlobInd = ExpYY->InsertGlobalValues(i, 1, &val, &j);
     }
   }
-
+  
   ExpYY->FillComplete();
   eye = Teuchos::rcp(new Epetra_MultiVector(Epetra_Map(m_, 0, A_->Comm()), m_));
   ExpVar = rcp(new Epetra_MultiVector(*map_x_, m_, false));
@@ -157,7 +158,7 @@ Y_Stoch::Y_Stoch(int NumStochIter,
   expv4->PutScalar(0.0);
   xndiff = Teuchos::rcp(new Epetra_Vector(*map_x_, false));
   VB = rcp(new Epetra_MultiVector(*map_x_, B->NumVectors()));
-
+  HYMLS::MatrixUtils::mmwrite("frc.mm",*B);
   dW = rcp(new Epetra_MultiVector(*z_));
   VBdW = rcp(new Epetra_MultiVector(*x_));
   // lin_coeff->ExtractView(&JacVal,&m_);
@@ -249,6 +250,10 @@ Y_Stoch::Y_Stoch(int NumStochIter,
     int gr = eye->Map().GID(i);
     eye->ReplaceGlobalValue(gr, gr, one);
   }
+  if (debug_)
+    printnormMV(*Vnew, 2, "nrm of each vector in Vn:");
+  
+  // Test on consistency of Jacobian and bilinear form.
 } /* end of 1st constructor */
 #else
 
@@ -482,39 +487,7 @@ Y_Stoch::Y_Stoch(int NumStochIter,
   diff = rcp(new Epetra_Vector(*xmap));
   x = rcp(new Epetra_Vector(*xmap));
   v = rcp(new Epetra_Vector(*xmap));
-  // EpetraExt::MatrixMarketFileToMultiVector("x.mm", *xmap, xptr);
-  // EpetraExt::MatrixMarketFileToMultiVector("v.mm", *xmap, vptr);
-  // Teuchos::RCP<Epetra_Vector> x = rcp((*xptr)(0));
-  // Teuchos::RCP<Epetra_Vector> v = rcp((*vptr)(0));
-
-  // double *rhs_ptr, *x_ptr, *v_ptr;
   double nrm;
-  // CHECK_ZERO(rhs->ExtractView(&rhs_ptr));
-  // rhs_ptr = diff->Values();
-  // CHECK_ZERO(x->ExtractView(&x_ptr));
-  // x_ptr = x->Values();
-  // v_ptr = v->Values();
-  // int ierr = 0;
-  // model->getProblemRHS(*x, *diff);
-  // Bilinear(v, v, vt);
-  // add and write
-  // diff->Update(1.0, *vt, 1.0);
-  // HYMLS::MatrixUtils::Dump(*diff, "testRhsBil.txt");
-  // Also J(x)v=0 also test that
-  // int nzmax = n*2*27;//let's hope that's enough, otherwise we should
-  // get an ierr/=0 from the fortran code.
-  //    int *rows = new int[n+1];
-  //    int *cols = new int[nzmax];
-  //    double *values = new double[nzmax];
-  //    model_jac(&n, &nzmax, values, rows, cols,x_ptr, &ierr);
-  //    for (int i = 0; i <n; i++ )
-  //      { rhs_ptr[i]=0.0;
-  //	for (int tel=rows[i]-1; tel < rows[i+1]-1; tel++)
-  //	   rhs_ptr[i]=rhs_ptr[i]+values[tel]*v_ptr[cols[tel]-1];
-  //      }
-  //    HYMLS::MatrixUtils::Dump(*rhs, "testJac.txt");
-  // Another test with random vectors
-  // Compute J(x)*v
   Epetra_CrsMatrix testJac(*A);
   testJac.FillComplete();
   //    testJac.ExtractCrsDataPointers(rows,cols,values);
@@ -545,27 +518,6 @@ Y_Stoch::Y_Stoch(int NumStochIter,
   plt::plot(vec);
   plt::show();
   getchar();
-// Make x and v zero where J has only one entry on a row. Dirichlet points
-/*for (int i = 0; i <n; i++ )
-   if ( rows[i+1]-rows[i]==1 & cols[rows[i]]==i)
-     {v[i]=0; x[i]=0 }
-
-for (int i = 0; i <n; i++ )
-   { rhs_ptr[i]=0.0;
-        for (int tel=rows[i]-1; tel < rows[i+1]-1; tel++)
-                   rhs_ptr[i]=rhs_ptr[i]+values[tel]*v_ptr[cols[tel]-1];
-        }
-//Subtract Bil(x,v)+Bil(v,x)
-rhs_ptr=rhs_ptr-vt;
-rhs_ptr=rhs_ptr-vt;
-
-//subtract from this J(0)*v
-model_jac(&n, &nzmax, values, rows, cols,x_ptr, &ierr);
-for (int i = 0; i <n; i++ )
-   { // rhs_ptr[i]=0.0;
-       for (int tel=rows[i]-1; tel < rows[i+1]-1; tel++)
-                  rhs_ptr[i]=rhs_ptr[i]-values[tel]*v_ptr[cols[tel]-1];
-   }*/
 #endif
 } /* end of 2nd constructor */
 #endif
@@ -611,7 +563,8 @@ Y_Stoch::CreateDistTransMultivec()
 /* ******************************************************** */
 
 void
-Y_Stoch::Bilinear(Teuchos::RCP<Epetra_MultiVector> u,
+Y_Stoch::Bilinear(Teuchos::RCP<Epetra_Vector> ud,
+                  Teuchos::RCP<Epetra_MultiVector> u,
                   Teuchos::RCP<Epetra_MultiVector> v,
                   Teuchos::RCP<Epetra_MultiVector> uv)
 {
@@ -621,18 +574,18 @@ Y_Stoch::Bilinear(Teuchos::RCP<Epetra_MultiVector> u,
   //  u->Random();
   //  v->Random();
   len = v->GlobalLength();
-  double *u_ptr, *v_ptr, *uv_ptr;
+  double *udet_ptr, *u_ptr, *v_ptr, *uv_ptr;
   if (mu >= mv) {
     for (int i = 0; i < mu; i++) {
       for (int j = 0; j < mv; j++) {
 #if need_locaInterface == 1
+	ud->ExtractView(&udet_ptr);
         (*u)(i)->ExtractView(&u_ptr);
         (*v)(j)->ExtractView(&v_ptr);
         (*uv)(i)->ExtractView(&uv_ptr);
-        model_bil(u_ptr, v_ptr, uv_ptr);
+        model_bil(udet_ptr, u_ptr, v_ptr, uv_ptr);
 #else
         /* -----  not NEED_LOCAINTERFACE  ----- */
-        //	model_->BilinearTerm(rcp((*u)(i)),rcp((*v)(j)),rcp((*uv)(i)));
         model_->BilinearTerm(Teuchos::rcpFromRef(*((*u)(i))),
                              Teuchos::rcpFromRef(*((*v)(j))),
                              Teuchos::rcpFromRef(*((*uv)(i))));
@@ -643,10 +596,11 @@ Y_Stoch::Bilinear(Teuchos::RCP<Epetra_MultiVector> u,
     for (int i = 0; i < mu; i++) {
       for (int j = 0; j < mv; j++) {
 #if need_locaInterface == 1
+	ud->ExtractView(&udet_ptr);
         (*u)(i)->ExtractView(&u_ptr);
         (*v)(j)->ExtractView(&v_ptr);
         (*uv)(j)->ExtractView(&uv_ptr);
-        model_bil(u_ptr, v_ptr, uv_ptr);
+        model_bil(udet_ptr, u_ptr, v_ptr, uv_ptr);
 #else  /* -----  not NEED_LOCAINTERFACE  ----- */
         model_->BilinearTerm(Teuchos::rcpFromRef(*((*u)(i))),
                              Teuchos::rcpFromRef(*((*v)(j))),
@@ -671,11 +625,12 @@ Y_Stoch::HBilinV()
 
 #if need_locaInterface == 1
     CHECK_ZERO(domain_->Solve2Assembly(*Vnew, *fortVn));
-    Bilinear(Teuchos::rcp((*fortVn)(i), false), fortVn, fortviv);
+    CHECK_ZERO(domain_->Solve2Assembly(*udet, *fortudet));
+    Bilinear(fortudet, Teuchos::rcp((*fortVn)(i), false), fortVn, fortviv);
     CHECK_ZERO(domain_->Assembly2Solve(*fortviv, *viv));
 
 #else  /* -----  not NEED_LOCAINTERFACE  ----- */
-    Bilinear(Teuchos::rcp((*Vnew)(i), false), Vnew, viv);
+    Bilinear(udet,Teuchos::rcp((*Vnew)(i), false), Vnew, viv);
 #endif /* -----  not NEED_LOCAINTERFACE  ----- */
     //   temp.Multiply('T', 'N', 1.0, *Vnew, *viv, 0.0);
     k = 0;
@@ -687,7 +642,10 @@ Y_Stoch::HBilinV()
   }
   VHn->Multiply('T', 'N', 1.0, *Vnew, *Hn, 0.0);
   if (debug_)
+  {
+    printnormMV(*Vnew, 2, "nrm of each vector in V:");
     printnormMV(*Hn, 2, "nrm of each vector in Hn:");
+  }
 }
 
 /* ******************************************************** */
@@ -819,8 +777,8 @@ Y_Stoch::y_rhs()
     // rhs=-x+lin_coeff*x0
     std::cout.precision(16);
     // rhs= x + dt*(V'<Vx,Vx>-V'E[<Vx,Vx>])
-    rhs->Update(-subdt_, *rep_exp_vyvy, 1.0);
-    rhs->Update(subdt_, *rhsNonLin, 1.0);
+    rhs->Update(subdt_, *rep_exp_vyvy, 1.0);
+    rhs->Update(-subdt_, *rhsNonLin, 1.0);
     rhs->Update(1.0, *VBdW, 1.0);
     if (debug_ && stochiter_ == 0) {
       double nrm;
@@ -1333,18 +1291,6 @@ Y_Stoch::RunBackTracking()
   if (backTrack_ == numBackTrackingSteps_)
     std::cout << "\nNewton: --> BACKTRACKING FAILED" << __FILE__ << __LINE__;
 }
-void
-Y_Stoch::printnormMV(Epetra_MultiVector& mv, int normType, std::string str)
-{
-  double nrm1[mv.NumVectors()];
-  if (normType == 1)
-    mv.Norm1(&nrm1[0]);
-  else if (normType == 2)
-    mv.Norm2(&nrm1[0]);
-  std::cout << "\n" << str << std::endl;
-  for (int i = 0; i < mv.NumVectors(); i++)
-    std::cout << "  " << nrm1[i];
-}
 
 void
 Y_Stoch::printTransNormMV(Epetra_MultiVector& mv, int normType, std::string str)
@@ -1361,7 +1307,10 @@ Y_Stoch::printTransNormMV(Epetra_MultiVector& mv, int normType, std::string str)
     mvT.Norm1(&nrm1[0]);
   else if (normType == 2)
     mvT.Norm2(&nrm1[0]);
-  std::cout << "\n" << str << std::endl;
-  for (int i = 0; i < mvT.NumVectors(); i++)
-    std::cout << "  " << nrm1[i];
+  if (MyPID==0)
+  {
+    std::cout << "\n" << str << std::endl;
+    for (int i = 0; i < mvT.NumVectors(); i++)
+      std::cout << "  " << nrm1[i];
+  }
 }

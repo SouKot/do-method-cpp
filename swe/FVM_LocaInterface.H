@@ -62,7 +62,6 @@ public:
 //! \name EpetraExt/Thyra interface 
 
 //@{
-
   Teuchos::RCP<Domain> getDomain();
   //! get the map of the variable vector [u,v,w,p,T,S]'
   Teuchos::RCP<const Epetra_Map> get_x_map() const;
@@ -72,7 +71,6 @@ public:
 
   //! starting guess
   Teuchos::RCP<const Epetra_Vector> get_x_init() const;
-
   //! get the Jacobian
   Teuchos::RCP<Epetra_Operator> create_W() const;
 

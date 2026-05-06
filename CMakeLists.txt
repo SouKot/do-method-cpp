@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.8)
 project(DO C CXX Fortran)
 set(CMAKE_EXPORT_COMPILE_COMMANDS "ON")
-
+#set(CMAKE_CXX_COMPILER_ID "Intel")
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   message(STATUS "Using GNU compiler flags")
 
@@ -10,38 +10,39 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 	  #set(CMAKE_CXX_COMPILER "scorep mpic++")
 	  #set(CMAKE_Fortran_COMPILER "scorep gfortran")
     set(CMAKE_C_FLAGS        "${CMAKE_C_FLAGS} -O2  -pg  -g -lpthread -lrt  -Wno-deprecated-declarations")
-    set(CMAKE_CXX_FLAGS      "${CMAKE_CXX_FLAGS} -O2  -pg  -g -DGNU  -std=c++17 -Wno-literal-suffix -lpthread -lrt -Wno-deprecated-declarations")
+    set(CMAKE_CXX_FLAGS      "${CMAKE_CXX_FLAGS} -O2  -pg  -g -DGNU -std=c++17 -Wno-literal-suffix -lpthread -lrt -Wno-deprecated-declarations")
     set(CMAKE_Fortran_FLAGS  "${CMAKE_Fortran_FLAGS} -std=legacy -O2  -pg  -g -ffixed-line-length-132 -lpthread -lrt -fdefault-real-8 -Wno-deprecated-declarations")
 ##    set(CMAKE_Fortran_FLAGS  "${CMAKE_Fortran_FLAGS} -ffree-form -O3 -g -lpthread -lrt -fdefault-real-8 -DTESTING -Wno-deprecated-declarations")
   endif()
 
-  set(CMAKE_C_FLAGS_RELEASE        "-O3 -ffast-math -lpthread -lrt -march=native -Wno-deprecated-declarations")
-  set(CMAKE_CXX_FLAGS_RELEASE      "-O3 -DGNU -ffast-math -std=c++17 -Wno-literal-suffix -lpthread -lrt -march=native -Wno-deprecated-declarations")
-  set(CMAKE_Fortran_FLAGS_RELEASE  "-std=legacy -O3 -ffixed-line-length-132 -ffast-math -lpthread -lrt -fdefault-real-8 -march=native -Wno-deprecated-declarations")
+  set(CMAKE_C_FLAGS_RELEASE        "-O3 -ffast-math -lpthread -fopenmp -lrt -march=native -Wno-deprecated-declarations")
+  set(CMAKE_CXX_FLAGS_RELEASE      "-O3 -ffast-math -DGNU  -std=c++17 -Wno-literal-suffix -lpthread -fopenmp -lrt -march=native -Wno-deprecated-declarations")
+  set(CMAKE_Fortran_FLAGS_RELEASE  "-std=legacy -O3 -ffast-math -ffixed-line-length-132 -fopenmp -lpthread -lrt -fdefault-real-8 -march=native -Wno-deprecated-declarations")
 
-  set (CMAKE_C_FLAGS_DEBUG       "-O0 -ggdb3 -lpthread -lrt -Wno-deprecated-declarations")
-  set (CMAKE_CXX_FLAGS_DEBUG     "-O0 -ggdb3  -DGNU  -std=c++17 -Wno-literal-suffix -lpthread -lrt  -Wno-deprecated-declarations")
-  set (CMAKE_Fortran_FLAGS_DEBUG "-std=legacy -O0 -ggdb3 -lpthread -lrt -ffixed-line-length-132 -fdefault-real-8  -Wno-deprecated-declarations")
+  set (CMAKE_C_FLAGS_DEBUG       "-O0 -ggdb3 -lpthread -fopenmp -lrt -Wno-deprecated-declarations")
+  set (CMAKE_CXX_FLAGS_DEBUG     "-O0 -ggdb3  -DGNU  -std=c++17 -Wno-literal-suffix -lpthread -fopenmp -lrt  -Wno-deprecated-declarations")
+  set (CMAKE_Fortran_FLAGS_DEBUG "-std=legacy -O0 -ggdb3 -lpthread -fopenmp -lrt -ffixed-line-length-132 -fdefault-real-8  -Wno-deprecated-declarations")
 
   set (CMAKE_C_FLAGS_RELWITHDEBINFO       "${CMAKE_C_FLAGS_RELEASE}       -pg  -g")
   set (CMAKE_CXX_FLAGS_RELWITHDEBINFO     "${CMAKE_CXX_FLAGS_RELEASE}     -pg  -g")
   set (CMAKE_Fortran_FLAGS_RELWITHDEBINFO "${CMAKE_Fortran_FLAGS_RELEASE} -pg  -g")
-elseif (CMAKE_C_COMPILER_ID STREQUAL "Intel")
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
   message(STATUS "Using Intel compiler flags")
 
   if (NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_C_FLAGS        "${CMAKE_C_FLAGS} -O2 -g -mkl -DTESTING")
-    set(CMAKE_CXX_FLAGS      "${CMAKE_CXX_FLAGS} -O2 -g -std=c++11 -mkl -DTESTING")
-    set(CMAKE_Fortran_FLAGS  "${CMAKE_Fortran_FLAGS} -O2 -g -mkl -DTESTING")
+    set(CMAKE_C_FLAGS        "${CMAKE_C_FLAGS} -O2 -g -qmkl")
+    set(CMAKE_CXX_FLAGS      "${CMAKE_CXX_FLAGS} -O2 -g -DINTEL -std=c++17 -qmkl")
+    set(CMAKE_Fortran_FLAGS  "${CMAKE_Fortran_FLAGS} -std=legacy -O2 -g -ffixed-line-length-132 -lpthread -lrt -fdefault-real-8 -Wno-deprecated-declarations")
+    #set(CMAKE_Fortran_FLAGS  "${CMAKE_Fortran_FLAGS} -O2 -g -mkl -DTESTING -fbounds-check")
   endif()
 
-  set(CMAKE_C_FLAGS_RELEASE        "-O3 -mkl -ffast-math -march=native")
-  set(CMAKE_CXX_FLAGS_RELEASE      "-O3 -mkl -ffast-math -std=c++11 -march=native")
-  set(CMAKE_Fortran_FLAGS_RELEASE  "-O3 -mkl -ffast-math -march=native")
+  set(CMAKE_C_FLAGS_RELEASE        "-O3 -qmkl -march=native")
+  set(CMAKE_CXX_FLAGS_RELEASE      "-O3 -qmkl -DINTEL -std=c++17 -march=native")
+  set(CMAKE_Fortran_FLAGS_RELEASE  "-O3 -qmkl -march=native -fbounds-check")
 
-  set (CMAKE_C_FLAGS_DEBUG       "-O0 -g -mkl -DTESTING -DDEBUGGING")
-  set (CMAKE_CXX_FLAGS_DEBUG     "-O0 -g -mkl -DTESTING -std=c++11 -DDEBUGGING")
-  set (CMAKE_Fortran_FLAGS_DEBUG "-O0 -g -mkl -DTESTING -DDEBUGGING")
+  set (CMAKE_C_FLAGS_DEBUG       "-O0 -g -qmkl -DTESTING -DDEBUGGING")
+  set (CMAKE_CXX_FLAGS_DEBUG     "-O0 -g -qmkl -DINTEL -DTESTING -std=c++17 -DDEBUGGING")
+  set (CMAKE_Fortran_FLAGS_DEBUG "-O0 -g -qmkl -DTESTING -DDEBUGGING")
 
   set (CMAKE_C_FLAGS_RELWITHDEBINFO       "${CMAKE_C_FLAGS_RELEASE}       -g")
   set (CMAKE_CXX_FLAGS_RELWITHDEBINFO     "${CMAKE_CXX_FLAGS_RELEASE}     -g")
@@ -61,11 +62,23 @@ set(GEN_SOURCES
 ### general/OceanOutputXdmf.C needs Trios_Domain.H
   general/Filestreams.C)
 
-set(DO_SOURCES 
-  DO/timedependent.cpp 
+# Sources shared by all DO targets (stochastic solver, basis solver)
+set(DO_COMMON_SOURCES
   DO/StochSys.cpp
   DO/Problem_Interface.cpp
- )
+)
+
+# Burgers and QG targets: direct Newton solver, no NOX/LOCA
+set(DO_NONSWE_SOURCES
+  DO/timedependent_do.cpp
+  ${DO_COMMON_SOURCES}
+)
+
+# SWE target: NOX/LOCA implicit time stepper, adaptive step-size control
+set(DO_SWE_SOURCES
+  DO/timedependent_swe.cpp
+  ${DO_COMMON_SOURCES}
+)
 
 set(BRGR_SOURCES
   Burger/Mean.cpp)
@@ -97,11 +110,17 @@ set(SWE_SOURCES
 )
 
 include_directories(includes)
-
-#find_package(PythonLibs 2.7)
+#find_package(MPI)
+#set(PYTHON_INCLUDE_DIRS "/opt/intel/oneapi/intelpython/python3.9/include/python3.9")
+#set(PYTHON_LIBRARIES "/usr/lib/x86_64-linux-gnu/libpython3.10.so")
+#find_package(Python3 COMPONENTS Interpreter NumPy Development)
+#PYHTON_INCLUDE_DIRS+="/usr/lib/python3/dist-packages/numpy/core/include/numpy/"
 #include_directories(${PYTHON_INCLUDE_DIRS})
 #link_directories(${PYTHON_LIBRARIES})
-
+#message("Python_FOUND:${PYTHON_FOUND}")
+#message("Python_VERSION:${PYTHON_VERSION}")
+#message("Python_Development_FOUND:${PYTHON_DEVELOPMENT_FOUND}")
+#message("Python_LIBRARIES:${PYTHON_LIBRARIES}")
 set(istrng "0")
 if (DEFINED ENV{TRNG_HOME})
   include_directories($ENV{TRNG_HOME}/include)
@@ -123,9 +142,14 @@ link_directories(${Trilinos_TPL_LIBRARY_DIRS})
 
 message(STATUS "istrng=${istrng}")
 message(STATUS "trilinos_LIBRARIES=${Trilinos_LIBRARIES}")
-string(REPLACE "teko;" "" tril_libs "${Trilinos_LIBRARIES}")
-set(Trilinos_LIBRARIES ${tril_libs})
-message(STATUS "trilinos_LIBRARIES : ${Trilinos_LIBRARIES}")
+#string(REPLACE "${Trilinos_LIBRARIES}" "${Trilinos_LIBRARIES};trilinosss" tril_libs "${Trilinos_LIBRARIES}")
+#string(REPLACE "pytrilinos;" "" tril_libs "${Trilinos_LIBRARIES}")
+#set(Trilinos_LIBRARIES ${tril_libs})
+#####message(STATUS "trilinos_TPL_LIBRARIES=${Trilinos_TPL_LIBRARIES}")
+
+#message(STATUS "trilinos_LIBRARIES : ${Trilinos_LIBRARIES}")
+
+link_directories("$ENV{TRILINOS_HOME}/lib")
 #####include_directories("$ENV{HYMLS_HOME}/include")
 #####link_directories("$ENV{HYMLS_HOME}/lib")
 if (DEFINED ENV{HYMLS_HOME})
@@ -147,7 +171,7 @@ target_link_libraries(BRGR gen)
 list(FIND Trilinos_TPL_LIST SCALAPACK SCALAPACK_found)
 
 if(SCALAPACK_found GREATER -1)
-  add_executable(BRGRDO ${DO_SOURCES})
+  add_executable(BRGRDO ${DO_NONSWE_SOURCES})
   target_compile_definitions(BRGRDO PRIVATE brgr=1 quasi_geo=0 need_locaInterface=0 use_trng=${istrng})
   target_link_libraries(BRGRDO BRGR)
   target_link_libraries(BRGRDO ${HYMLS_LIBRARIES})
@@ -162,7 +186,7 @@ add_library(QG SHARED ${QG_SOURCES} )
 target_link_libraries(QG gen)
 
 if(SCALAPACK_found GREATER -1)
-  add_executable(QGDO ${DO_SOURCES})
+  add_executable(QGDO ${DO_NONSWE_SOURCES})
   target_compile_definitions(QGDO PRIVATE brgr=0 quasi_geo=1 need_locaInterface=0 use_trng=${istrng})
   target_link_libraries(QGDO QG)
   target_link_libraries(QGDO ${HYMLS_LIBRARIES})
@@ -181,14 +205,51 @@ set_target_properties (SWE PROPERTIES
 target_link_libraries(SWE gen)
 
 if(SCALAPACK_found GREATER -1)
-  add_executable(SWEDO ${DO_SOURCES})
+  add_executable(SWEDO ${DO_SWE_SOURCES})
   target_compile_definitions(SWEDO PRIVATE brgr=0 quasi_geo=0 need_locaInterface=1 use_trng=${istrng})
   target_link_libraries(SWEDO SWE)
   target_link_libraries(SWEDO ${HYMLS_LIBRARIES})
   target_link_libraries(SWEDO ${Trilinos_TPL_LIBRARIES})
   target_link_libraries(SWEDO ${Trilinos_LIBRARIES})
+  target_link_libraries(SWEDO "libtrilinosss.so" -lgfortran)
   target_link_libraries(SWEDO ${PYTHON_LIBRARIES})
-  target_link_libraries(SWEDO ${trng_lib})
+  #target_link_libraries(SWEDO ${trng_lib})
   target_link_libraries(SWEDO gen)
 endif()
 
+find_package(Doxygen)
+set(DOXYGEN_USE_MDFILE_AS_MAINPAGE "${PROJECT_SOURCE_DIR}/README.md")
+if(DOXYGEN_FOUND)
+    # Set Doxygen configuration variables
+    set(DOXYGEN_PROJECT_NAME "DO Project")
+    set(DOXYGEN_GENERATE_HTML YES)
+    set(DOXYGEN_RECURSIVE YES)
+    
+    # Crucial for your Fortran source files (swe/*.F90)
+    set(DOXYGEN_OPTIMIZE_FOR_FORTRAN YES)
+    set(DOXYGEN_EXTRACT_ALL YES)
+    set(DOXYGEN_EXTRACT_PRIVATE YES)
+    set(DOXYGEN_EXTRACT_STATIC YES)
+
+    # Tell Doxygen where to look for source code. 
+    # This covers your general, DO, Burger, QG, and swe directories.
+    set(DOXYGEN_SOURCE_DIR 
+        ${PROJECT_SOURCE_DIR}/general
+        ${PROJECT_SOURCE_DIR}/DO
+        ${PROJECT_SOURCE_DIR}/Burger
+        ${PROJECT_SOURCE_DIR}/QG
+        ${PROJECT_SOURCE_DIR}/swe
+        ${PROJECT_SOURCE_DIR}/includes
+    )
+
+    # Create the 'docs' target
+    doxygen_add_docs(docs 
+        ${DOXYGEN_SOURCE_DIR}
+        "${PROJECT_SOURCE_DIR}/README.md"
+        COMMENT "Generating API documentation with Doxygen"
+    )
+    
+    message(STATUS "Doxygen target 'docs' has been created.")
+else()
+    message(WARNING "Doxygen not found - documentation target will not be created.")
+endif()

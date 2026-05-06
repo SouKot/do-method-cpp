@@ -3,14 +3,15 @@
  *
  *       Filename:  Mean.cpp
  *
- *    Description:
- *
- *    Calculates mean of QG model
+ *    Description:  Implementation of the QG::Mean mean-field solver.
+ *                  Theta-method time discretisation with Newton-Raphson nonlinear
+ *                  solve.  The time-invariant stochastic forcing W is computed
+ *                  once in the constructor via createW(diagmass).
  *
  *        Version:  1.0
  *        Created:  04/14/2018 07:55:56 AM
  *       Revision:  none
- *       Compiler:  gcc
+ *       Compiler:  gcc / clang (C++17)
  *
  *         Author:  Sourabh Kotnala (), sauravkotnala@gmail.com
  *   Organization:
@@ -61,7 +62,7 @@ Mean::Mean(RCP<Teuchos::ParameterList> PrmLst, double* t, double* dt,
   theta = PrmLst->get("theta", 0.5);
   NumStchFrcVec_ = PrmLst->get("No. of vectors in stoch. forcing",
                                2); // global number of elements in the map
-  solver_type = PrmLst->get("Solver Package", "Amesos2");
+  solver_type = PrmLst->get("Solver Package", "Amesos");
   test_ = PrmLst->get("Testing", true);
   debug_ = PrmLst->get("Debugging", true);
   if (debug_) {
@@ -615,16 +616,4 @@ Mean::WriteSolution(std::string filename, double param,
   out->setf(std::ios::scientific);
   (*out) << param;
   (*out) << *(HYMLS::MatrixUtils::Gather(soln, 0));
-}
-void
-Mean::printnormMV(Epetra_MultiVector& mv, int normType, string str)
-{
-  double nrm1[mv.NumVectors()];
-  if (normType == 1)
-    mv.Norm1(&nrm1[0]);
-  else if (normType == 2)
-    mv.Norm2(&nrm1[0]);
-  std::cout << "\n" << str << std::endl;
-  for (int i = 0; i < mv.NumVectors(); i++)
-    std::cout << "  " << nrm1[i];
 }

@@ -11,7 +11,6 @@
 #include "NOX_Epetra_LinearSystem_Hymls.hpp"
 #include "NOX_Epetra_LinearSystem_Amesos.hpp"
 #include "NOX.H"
-#include "BelosTypes.hpp"
 #include "Ifpack_Preconditioner.h"
 #include "NOX_Epetra_LinearSystem_Belos.H"
 //#include "TRIOS_SolverFactory.H"

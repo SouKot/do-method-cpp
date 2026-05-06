@@ -3,16 +3,16 @@
  *
  *       Filename:  Mean.hpp
  *
- *    Description:  
- *
- *
- *
- *    class for solving mean of SDE
+ *    Description:  Mean-field solver for the stochastic Quasi-Geostrophic (QG)
+ *                  equation.  Integrates the mean PDE with a theta-method time
+ *                  discretisation and Newton-Raphson nonlinear solve.  The
+ *                  stochastic forcing W is time-invariant and set once in the
+ *                  constructor; refreshForcing() is a no-op for this model.
  *
  *        Version:  1.0
  *        Created:  04/15/2018 03:38:12 PM
  *       Revision:  none
- *       Compiler:  gcc
+ *       Compiler:  gcc / clang (C++17)
  *
  *         Author:  Sourabh Kotnala (), sauravkotnala@gmail.com
  *   Organization:  
@@ -27,6 +27,7 @@
 //#include <Teuchos_SerialDenseMatrix.hpp>
 #include "EpetraExt_MultiVectorIn.h"
 #include "EpetraExt_MultiVectorOut.h"
+#include "../DO/DOUtils.hpp"
 //#include "Epetra_CrsGraph.h"
 #include "Epetra_CrsMatrix.h"
 #include "Epetra_Map.h"
@@ -60,9 +61,34 @@
 #endif
 class AztecOO;
 using namespace Teuchos;
+
+/**
+ * @brief Mean-field solver for the stochastic Quasi-Geostrophic equation.
+ *
+ * @details Integrates the deterministic (mean) part of the stochastic QG
+ * equation using a theta-method time discretisation and Newton-Raphson
+ * nonlinear solve.  The stochastic forcing W is computed once in the
+ * constructor (time-invariant); refreshForcing() is therefore a no-op.
+ * Used exclusively by the QGDO build target.
+ *
+ * @see Burger::Mean  Equivalent solver for the Burgers model.
+ */
 class Mean
 {
   public:
+
+  /**
+   * @brief Construct and initialise the QG mean solver.
+   *
+   * Builds the mass matrix, Jacobian structure, and initial stochastic forcing W
+   * from @p PrmLst.  The diagonal mass vector required by createW() is derived
+   * internally from the QG operator.
+   *
+   * @param[in] PrmLst  Parameter list (nx, ny, Reynolds number, theta, solver).
+   * @param[in] t       Pointer to the current simulation time (advanced externally).
+   * @param[in] dt      Pointer to the current time-step size (updated externally).
+   * @param[in] Comm    Epetra communicator (serial or MPI).
+   */
    Mean(
         RCP<Teuchos::ParameterList> PrmLst,
         double* t, double* dt,
@@ -88,16 +114,64 @@ void BilinearTerm(RCP<Epetra_Vector> u1,
   RCP<Epetra_CrsMatrix> getJacobian(){ return jac;}
   void ThetaStepper(Teuchos::RCP<Epetra_Vector> rhs_u0);
   int LinSolve(Epetra_Vector* LHS, Epetra_Vector* RHS);
+  /**
+   * @brief Advance the mean solution by one time step using Newton-Raphson.
+   * @return @c true on convergence, @c false if the solver fails.
+   */
   bool NewtonSolver();
   void RunBackTracking(Epetra_Vector &rhs_u0);
   RCP<Epetra_Vector> get_Xdim(){return x_;}
+
+  /// @brief Return an RCP to the current mean solution vector.
   RCP<Epetra_Vector> getSolution(){return u_;}
+
+  /**
+   * @brief Inject the E[V y V y^T] term computed by the DO stochastic solver.
+   *
+   * Called once per time step by the DO driver after the stochastic sub-step
+   * so that the mean RHS can include the second-moment correction.
+   *
+   * @param[in] ExpVyVy  E[Vy(Vy)^T] vector computed by Y_Stoch.
+   */
   void setExpVyVy(RCP<Epetra_Vector>ExpVyVy){ExpVyVy_=ExpVyVy;}
+
+  /// @brief Return an RCP to the (diagonal, scaled by -1) mass matrix.
   RCP<Epetra_CrsMatrix> getMassMatrix();
+
+  /**
+   * @brief Write the solution vector to a text file.
+   * @param[in] filename  Output file path.
+   * @param[in] param     Parameter value printed in the header (e.g. current time).
+   * @param[in] soln      Solution vector to write.
+   */
   void WriteSolution(std::string filename, double param,
                          const Epetra_Vector& soln);
+
+  /**
+   * @brief Compute the time-invariant stochastic forcing vector W.
+   *
+   * Fills W_ with a Gaussian-weighted divergence pattern.  Entries corresponding
+   * to zero mass-matrix rows (boundary / pressure dofs) are zeroed via @p diagmass.
+   * Called once in the constructor; should not be called again during time stepping
+   * as it reallocates W_ and invalidates shared RCPs held by Y_Stoch / Problem_Interface.
+   *
+   * @param[in] diagmass  Diagonal of the QG mass matrix; used to mask zero-mass dofs.
+   */
   void createW(Epetra_Vector& diagmass);
+
+  /**
+   * @brief No-op forcing-refresh adapter for the DO time loop.
+   *
+   * QG's forcing W is time-invariant and already constructed in the constructor,
+   * so this method intentionally does nothing.  Provides the same call site as
+   * Burger::Mean::refreshForcing() so the driver contains no model-specific guards.
+   */
+  void refreshForcing(double) {}
+
+  /// @brief Return the number of stochastic forcing vectors (columns of W).
   int get_dim_W(){return NumStchFrcVec_;}
+
+  /// @brief Return an RCP to the stochastic forcing multi-vector W.
   RCP<Epetra_MultiVector> get_W(){return W_;}
   double theta;
   double Tol;
@@ -117,7 +191,6 @@ void BilinearTerm(RCP<Epetra_Vector> u1,
   Teuchos::RCP<Amesos2::Solver<MAT,MV> > amesos2_solve;
   Teuchos::RCP<QG::QG> qg;
   //virtual ~Mean();
-  void printnormMV(Epetra_MultiVector &mv, int normType, string str);
   bool newtonLineSearchSolve(Epetra_Vector &x0);
   void setSolution(Epetra_Vector &x);
 private:

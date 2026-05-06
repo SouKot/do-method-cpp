@@ -54,7 +54,7 @@ void model_massmat(int* nrows, double* x, double* mass);
 // get number of parameters
 void model_get_num_stochvectors(int* nWvec);
 
-void model_bil(double* u, double* v, double* uv );
+void model_bil(double* udet, double* u, double* v, double* uv );
 // get an estimate of the amount of ints and doubles allocated by
 // the fortran code
 void model_memory_estimate(double* num_ints, double* num_doubles);

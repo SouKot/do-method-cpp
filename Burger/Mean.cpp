@@ -3,14 +3,15 @@
  *
  *       Filename:  Mean.cpp
  *
- *    Description:
- *
- *    Calculates mean of Stochastic Burgers Equation
+ *    Description:  Implementation of the Burger::Mean mean-field solver.
+ *                  Theta-method time discretisation with Newton-Raphson nonlinear
+ *                  solve, optional back-tracking line search, and time-dependent
+ *                  stochastic forcing createW().
  *
  *        Version:  1.0
  *        Created:  04/14/2018 07:55:56 AM
  *       Revision:  none
- *       Compiler:  gcc
+ *       Compiler:  gcc / clang (C++17)
  *
  *         Author:  Sourabh Kotnala (), sauravkotnala@gmail.com
  *   Organization:
@@ -24,6 +25,7 @@
 #include <EpetraExt_MatrixMatrix.h>
 #include "BelosTypes.hpp"
 #include "Teuchos_RCPDecl.hpp"
+#include <fstream>
 //#include "Galeri_Maps.h"
 
 // using namespace Galeri;
@@ -69,6 +71,15 @@ Mean::Mean(RCP<Teuchos::ParameterList> PrmLst, double* t, double* dt,
   u0 = rcp(new Epetra_Vector(*u_));
   x_ = rcp(new Epetra_Vector(*u_));
   createLinOp(Comm);
+  /*double nrm2;
+  std::cout<<"\n";
+  for(double i=0.0; i<=0.8; i+=0.001)
+  {
+	  createW(i);
+	  (*W_)(0)->Norm2(&nrm2);
+	  std::cout<< nrm2 <<"  ";
+  }
+  std::cout<<"\n";*/
   createW();
   LinOp_->FillComplete();
   Op2x_->FillComplete();
@@ -391,13 +402,18 @@ Mean::createLinOp(Teuchos::RCP<Epetra_Comm> Comm)
 }
 
 void
-Mean::createW()
+Mean::createW(double t)
 {
   // NumStchFrcVec_=1;
-  W_ = rcp(new Epetra_MultiVector(x_->Map(), NumStchFrcVec_));
+  if (W_ == Teuchos::null) {
+    W_ = rcp(new Epetra_MultiVector(x_->Map(), NumStchFrcVec_));
+  }
+  //W_ = rcp(new Epetra_MultiVector(x_->Map(), NumStchFrcVec_));
   for (int i = 0; i < W_->NumVectors(); ++i) {
     for (int j = 0; j < W_->MyLength(); ++j) {
-      (*(*W_)(i))[j] = 0.5 * cos(4 * PI * (*x_)[j]);
+      //(*(*W_)(i))[j] = 0.5 * cos(4 * PI * (*x_)[j]);
+	  (*(*W_)(i))[j] = 0.5 * (cos(4 * PI * (*x_)[j])*exp(-10*t) + cos(2 * PI * (*x_)[j])*exp(5*(t-1)));
+
     }
   }
 }

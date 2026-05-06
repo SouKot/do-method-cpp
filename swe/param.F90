@@ -32,7 +32,7 @@
         real,    parameter:: gdim = 9.8		! Gravity
         real,    parameter:: rhodim = 1.0235e+03		! Densiity
         real,    parameter:: taudim = 1.0		! Amplitude of the windstress
-        real,    parameter:: Ahdim = 2.20e+2
+        real,    parameter:: Ahdim = 2.20e+4
         real,    parameter:: bfric = 0.0e-0		! Bottom friction
         real,    parameter:: ifric = 5.0e-4		! Interfacial friction
         real,    parameter:: h0 = 10.0/hdim		! Minumum layer thickness when using potential for layer thicknesses

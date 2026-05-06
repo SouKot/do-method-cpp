@@ -1,0 +1,14 @@
+<ParameterList name="ANONYMOUS->PSEUDO BLOCK GMRES">
+  <Parameter docString="" id="0" isDefault="false" isUsed="true" name="Orthogonalization" type="string" value="ICGS"/>
+  <Parameter docString="" id="1" isDefault="false" isUsed="true" name="Block Size" type="int" value="1"/>
+  <Parameter docString="" id="2" isDefault="false" isUsed="true" name="Num Blocks" type="int" value="100"/>
+  <Parameter docString="" id="3" isDefault="false" isUsed="true" name="Maximum Iterations" type="int" value="150"/>
+  <Parameter docString="" id="4" isDefault="false" isUsed="true" name="Maximum Restarts" type="int" value="4"/>
+  <Parameter docString="" id="5" isDefault="false" isUsed="true" name="Deflation Quorum" type="int" value="-1"/>
+  <Parameter docString="" id="6" isDefault="false" isUsed="true" name="Convergence Tolerance" type="double" value="1.00000000000000005e-04"/>
+  <Parameter docString="" id="7" isDefault="false" isUsed="true" name="Adaptive Block Size" type="bool" value="false"/>
+  <Parameter docString="" id="8" isDefault="false" isUsed="true" name="Verbose" type="bool" value="false"/>
+  <Parameter docString="" id="9" isDefault="false" isUsed="true" name="Verbosity" type="int" value="1"/>
+  <Validators/>
+</ParameterList>
+

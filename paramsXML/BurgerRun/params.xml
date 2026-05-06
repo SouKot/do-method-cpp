@@ -5,9 +5,9 @@
     <Parameter name="nx" type="int" value="128"/>
     <Parameter name="mu" type="double" value="0.005"/>
     <Parameter name="No. of vectors in stoch. forcing" type="int" value="1"/>
-    <Parameter name="theta" type="double" value="1.0"/>
+    <Parameter name="theta" type="double" value="0.5"/>
     <!--  NOTE: Only Solver Type = direct is supported for now!!!! -->
-    <Parameter name="Solver Package" type="string" value="Belos"/>
+    <Parameter name="Solver Package" type="string" value="Amesos"/>
     <!-- If "Solver Type" value is "direct" then -->
     <ParameterList name="Amesos"><!--{-->
       <Parameter name="Solver name" type="string" value="Amesos_Mumps"/>
@@ -36,7 +36,7 @@
     <Parameter name="Scheme" type="string" value="Theta"/> 
     <Parameter name="Time Profiling" type="bool" value="1"/>
     <!-- only relevant for "Theta" scheme -->
-    <Parameter name="Theta" type="double" value="1.0"/>
+    <Parameter name="Theta" type="double" value="0.5"/>
     <Parameter name="Start Time" type="double" value="0.0"/>
     <Parameter name="End Time" type="double" value="0.8"/>
     <Parameter name="Step Size" type="double" value="0.001"/>

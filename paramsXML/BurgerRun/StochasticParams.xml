@@ -17,8 +17,8 @@
     <!-- PARAMETER LIST FOR STOCHASTIC BASIS PART --> 
     <!--**************************************************************** -->
     <ParameterList name="Stochastic Basis">
-      <Parameter name="Max. Stoch subspace Dimension" type="int" value="2"/>
-      <Parameter name="Initial Stoch subspace Dimension" type="int" value="2"/>
+      <Parameter name="Max. Stoch subspace Dimension" type="int" value="30"/>
+      <Parameter name="Initial Stoch subspace Dimension" type="int" value="30"/>
       <!-- set to "None" if no file is  provided for inital values for basis --> 
       <Parameter name="StochBasisFile" type="string" value="None"/>
       <Parameter name="Class Testing" type="bool" value="false"/>
@@ -53,7 +53,7 @@
 	     related to solver should be defined. For example if
 	     Amesos_Klu is chosen then a file named Amesos_Klu.xml
 	     should be present in the run directory. -->
-	<Parameter name="Solver name" type="string" value="SuperLU_DIST"/>
+	<Parameter name="Solver name" type="string" value="Mumps"/>
       </ParameterList><!-- } Amesos2  -->
       <!-- elseif {
 	      "Solve Type"="Belos" then  --> 
@@ -75,7 +75,7 @@
       <!-- Following parameter is used when above parameter is NOT "None".
 	   Use it to give the name of the file--> 
       <Parameter name="StochCoefFile" type="string" value="VarFile.mm"/>
-      <Parameter name="Stochastic Iterations" type="int" value="6400"/>
+      <Parameter name="Stochastic Iterations" type="int" value="12800"/>
       <Parameter name="Number of Sub Time Steps" type="int" value="1" />
       <Parameter name="Max Num of Iter" type="int" value="50" />
       <Parameter name="Use BackTracking" type="bool" value="true" />

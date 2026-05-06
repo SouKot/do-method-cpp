@@ -127,6 +127,11 @@ bool ThetaStepperEvaluator::computeF(const Epetra_Vector& x, Epetra_Vector& F,
   CHECK_ZERO(B_->Multiply(false,*x_dot_,F));
 
 
+  //double nrm;
+  //x_old_->Norm2(&nrm);
+  //std::cout<<"\n norm of x_old in Thetastepper = " <<nrm<<"\n"; 
+  //x.Norm2(&nrm);
+  //std::cout<<"\n norm of x in Thetastepper = " <<nrm<<"\n"; 
 
   // set F = 1/dtB(u-u_old) + (1-theta)f(u_old) + theta f(u)
 
@@ -135,7 +140,17 @@ bool ThetaStepperEvaluator::computeF(const Epetra_Vector& x, Epetra_Vector& F,
     F[i] += (1-(*theta_)[i])*(*f_old_)[i] 
       +  (*theta_)[i]*(*f_new_)[i];
   }
-
+  
+  //F.Norm2(&nrm);
+  //std::cout<<"\n norm of F in Thetastepper = " <<nrm<<"\n"; 
+  //f_old_->Norm2(&nrm);
+  //std::cout<<"\n norm of f_old in Thetastepper = " <<nrm<<"\n"; 
+  //f_new_->Norm2(&nrm);
+  //std::cout<<"\n norm of f_new in Thetastepper = " <<nrm<<"\n"; 
+  //F.Norm2(&nrm);
+  //std::cout<<"\n norm of  in Thetastepper = " <<nrm<<"\n"; 
+  //getchar();
+  
   // for ( int i=0; i<F.MyLength(); i++)
   // cout<<(*f_old_)[i]<<"\t";
   // getchar(); 

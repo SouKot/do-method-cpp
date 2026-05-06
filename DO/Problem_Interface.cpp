@@ -3,7 +3,6 @@
 #include "Problem_Interface.hpp"
 
 #include <EpetraExt_MatrixMatrix.h>
-
 #include "Amesos_Lapack.h"
 #include "AnasaziBasicOrthoManager.hpp"
 #include "AnasaziEpetraAdapter.hpp"
@@ -44,10 +43,10 @@ Problem_Interface::Problem_Interface(Teuchos::RCP<Epetra_CrsMatrix> A,
   
   std::string solver_name = SolverSublist.get("Solver name", "any");
   
-  if (numProc == 1 && solver_type == "Amesos")
-    solver_name = "Amesos_Klu";
-  else if (numProc == 1 && solver_type == "Amesos2")
-    solver_name = "KLU2";
+//  if (numProc == 1 && solver_type == "Amesos")
+  //  solver_name = "Amesos_Klu";
+  //else if (numProc == 1 && solver_type == "Amesos2")
+   // solver_name = "KLU2";
 
   const Teuchos::RCP<Teuchos::ParameterList> SolParams = Teuchos::getParametersFromXmlFile(solver_name + ".xml");
   if (MyPID == 0)
@@ -314,12 +313,11 @@ void Problem_Interface::init_v(double t)
  * 
  *     }
  */
-/*     if (abs(stchFrcStren_)>=10e-12)
- *     {
- *       for (int i = 0; i < std::min(W_->NumVectors(),V->NumVectors()) ; i++)
- *         *((*V)(i))=*((*W_)(i));
- *     }
- */
+     //if (abs(stchFrcStren_)>=10e-8)
+     //{
+       // for (int i = 0; i < std::min(W_->NumVectors(),V->NumVectors()) ; i++)
+       //	 *((*V)(i))=*((*W_)(i));
+     //}
 
 #if need_locaInterface == 1
     Epetra_Vector massDiag(V->Map());
@@ -381,7 +379,7 @@ void Problem_Interface::init_v(double t)
     Epetra_MultiVector *vt;
     EpetraExt::MatrixMarketFileToMultiVector(InitFile_.c_str(), (V->Map()), vt);
     V = Teuchos::rcp(vt);
-    if (debug_)
+    if (debug_ && A_->Comm().MyPID()==0)
     {
       printnormMV(*V, 2, "initial norm of V without m-orthogonalization:");
     }
@@ -657,15 +655,4 @@ void Problem_Interface::TransferNorm()
   Epetra_MultiVector ycpy(*y);
   ycpy = *y;
   y->Multiply('N', 'N', 1.0, *Rvec, ycpy, 0.0);
-}
-void Problem_Interface::printnormMV(Epetra_MultiVector &mv, int normType, string str)
-{
-  double nrm1[mv.NumVectors()];
-  if (normType == 1)
-    mv.Norm1(&nrm1[0]);
-  else if (normType == 2)
-    mv.Norm2(&nrm1[0]);
-  std::flush(std::cout << "\n" << str << std::endl);
-  for (int i = 0; i < mv.NumVectors(); i++)
-    std::flush(std::cout << "  " << nrm1[i]);
 }
