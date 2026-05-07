@@ -3,40 +3,32 @@
 [Y]=mmread('YTrans_COEFF.mm');
 xx=linspace(0,1,128);
 [ha,hfig]=tight_subplot_cm(2,2,[1.9,1.7],[1.3,0.4],[1.5,.2],18,24, 'yes');
-lw=2;
+lw=1;
+load Exact_data.mat;
+exact_sol=val_0_8;
 axes(ha(1));
 plot(xx', exact_sol.mean,'linewidth',lw);
-ylab=ylabel('$\mathbf{E\mathit u}$','interpreter','latex');
-xlab=xlabel('$\mathbf{\mathit x}$','interpreter','latex')
-xlab.FontSize=14;
-xlab.FontWeight='bold'
-xlab.FontName='Times New Roman'
-ylab.FontSize=14;
+ylab=ylabel('$\mathbf{E\mathit u}$','interpreter','latex','FontSize',14);
+xlab=xlabel('$\mathbf{\mathit x}$','interpreter','latex','FontSize',14)
 title('mean');
 axes(ha(2));
 plot(xx', exact_sol.variance,'linewidth',lw);
-ylab=ylabel('$\mathbf{E\mathit u^2}$','interpreter','latex');
-xlab=xlabel('$\mathbf{\mathit x}$','interpreter','latex');
-xlab.FontSize=14;
-ylab.FontSize=14;
+ylab=ylabel('$\mathbf{E\mathit u^2}$','interpreter','latex','FontSize',14);
+xlab=xlabel('$\mathbf{\mathit x}$','interpreter','latex','FontSize',14);
 title('variance');
 axes(ha(3));
 plot(xx', exact_sol.m3,'linewidth',lw);
-ylab=ylabel('$\mathbf{E\mathit u^3}$','interpreter','latex');
-xlab=xlabel('$\mathbf{\mathit x}$','interpreter','latex');
-xlab.FontSize=14;
-ylab.FontSize=14;
+ylab=ylabel('$\mathbf{E\mathit u^3}$','interpreter','latex','FontSize',14);
+xlab=xlabel('$\mathbf{\mathit x}$','interpreter','latex','FontSize',14);
 title('3rd moment');
 axes(ha(4));
 plot(xx', exact_sol.kurtosis_excess,'linewidth',lw)
-ylab2=ylabel('$\mathbf{E\mathit u^4-3}(\mathbf{E} \mathbf{\mathit u^2)^2}$','interpreter','latex')
-ylab2.Position(1)=ylab2.Position(1)+0.02
-xlab=xlabel('$\mathbf{\mathit x}$','interpreter','latex');
+ylab2=ylabel('$\mathbf{E\mathit u^4-3}(\mathbf{E} \mathbf{\mathit u^2)^2}$','interpreter','latex','FontSize',14)
+%ylab2.Position(1)=ylab2.Position(1)+0.02
+xlab=xlabel('$\mathbf{\mathit x}$','interpreter','latex','FontSize',14);
 yticks((-2:1:1)*10^-5)
 % Apply the labels
 %yticklabels(newLabels);
-xlab.FontSize=14;
-ylab2.FontSize=14;
 title('excess 4th moment')
 hold on
 

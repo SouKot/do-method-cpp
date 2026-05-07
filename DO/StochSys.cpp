@@ -32,6 +32,8 @@
 #include <random>
 #include <sstream>
 #include <stdexcept>
+#include <vector>
+#include <algorithm>
 //#include <Epetra_SerialDenseSVD.h>
 #if need_locaInterface == 1
 #include "FVM_model_interface.h"
@@ -756,7 +758,7 @@ Y_Stoch::y_jac()
 {
   // jacBilinTerm();
   *jac = *lin_coeff;
-  // jac->Update(-1.0*subdt_,*JacNonLin,1.0);
+  // jac->Update(subdt_,*JacNonLin,1.0);
 }
 /*
  * ===  FUNCTION
@@ -796,9 +798,9 @@ Y_Stoch::y_rhs()
     rhs->PutScalar(0.0);
     rhs->Multiply('N', 'N', 1.0, *lin_coeff, *x0_, 1.0); // rhs=-x+lin_coeff*x0
     rhs->Update(-1.0, *x_, 1.0);
-    rhs->Update(1.0, *rep_exp_vyvy, 1.0); // rhs=-x+lin_coeff*x0+const_coeff
+    rhs->Update(-subdt_, *rep_exp_vyvy, 1.0); // rhs=-x+lin_coeff*x0+const_coeff
     // rhs=-x + lin_coeff*x0 + const_coeff + rhs_nonlin
-    rhs->Update(-1.0 * subdt_, *rhsNonLin, 1.0);
+    rhs->Update(subdt_, *rhsNonLin, 1.0);
     rhs->Update(-1.0, *VBdW, 1.0);
   }
 }
@@ -867,8 +869,9 @@ Y_Stoch::Solve()
     Epetra_SerialDenseMatrix res;
     res = DenseRHS;
     res.Multiply('N', 'N', 1.0, *Yjac, DenseDx_, -1.0);
-    res.Print(std::cout << "res \n");
+    //res.Print(std::cout << "res \n");
     std::cout << "\n If Solved : " << y_prob.Solved() << std::endl;
+    std::cout << "\n Debug_ value : " << debug_<< std::endl;
     getchar();
   }
 
@@ -1222,11 +1225,15 @@ Y_Stoch::Newton()
   // y_jac();
   y_rhs();
   rhs->Scale(-1.0);
-  rhs->Norm2(&NormRHS_);
-  std::cout << "\n norm of rhs = " << NormRHS_ << std::endl;
-  // INFO("Newton:      norm: " << NormRHStest_ );
+  std::vector<double> normsRHS(rhs->NumVectors());
+  rhs->Norm2(normsRHS.data());
+  NormRHS_ = *std::max_element(normsRHS.begin(), normsRHS.end());
+  //std::cout << "\n norm of rhs = " << NormRHS_ << std::endl;
+  //y_jac();
+  //y_prob.SetMatrix(*Yjac); // 2. Give the updated matrix to the SVD solver
+  //y_prob.Factor();
+  INFO("Newton:      norm: " << NormRHStest_ );
   for (iter_ = 0; iter_ != maxNumIterations_; ++iter_) {
-    // y_jac();
     Solve();
     if (debug_)
       x0_->Update(1.0, *dx_, 0.0);
@@ -1235,9 +1242,11 @@ Y_Stoch::Newton()
       y_rhs();
       rhs->Scale(-1.0);
     }
-    rhs->Norm2(&NormRHStest_);
-    std::cout << "\n RHS NORM = " << NormRHStest_ << std::endl;
+    std::vector<double> normsTest(rhs->NumVectors());
+    rhs->Norm2(normsTest.data());
+    NormRHStest_ = *std::max_element(normsTest.begin(), normsTest.end());
     if (debug_) {
+      std::cout << "\n RHS NORM = " << NormRHStest_ << std::endl;
       Epetra_Vector Err(*(*y_)(0));
       Err.Multiply('N', 'N', 1.0, *jac, *x0_, 0.0);
       Err.Update(1.0, *rhs, 1.0);
@@ -1278,7 +1287,9 @@ Y_Stoch::RunBackTracking()
     // Apply reduction to the state vector
     x0_->Update(reduction, *dx_, 1.0);
     y_rhs();
-    rhs->Norm2(&NormRHStest_);
+    std::vector<double> normsBT(rhs->NumVectors());
+    rhs->Norm2(normsBT.data());
+    NormRHStest_ = *std::max_element(normsBT.begin(), normsBT.end());
     if (debug_) {
 
       std::cout << "Newton: --> backtracking:\n "
