@@ -1,0 +1,9 @@
+image: alpine/git:latest
+
+pipelines:
+  default:
+    - step:
+        name: Mirror to GitHub
+        script:
+          - git remote add github git@github.com:SouKot/do-method-cpp.git
+          - git push --prune --mirror github
