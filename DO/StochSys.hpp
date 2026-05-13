@@ -81,13 +81,13 @@ public:
           int num_Subtime_Step,
           int m,
           double* dt,
-          Teuchos::RCP<Epetra_CrsMatrix> A,
-          Teuchos::RCP<Epetra_Vector> uav,
-          Teuchos::RCP<FVM::Domain> domain,
-          Teuchos::RCP<Epetra_MultiVector> Vn,
-          Teuchos::RCP<Epetra_MultiVector> Wb,
-          Teuchos::RCP<Epetra_Comm> comm,
-          Teuchos::RCP<Teuchos::ParameterList> CoefParams,
+          const Teuchos::RCP<Epetra_CrsMatrix>& A,
+          const Teuchos::RCP<Epetra_Vector>& uav,
+          const Teuchos::RCP<FVM::Domain>& domain,
+          const Teuchos::RCP<Epetra_MultiVector>& Vn,
+          const Teuchos::RCP<Epetra_MultiVector>& Wb,
+          const Teuchos::RCP<Epetra_Comm>& comm,
+          const Teuchos::RCP<Teuchos::ParameterList>& CoefParams,
           int maxNumIter,
           bool useBacktracking,
           double numBackTrackingSteps,
@@ -115,13 +115,13 @@ public:
           int num_Subtime_Step,
           int m,
           double* dt,
-          Teuchos::RCP<Epetra_CrsMatrix> A,
-          Teuchos::RCP<Epetra_Vector> uav,
-          Teuchos::RCP<Epetra_MultiVector> Vn,
-          Teuchos::RCP<Epetra_MultiVector> Wb,
-          Teuchos::RCP<Epetra_Comm> comm,
-          Teuchos::RCP<Teuchos::ParameterList> CoefParams,
-          Teuchos::RCP<Mean> model,
+          const Teuchos::RCP<Epetra_CrsMatrix>& A,
+          const Teuchos::RCP<Epetra_Vector>& uav,
+          const Teuchos::RCP<Epetra_MultiVector>& Vn,
+          const Teuchos::RCP<Epetra_MultiVector>& Wb,
+          const Teuchos::RCP<Epetra_Comm>& comm,
+          const Teuchos::RCP<Teuchos::ParameterList>& CoefParams,
+          const Teuchos::RCP<Mean>& model,
           int maxNumIter,
           bool useBacktracking,
           double numBackTrackingSteps,
@@ -132,7 +132,7 @@ public:
   Teuchos::RCP<Epetra_Map> get_x_map();
   Teuchos::RCP<Epetra_Map> get_f_map();
   Teuchos::RCP<Epetra_MultiVector> get_x_init();
-  void set_x(Teuchos::RCP<Epetra_MultiVector> x0_temp);
+  void set_x(const Teuchos::RCP<Epetra_MultiVector>& x0_temp);
   /*!
    \brief set dW (wiener process)  for the stochastic iteartions.
    \fn setDwiener
@@ -143,7 +143,7 @@ public:
     * It implies that the address of variable(in our case, z_) which is
     * paased on to zo_temp also gets multiplied by \f$\sqrt{dt}\f.
   */
-  void setDwiener(Teuchos::RCP<Epetra_MultiVector> z0_temp);
+  void setDwiener(const Teuchos::RCP<Epetra_MultiVector>& z0_temp);
   Teuchos::RCP<Epetra_Vector> getEVyVy();
   /**
    * ===  FUNCTION
@@ -154,10 +154,10 @@ public:
    *		  (TODO:: how to call it in y_jac for non-linear term????!!!)
    * =====================================================================================
    **/
-  void Bilinear(Teuchos::RCP<Epetra_Vector> ud,
-                Teuchos::RCP<Epetra_MultiVector> u,
-                Teuchos::RCP<Epetra_MultiVector> v,
-                Teuchos::RCP<Epetra_MultiVector> uv);
+  void Bilinear(const Teuchos::RCP<Epetra_Vector>& ud,
+                const Teuchos::RCP<Epetra_MultiVector>& u,
+                const Teuchos::RCP<Epetra_MultiVector>& v,
+                const Teuchos::RCP<Epetra_MultiVector>& uv);
   void HBilinV();
   // void BilinTerm();
   void jacBilinTerm();
@@ -173,7 +173,7 @@ public:
   void PostProcess(Epetra_Vector& second_mmnt);
   void Newton();
   void RunBackTracking();
-  void CreateLocMultiVec(std::string WhichOne);
+  void CreateLocMultiVec(const std::string& WhichOne);
   void CreateDistTransMultivec();
   bool Converged() { return isConverged_; }
   int Iterations() { return iter_; }
@@ -198,10 +198,7 @@ public:
   int stochiter;
   int N_, MyPID, itrtr = 0;
   double subdt_;
-  double *r_val, *Viewx_, *ViewRHS, *JacVal;
-  double* sol_val;
   double* dt_;
-  double *ViewLocExpyyy, *sumexp, *ViewYY;
   Teuchos::RCP<Epetra_CrsMatrix> A_, ExpYY;
   // Teuchos::RCP<Epetra_CrsMatrix> mass_;
   Teuchos::RCP<Epetra_MultiVector> Vnew, fortVn, fortviv,
@@ -259,7 +256,7 @@ public:
   Teuchos::RCP<MV> evecs;
   Anasazi::Eigensolution<double, MV> EigSol;
 
-  void printTransNormMV(Epetra_MultiVector& mv, int normType, std::string str);
+  void printTransNormMV(Epetra_MultiVector& mv, int normType, const std::string& str);
   void computeEVyVy();
   void computeCrossVariance();
   void computeExpDExpyy();

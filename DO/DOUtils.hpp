@@ -25,6 +25,7 @@
 #include "Epetra_MultiVector.h"
 #include <iostream>
 #include <string>
+#include <vector>
 
 /**
  * @brief Print the 1- or 2-norm of each column of an Epetra_MultiVector.
@@ -37,13 +38,13 @@
  * @param[in]     normType 1 for the 1-norm, 2 for the 2-norm.
  * @param[in]     str      Label string printed before the norm values.
  */
-inline void printnormMV(Epetra_MultiVector& mv, int normType, std::string str)
+inline void printnormMV(Epetra_MultiVector& mv, int normType, const std::string& str)
 {
-    double nrm[mv.NumVectors()];
+    std::vector<double> nrm(mv.NumVectors());
     if (normType == 1)
-        mv.Norm1(nrm);
+        mv.Norm1(nrm.data());
     else if (normType == 2)
-        mv.Norm2(nrm);
+        mv.Norm2(nrm.data());
     if (mv.Comm().MyPID() == 0) {
         std::cout << "\n" << str << std::endl;
         for (int i = 0; i < mv.NumVectors(); i++)

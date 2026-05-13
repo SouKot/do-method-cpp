@@ -308,7 +308,7 @@ Mean::Mean(RCP<Teuchos::ParameterList> PrmLst, double* t, double* dt,
 } /* end of constructor */
 
 void
-Mean::createLinOp(Teuchos::RCP<Epetra_Comm> Comm)
+Mean::createLinOp(const Teuchos::RCP<Epetra_Comm>& Comm)
 {
   Teuchos::RCP<Epetra_Map> Map; // the map to be created
   double x_end = 1, x_in = 0;

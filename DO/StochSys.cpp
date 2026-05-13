@@ -43,13 +43,13 @@ Y_Stoch::Y_Stoch(int NumStochIter,
                  int num_Subtime_Step,
                  int m,
                  double* dt,
-                 Teuchos::RCP<Epetra_CrsMatrix> A,
-                 Teuchos::RCP<Epetra_Vector> uav,
-                 Teuchos::RCP<FVM::Domain> domain,
-                 Teuchos::RCP<Epetra_MultiVector> Vn,
-                 Teuchos::RCP<Epetra_MultiVector> Wb,
-                 Teuchos::RCP<Epetra_Comm> comm, // pass comm
-                 Teuchos::RCP<Teuchos::ParameterList> CoefParams,
+                 const Teuchos::RCP<Epetra_CrsMatrix>& A,
+                 const Teuchos::RCP<Epetra_Vector>& uav,
+                 const Teuchos::RCP<FVM::Domain>& domain,
+                 const Teuchos::RCP<Epetra_MultiVector>& Vn,
+                 const Teuchos::RCP<Epetra_MultiVector>& Wb,
+                 const Teuchos::RCP<Epetra_Comm>& comm, // pass comm
+                 const Teuchos::RCP<Teuchos::ParameterList>& CoefParams,
                  int maxNumIter,
                  bool useBacktracking,
                  double numBackTrackingSteps,
@@ -89,18 +89,15 @@ Y_Stoch::Y_Stoch(int NumStochIter,
   z_ = Teuchos::rcp(new Epetra_MultiVector(*map_z_, MyLDA));
   YY = Teuchos::rcp(new Epetra_MultiVector(*map_mm, MyLDA));
   rszyy = m_ * m_;
-  YY->ExtractView(&ViewYY, &rszyy);
   x0_ = rcp(new Epetra_MultiVector(*map_x_, MyLDA));
   x_ = rcp(new Epetra_MultiVector(*map_x_, MyLDA));
   dx_ = rcp(new Epetra_MultiVector(*map_x_, MyLDA));
-  dx_->ExtractView(&Viewx_, &m_);
   // f_out = Teuchos::rcp(new Epetra_Vector(*map_x_, MyLDA));
   int n;
   n = A->NumMyRows();
   // map_expv4 = rcp(new Epetra_Map(n,0,*Comm_));
   viv = rcp(new Epetra_MultiVector(*Vnew));
   rhs = rcp(new Epetra_MultiVector(*map_x_, MyLDA));
-  rhs->ExtractView(&ViewRHS, &m_);
   Teuchos::RCP<Epetra_Map> fortMap = domain_->GetAssemblyMap();
   fortudet = Teuchos::rcp(new Epetra_Vector(*fortMap));
   fortVn = Teuchos::rcp(new Epetra_MultiVector(*fortMap, m_));
@@ -121,11 +118,9 @@ Y_Stoch::Y_Stoch(int NumStochIter,
   EyyTyT = rcp(new Epetra_MultiVector(*map_mm, m_));
   ExpzyDExpyy = rcp(new Epetra_MultiVector(*map_z_, m_));
   // ExpzyDExpyy->PutScalar(1.0);
-  ExpzyDExpyy->ExtractView(&sol_val, &m_);
   ExpVyVyyDExpyy = rcp(new Epetra_MultiVector(*Vnew));
   ExpDExpyy = rcp(new Epetra_MultiVector(*Vnew));
   LocExpyyy = rcp(new Epetra_MultiVector(*map_x_, Vnew->NumVectors()));
-  LocExpyyy->ExtractView(&ViewLocExpyyy, &m_);
   //  getchar();
 
   Exp_VyVyy = rcp(new Epetra_MultiVector(*Vnew));
@@ -165,18 +160,23 @@ Y_Stoch::Y_Stoch(int NumStochIter,
   VBdW = rcp(new Epetra_MultiVector(*x_));
   // lin_coeff->ExtractView(&JacVal,&m_);
   jac = Teuchos::rcp(new Epetra_MultiVector(*lin_coeff));
-  jac->ExtractView(&JacVal, &m_);
-  Yjac = rcp(
-    new Epetra_SerialDenseMatrix(Epetra_DataAccess::View, JacVal, m_, m_, m_));
+  {
+    double* jac_val;
+    jac->ExtractView(&jac_val, &m_);
+    Yjac = rcp(new Epetra_SerialDenseMatrix(Epetra_DataAccess::View, jac_val, m_, m_, m_));
+  }
   H = rcp(new Epetra_MultiVector(*map_x_, m_ * m_));
   Hn = rcp(new Epetra_MultiVector(Vnew->Map(), m_ * m_));
   VHn = rcp(new Epetra_MultiVector(*map_x_, m_ * m_));
   Rv = Teuchos::rcp(new Epetra_MultiVector(*Exp_yy_));
-  Rv->ExtractView(&r_val, &m_);
-  Ru = Teuchos::rcp(new Teuchos::SerialDenseMatrix<int, double>(
-    Teuchos::View, r_val, m_, m_, m_));
-  ru = Epetra_SerialDenseMatrix(Epetra_DataAccess::View, r_val, m_, m_, m_);
-  
+  {
+    double* r_val;
+    Rv->ExtractView(&r_val, &m_);
+    Ru = Teuchos::rcp(new Teuchos::SerialDenseMatrix<int, double>(
+      Teuchos::View, r_val, m_, m_, m_));
+    ru = Epetra_SerialDenseMatrix(Epetra_DataAccess::View, r_val, m_, m_, m_);
+  }
+
 #if use_trng==1
   eng.split(A_->Comm().NumProc(), MyPID);
   gen = Teuchos::rcp(new GEN(0.0,1.0));
@@ -263,13 +263,13 @@ Y_Stoch::Y_Stoch(int NumStochIter,
                  int num_Subtime_Step,
                  int m,
                  double* dt,
-                 Teuchos::RCP<Epetra_CrsMatrix> A,
-                 Teuchos::RCP<Epetra_Vector> uav,
-                 Teuchos::RCP<Epetra_MultiVector> Vn,
-                 Teuchos::RCP<Epetra_MultiVector> Wb,
-                 Teuchos::RCP<Epetra_Comm> comm, // pass comm
-                 Teuchos::RCP<Teuchos::ParameterList> CoefParams,
-                 Teuchos::RCP<Mean> model,
+                 const Teuchos::RCP<Epetra_CrsMatrix>& A,
+                 const Teuchos::RCP<Epetra_Vector>& uav,
+                 const Teuchos::RCP<Epetra_MultiVector>& Vn,
+                 const Teuchos::RCP<Epetra_MultiVector>& Wb,
+                 const Teuchos::RCP<Epetra_Comm>& comm, // pass comm
+                 const Teuchos::RCP<Teuchos::ParameterList>& CoefParams,
+                 const Teuchos::RCP<Mean>& model,
                  int maxNumIter,
                  bool useBacktracking,
                  double numBackTrackingSteps,
@@ -310,18 +310,15 @@ Y_Stoch::Y_Stoch(int NumStochIter,
   z_ = Teuchos::rcp(new Epetra_MultiVector(*map_z_, MyLDA));
   YY = Teuchos::rcp(new Epetra_MultiVector(*map_mm, MyLDA));
   rszyy = m_ * m_;
-  YY->ExtractView(&ViewYY, &rszyy);
   x0_ = rcp(new Epetra_MultiVector(*map_x_, MyLDA));
   x_ = rcp(new Epetra_MultiVector(*map_x_, MyLDA));
   dx_ = rcp(new Epetra_MultiVector(*map_x_, MyLDA));
-  dx_->ExtractView(&Viewx_, &m_);
   f_out = Teuchos::rcp(new Epetra_Vector(*map_x_, MyLDA));
   int n;
   n = A->NumMyRows();
   // map_expv4 = rcp(new Epetra_Map(n,0,*Comm_));
   viv = rcp(new Epetra_MultiVector(*Vnew));
   rhs = rcp(new Epetra_MultiVector(*map_x_, MyLDA));
-  rhs->ExtractView(&ViewRHS, &m_);
   //  Teuchos::RCP<Epetra_Map> fortMap=domain_->GetAssemblyMap();
 
   //  fortviv = Teuchos::rcp(new Epetra_MultiVector(*fortMap, m_));
@@ -341,11 +338,9 @@ Y_Stoch::Y_Stoch(int NumStochIter,
   EyyTyT = rcp(new Epetra_MultiVector(*map_mm, m_));
   ExpzyDExpyy = rcp(new Epetra_MultiVector(*map_z_, m_));
   // ExpzyDExpyy->PutScalar(1.0);
-  ExpzyDExpyy->ExtractView(&sol_val, &m_);
   ExpVyVyyDExpyy = rcp(new Epetra_MultiVector(*Vnew));
   ExpDExpyy = rcp(new Epetra_MultiVector(*Vnew));
   LocExpyyy = rcp(new Epetra_MultiVector(*map_x_, Vnew->NumVectors()));
-  LocExpyyy->ExtractView(&ViewLocExpyyy, &m_);
   //  getchar();
 
   Exp_VyVyy = rcp(new Epetra_MultiVector(*Vnew));
@@ -390,17 +385,22 @@ Y_Stoch::Y_Stoch(int NumStochIter,
   VBdW = rcp(new Epetra_MultiVector(*x_));
   // lin_coeff->ExtractView(&JacVal,&m_);
   jac = Teuchos::rcp(new Epetra_MultiVector(*lin_coeff));
-  jac->ExtractView(&JacVal, &m_);
-  Yjac = rcp(
-    new Epetra_SerialDenseMatrix(Epetra_DataAccess::View, JacVal, m_, m_, m_));
+  {
+    double* jac_val;
+    jac->ExtractView(&jac_val, &m_);
+    Yjac = rcp(new Epetra_SerialDenseMatrix(Epetra_DataAccess::View, jac_val, m_, m_, m_));
+  }
   H = rcp(new Epetra_MultiVector(*map_x_, m_ * m_));
   Hn = rcp(new Epetra_MultiVector(Vnew->Map(), m_ * m_));
   VHn = rcp(new Epetra_MultiVector(*map_x_, m_ * m_));
   Rv = Teuchos::rcp(new Epetra_MultiVector(*Exp_yy_));
-  Rv->ExtractView(&r_val, &m_);
-  Ru = Teuchos::rcp(new Teuchos::SerialDenseMatrix<int, double>(
-    Teuchos::View, r_val, m_, m_, m_));
-  ru = Epetra_SerialDenseMatrix(Epetra_DataAccess::View, r_val, m_, m_, m_);
+  {
+    double* r_val;
+    Rv->ExtractView(&r_val, &m_);
+    Ru = Teuchos::rcp(new Teuchos::SerialDenseMatrix<int, double>(
+      Teuchos::View, r_val, m_, m_, m_));
+    ru = Epetra_SerialDenseMatrix(Epetra_DataAccess::View, r_val, m_, m_, m_);
+  }
   std::random_device random_dev;
 #if use_trng==1
   eng.split(A_->Comm().NumProc(), MyPID);
@@ -527,7 +527,7 @@ Y_Stoch::Y_Stoch(int NumStochIter,
 /* ******************************************************** */
 
 void
-Y_Stoch::CreateLocMultiVec(std::string WhichOne)
+Y_Stoch::CreateLocMultiVec(const std::string& WhichOne)
 {
   if (WhichOne == "y") {
     for (int i = 0; i < yTrans_->MyLength(); i++) {
@@ -565,10 +565,10 @@ Y_Stoch::CreateDistTransMultivec()
 /* ******************************************************** */
 
 void
-Y_Stoch::Bilinear(Teuchos::RCP<Epetra_Vector> ud,
-                  Teuchos::RCP<Epetra_MultiVector> u,
-                  Teuchos::RCP<Epetra_MultiVector> v,
-                  Teuchos::RCP<Epetra_MultiVector> uv)
+Y_Stoch::Bilinear(const Teuchos::RCP<Epetra_Vector>& ud,
+                  const Teuchos::RCP<Epetra_MultiVector>& u,
+                  const Teuchos::RCP<Epetra_MultiVector>& v,
+                  const Teuchos::RCP<Epetra_MultiVector>& uv)
 {
   int mu = u->NumVectors();
   int mv = v->NumVectors();
@@ -812,14 +812,14 @@ Y_Stoch::get_x_map()
 }
 
 void
-Y_Stoch::set_x(Teuchos::RCP<Epetra_MultiVector> x0_temp)
+Y_Stoch::set_x(const Teuchos::RCP<Epetra_MultiVector>& x0_temp)
 {
   x0_ = x0_temp;
   *x_ = *x0_temp;
 }
 
 void
-Y_Stoch::setDwiener(Teuchos::RCP<Epetra_MultiVector> z0_temp)
+Y_Stoch::setDwiener(const Teuchos::RCP<Epetra_MultiVector>& z0_temp)
 {
   dW = z0_temp;
 
@@ -855,8 +855,12 @@ Y_Stoch::getEVyVy()
 void
 Y_Stoch::Solve()
 {
+  double* Viewx;
+  double* ViewRHS;
+  dx_->ExtractView(&Viewx, &m_);
+  rhs->ExtractView(&ViewRHS, &m_);
   DenseDx_ =
-    Epetra_SerialDenseMatrix(Epetra_DataAccess::Copy, Viewx_, m_, m_, MyLDA);
+    Epetra_SerialDenseMatrix(Epetra_DataAccess::Copy, Viewx, m_, m_, MyLDA);
   DenseRHS =
     Epetra_SerialDenseMatrix(Epetra_DataAccess::Copy, ViewRHS, m_, m_, MyLDA);
 
@@ -1056,6 +1060,10 @@ Y_Stoch::computeCrossVariance()
 void
 Y_Stoch::computeEyyTyT()
 {
+  double* ViewYY;
+  double* ViewLocExpyyy;
+  YY->ExtractView(&ViewYY, &rszyy);
+  LocExpyyy->ExtractView(&ViewLocExpyyy, &m_);
   Epetra_Vector tmpy(*(*y_)(0));
   int err1;
   for (int i = 0; i < MyLDA; i++) {
@@ -1304,7 +1312,7 @@ Y_Stoch::RunBackTracking()
 }
 
 void
-Y_Stoch::printTransNormMV(Epetra_MultiVector& mv, int normType, std::string str)
+Y_Stoch::printTransNormMV(Epetra_MultiVector& mv, int normType, const std::string& str)
 {
   Epetra_Map mp(mv.NumVectors(), 0, mv.Comm());
   Epetra_MultiVector mvT(mp, mv.MyLength());

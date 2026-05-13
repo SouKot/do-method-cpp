@@ -343,7 +343,7 @@ Mean::computeJac(RCP<Epetra_Vector> u)
 }
 //=============================================================================
 void
-Mean::ThetaStepper(Teuchos::RCP<Epetra_Vector> rhs_u0)
+Mean::ThetaStepper(const Teuchos::RCP<Epetra_Vector>& rhs_u0)
 {
   /* FIXME : even when thea=[1 or 0], it calls createRHS twice, which just waste
    * time. */

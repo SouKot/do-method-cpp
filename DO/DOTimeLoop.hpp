@@ -68,7 +68,7 @@ struct StochTimers {
  * @param[out] detA    V-solver's local Jacobian copy; overwritten with @p A.
  * @param[in]  massmat Mass matrix written to @c mass.mm.
  */
-inline void dumpInitialJacobian(Teuchos::RCP<Epetra_CrsMatrix> A,
+inline void dumpInitialJacobian(const Teuchos::RCP<Epetra_CrsMatrix>& A,
                                 Epetra_CrsMatrix &detA,
                                 Epetra_CrsMatrix &massmat) {
     EpetraExt::RowMatrixToMatrixMarketFile("mass.mm", massmat);
@@ -108,9 +108,9 @@ inline void dumpInitialJacobian(Teuchos::RCP<Epetra_CrsMatrix> A,
 inline void runStochStep(bool isStochOn,
                          bool timeProf,
                          double dt,
-                         Teuchos::RCP<Y_Stoch> y_interface,
-                         Teuchos::RCP<Problem_Interface> Vstoch,
-                         Teuchos::RCP<Epetra_MultiVector> Vn,
+                         const Teuchos::RCP<Y_Stoch>& y_interface,
+                         const Teuchos::RCP<Problem_Interface>& Vstoch,
+                         const Teuchos::RCP<Epetra_MultiVector>& Vn,
                          const StochTimers &tmr) {
     if (!isStochOn) return;
 

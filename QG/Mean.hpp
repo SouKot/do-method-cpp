@@ -93,7 +93,7 @@ class Mean
         RCP<Teuchos::ParameterList> PrmLst,
         double* t, double* dt,
 	RCP<Epetra_Comm> Comm);
-  void createLinOp(Teuchos::RCP<Epetra_Comm> Comm);
+  void createLinOp(const Teuchos::RCP<Epetra_Comm>& Comm);
 void BilinearTerm(RCP<Epetra_Vector> u1,
 			RCP<Epetra_Vector> u2,
 			RCP<Epetra_Vector> u3);
@@ -112,7 +112,7 @@ void BilinearTerm(RCP<Epetra_Vector> u1,
     A=*jac;
   }
   RCP<Epetra_CrsMatrix> getJacobian(){ return jac;}
-  void ThetaStepper(Teuchos::RCP<Epetra_Vector> rhs_u0);
+  void ThetaStepper(const Teuchos::RCP<Epetra_Vector>& rhs_u0);
   int LinSolve(Epetra_Vector* LHS, Epetra_Vector* RHS);
   /**
    * @brief Advance the mean solution by one time step using Newton-Raphson.

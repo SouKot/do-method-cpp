@@ -23,10 +23,10 @@ using namespace std;
 // using Teuchos::RCP;
 // using Teuchos::rcp; // Save some typing
 //-----------------------------------------------------------------------------
-Problem_Interface::Problem_Interface(Teuchos::RCP<Epetra_CrsMatrix> A,
-                                     Teuchos::RCP<Teuchos::ParameterList> SolverParams,
-                                     Teuchos::RCP<Epetra_Vector> udet, int &m, double *t, double &dt,
-                                     Teuchos::RCP<Epetra_MultiVector> W, Teuchos::RCP<Epetra_CrsMatrix> mass,
+Problem_Interface::Problem_Interface(const Teuchos::RCP<Epetra_CrsMatrix>& A,
+                                     const Teuchos::RCP<Teuchos::ParameterList>& SolverParams,
+                                     const Teuchos::RCP<Epetra_Vector>& udet, int &m, double *t, double &dt,
+                                     const Teuchos::RCP<Epetra_MultiVector>& W, const Teuchos::RCP<Epetra_CrsMatrix>& mass,
                                      int iter)
     : // **************************************************************************************
       A_(A), SolverParams_(SolverParams), udet_(udet), m_(m), t_(t), dt_(dt), W_(W), stochiter(iter), mass_(mass),
@@ -69,15 +69,18 @@ Problem_Interface::Problem_Interface(Teuchos::RCP<Epetra_CrsMatrix> A,
   ExpDExpyy = rcp(new Epetra_MultiVector(A->RowMap(), m_));
   LHS_block_1_ = rcp(new Epetra_CrsMatrix(Epetra_DataAccess::Copy, A_->RowMap(), 3));
   Rvec = Teuchos::rcp(new Epetra_MultiVector(*locmap_, m_));
-  Rvec->ExtractView(&r_val, &m_);
-  R = Teuchos::rcp(new Teuchos::SerialDenseMatrix<int, double>(Teuchos::DataAccess::View, r_val, m_, m_, m_));
+  {
+    double* r_val;
+    Rvec->ExtractView(&r_val, &m_);
+    R = Teuchos::rcp(new Teuchos::SerialDenseMatrix<int, double>(Teuchos::DataAccess::View, r_val, m_, m_, m_));
+  }
   /****** LHS_block_1 = M-dt*A *********/
-  LHS_block_1 = LHS_block_1_.get();
   // EpetraExt::MatrixMatrix::Add(*mass_, false, 1.0, *LHS_block_1_, 1.0);
   // EpetraExt::MatrixMatrix::Add(*A_, false, -dt_, *LHS_block_1_, 1.0);
   // LHS_block_1_->FillComplete();
-  EpetraExt::MatrixMatrix::Add(*mass_, false, 1.0, *A_, false, -(dt_), LHS_block_1);
-  LHS_block_1->FillComplete();
+  { Epetra_CrsMatrix* lhs = LHS_block_1_.get();
+    EpetraExt::MatrixMatrix::Add(*mass_, false, 1.0, *A_, false, -(dt_), lhs); }
+  LHS_block_1_->FillComplete();
   v_prob = Teuchos::rcp(new Epetra_LinearProblem);
   if (solver_type == "Amesos")
   {
@@ -211,7 +214,7 @@ Problem_Interface::~Problem_Interface()
 {
 }
 // ************************************************************************
-int Problem_Interface::SolveV(Epetra_MultiVector& LHS, Epetra_MultiVector& RHS, std::string label)
+int Problem_Interface::SolveV(Epetra_MultiVector& LHS, Epetra_MultiVector& RHS, const std::string& label)
 // ************************************************************************
 {
   double time, LocTime;
@@ -572,7 +575,8 @@ void Problem_Interface::computeBlocks(double dt)
   /****** LHS_block_1 = M-dt*J *********/
   // EpetraExt::MatrixMatrix::Add(*mass_, false, 1.0, *LHS_block_1_, 1.0);
   // EpetraExt::MatrixMatrix::Add(*A_, false, -dt_, *LHS_block_1_, 1.0);
-  EpetraExt::MatrixMatrix::Add(*mass_, false, 1.0, *A_, false, -(dt_), LHS_block_1);
+  { Epetra_CrsMatrix* lhs = LHS_block_1_.get();
+    EpetraExt::MatrixMatrix::Add(*mass_, false, 1.0, *A_, false, -(dt_), lhs); }
   if (debug_ && DbgLvl_ % 7 == 0)
   {
     std::cout << "\nNorm of deterministic Jacobian A = " << A_->NormFrobenius() << std::endl;

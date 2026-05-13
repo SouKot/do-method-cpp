@@ -93,7 +93,7 @@ public:
         double *t, double *dt,
         RCP<Epetra_Comm> Comm);
 
-    void createLinOp(Teuchos::RCP<Epetra_Comm> Comm);
+    void createLinOp(const Teuchos::RCP<Epetra_Comm>& Comm);
 
     void BilinearTerm(
         RCP<Epetra_Vector> u1,
