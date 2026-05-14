@@ -211,7 +211,7 @@ void runSimulation(Teuchos::RCP<Epetra_Comm> Comm, Epetra_Time& timer)
 
     // ===== Shared stochastic state =====
     auto sharedState = Teuchos::rcp(new StochasticState());
-    sharedState->udet = soln;
+    sharedState->uMean = soln;
     sharedState->A    = Teuchos::rcpFromRef(detA);
     sharedState->W    = Wbase;
     sharedState->bilinearTerm = [&model](const Teuchos::RCP<Epetra_Vector>& u,

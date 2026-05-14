@@ -63,12 +63,12 @@ CoeffSolver::CoeffSolver(int NumStochIter,
   , m_(m)
   , dt_(dt)
   , A_(A)
-  , udet(uav)
+  , uMean(uav)
   , domain_(domain)
   , sharedState_(sharedState)
-  , Vnew(Vn)
-  , B(Wb)
-  , N_(uav->GlobalLength())
+  , V(Vn)
+  , W(Wb)
+  , nDOF(uav->GlobalLength())
   , y_prob()
   , isConverged_(false)
   , backTracking_(useBacktracking)
@@ -82,25 +82,25 @@ CoeffSolver::CoeffSolver(int NumStochIter,
   MyPID = A->Comm().MyPID();
   using Teuchos::rcp;
   map_x_ = rcp(new Epetra_LocalMap(m_, 0, *Comm_));
-  map_z_ = rcp(new Epetra_LocalMap(B->NumVectors(), 0, A_->Comm()));
+  map_z_ = rcp(new Epetra_LocalMap(W->NumVectors(), 0, A_->Comm()));
   map_mm = rcp(new Epetra_LocalMap(m_ * m_, 0, *Comm_));
   Tmap = rcp(new Epetra_Map(NumStochIter_, 0, *Comm_));
 
   yTrans_ = Teuchos::rcp(new Epetra_MultiVector(*Tmap, m_));
-  zTrans_ = Teuchos::rcp(new Epetra_MultiVector(*Tmap, B->NumVectors()));
-  MyLDA = yTrans_->MyLength();
-  y_ = Teuchos::rcp(new Epetra_MultiVector(*map_x_, MyLDA));
-  z_ = Teuchos::rcp(new Epetra_MultiVector(*map_z_, MyLDA));
-  YY = Teuchos::rcp(new Epetra_MultiVector(*map_mm, MyLDA));
-  rszyy = m_ * m_;
-  x0_ = rcp(new Epetra_MultiVector(*map_x_, MyLDA));
-  x_ = rcp(new Epetra_MultiVector(*map_x_, MyLDA));
-  dx_ = rcp(new Epetra_MultiVector(*map_x_, MyLDA));
-  f_out = Teuchos::rcp(new Epetra_Vector(*map_x_, MyLDA));
+  zTrans_ = Teuchos::rcp(new Epetra_MultiVector(*Tmap, W->NumVectors()));
+  numSamples = yTrans_->MyLength();
+  y_ = Teuchos::rcp(new Epetra_MultiVector(*map_x_, numSamples));
+  z_ = Teuchos::rcp(new Epetra_MultiVector(*map_z_, numSamples));
+  yyOuter = Teuchos::rcp(new Epetra_MultiVector(*map_mm, numSamples));
+  sizeYY = m_ * m_;
+  yOld = rcp(new Epetra_MultiVector(*map_x_, numSamples));
+  yCurr = rcp(new Epetra_MultiVector(*map_x_, numSamples));
+  yDelta = rcp(new Epetra_MultiVector(*map_x_, numSamples));
+  residual = Teuchos::rcp(new Epetra_Vector(*map_x_, numSamples));
   int n;
   n = A->NumMyRows();
-  viv = rcp(new Epetra_MultiVector(*Vnew));
-  rhs = rcp(new Epetra_MultiVector(*map_x_, MyLDA));
+  bilinWork = rcp(new Epetra_MultiVector(*V));
+  rhs = rcp(new Epetra_MultiVector(*map_x_, numSamples));
 #if need_locaInterface == 1
   // Allocate Fortran-map work vectors for the LOCA/SWE bilinear interface.
   Teuchos::RCP<Epetra_Map> fortMap = domain_->GetAssemblyMap();
@@ -108,28 +108,28 @@ CoeffSolver::CoeffSolver(int NumStochIter,
   fortVn = Teuchos::rcp(new Epetra_MultiVector(*fortMap, m_));
   fortviv = Teuchos::rcp(new Epetra_MultiVector(*fortMap, m_));
 #endif
-  AV = rcp(new Epetra_MultiVector(*Vnew));
+  AV = rcp(new Epetra_MultiVector(*V));
   VAV = rcp(new Epetra_MultiVector(*map_x_, m_));
-  udet_mtimes = rcp(new Epetra_MultiVector(*Vnew));
+  udet_mtimes = rcp(new Epetra_MultiVector(*V));
   ones = rcp(new Epetra_Vector(*map_x_));
-  Vudet = rcp(new Epetra_MultiVector(*Vnew));
-  udetV = rcp(new Epetra_MultiVector(*Vnew));
+  Vudet = rcp(new Epetra_MultiVector(*V));
+  udetV = rcp(new Epetra_MultiVector(*V));
   VVudet = rcp(new Epetra_MultiVector(*map_x_, m_));
   lin_coeff = rcp(new Epetra_MultiVector(*map_x_, m_));
   JacNonLin = rcp(new Epetra_MultiVector(*map_x_, m_));
-  rhsNonLin = rcp(new Epetra_MultiVector(*map_x_, MyLDA));
+  rhsNonLin = rcp(new Epetra_MultiVector(*map_x_, numSamples));
   Ezy = rcp(new Epetra_MultiVector(*map_z_, m_));
   EzyPrev = rcp(new Epetra_MultiVector(*map_z_, m_));
   Eyy = rcp(new Epetra_MultiVector(*map_x_, m_));
   EyyTyT = rcp(new Epetra_MultiVector(*map_mm, m_));
   EzyDEyy = rcp(new Epetra_MultiVector(*map_z_, m_));
-  EVyVyyDEyy = rcp(new Epetra_MultiVector(*Vnew));
-  EDEyy = rcp(new Epetra_MultiVector(*Vnew));
-  LocEyyy = rcp(new Epetra_MultiVector(*map_x_, Vnew->NumVectors()));
+  EVyVyyDEyy = rcp(new Epetra_MultiVector(*V));
+  EDEyy = rcp(new Epetra_MultiVector(*V));
+  LocEyyy = rcp(new Epetra_MultiVector(*map_x_, V->NumVectors()));
 
-  EVyVyy = rcp(new Epetra_MultiVector(*Vnew));
+  EVyVyy = rcp(new Epetra_MultiVector(*V));
 
-  Utmp = Teuchos::rcp(new Epetra_MultiVector(*map_x_, m_));
+  workMxM = Teuchos::rcp(new Epetra_MultiVector(*map_x_, m_));
   Epetra_Map Glob_x_map(m_, 0, *Comm_);
   EYY = rcp(new Epetra_CrsMatrix(Epetra_DataAccess::Copy, Glob_x_map, m_));
   int GlobInd;
@@ -142,37 +142,37 @@ CoeffSolver::CoeffSolver(int NumStochIter,
   }
 
   EYY->FillComplete();
-  eye = Teuchos::rcp(new Epetra_MultiVector(Epetra_Map(m_, 0, A_->Comm()), m_));
-  Vtemp = rcp(new Epetra_MultiVector(*Vnew));
+  identity = Teuchos::rcp(new Epetra_MultiVector(Epetra_Map(m_, 0, A_->Comm()), m_));
+  Vwork = rcp(new Epetra_MultiVector(*V));
   const_coeff = rcp(new Epetra_MultiVector(
-    *map_x_, 1)); // map of udet from deterministic part( n*1 length vector )
-  repEVyVy = rcp(new Epetra_MultiVector(*map_x_, MyLDA));
-  for (int i = 0; i < MyLDA; i++)
+    *map_x_, 1)); // map of uMean from deterministic part( n*1 length vector )
+  repEVyVy = rcp(new Epetra_MultiVector(*map_x_, numSamples));
+  for (int i = 0; i < numSamples; i++)
     (*repEVyVy)[i] = (*const_coeff)[0];
 
   EVyVy = rcp(new Epetra_Vector(
-    *udet)); // map of udet from deterministic part( n*1 length vector )
+    *uMean)); // map of uMean from deterministic part( n*1 length vector )
   EVyVy->PutScalar(0.0);
   xndiff = Teuchos::rcp(new Epetra_Vector(*map_x_, false));
-  VB = rcp(new Epetra_MultiVector(*map_x_, B->NumVectors()));
+  VB = rcp(new Epetra_MultiVector(*map_x_, W->NumVectors()));
   dW = rcp(new Epetra_MultiVector(*z_));
-  VBdW = rcp(new Epetra_MultiVector(*x_));
-  jac = Teuchos::rcp(new Epetra_MultiVector(*lin_coeff));
+  VBdW = rcp(new Epetra_MultiVector(*yCurr));
+  jacView = Teuchos::rcp(new Epetra_MultiVector(*lin_coeff));
   {
     double* jac_val;
-    jac->ExtractView(&jac_val, &m_);
-    Yjac = rcp(new Epetra_SerialDenseMatrix(Epetra_DataAccess::View, jac_val, m_, m_, m_));
+    jacView->ExtractView(&jac_val, &m_);
+    jacDense = rcp(new Epetra_SerialDenseMatrix(Epetra_DataAccess::View, jac_val, m_, m_, m_));
   }
-  H = rcp(new Epetra_MultiVector(*map_x_, m_ * m_));
-  Hn = rcp(new Epetra_MultiVector(Vnew->Map(), m_ * m_));
-  VHn = rcp(new Epetra_MultiVector(*map_x_, m_ * m_));
-  Rv = Teuchos::rcp(new Epetra_MultiVector(*Eyy));
+  BilinTensor = rcp(new Epetra_MultiVector(*map_x_, m_ * m_));
+  BilinTensorN = rcp(new Epetra_MultiVector(V->Map(), m_ * m_));
+  VtBilinTensorN = rcp(new Epetra_MultiVector(*map_x_, m_ * m_));
+  EyyInvView = Teuchos::rcp(new Epetra_MultiVector(*Eyy));
   {
     double* r_val;
-    Rv->ExtractView(&r_val, &m_);
-    Ru = Teuchos::rcp(new Teuchos::SerialDenseMatrix<int, double>(
+    EyyInvView->ExtractView(&r_val, &m_);
+    EyyInvTeuchos = Teuchos::rcp(new Teuchos::SerialDenseMatrix<int, double>(
       Teuchos::View, r_val, m_, m_, m_));
-    ru = Epetra_SerialDenseMatrix(Epetra_DataAccess::View, r_val, m_, m_, m_);
+    EyyInvEpetra = Epetra_SerialDenseMatrix(Epetra_DataAccess::View, r_val, m_, m_, m_);
   }
 
   // WARNING: At present the 'TypeCoeffFile' can be either 'None' or
@@ -212,12 +212,12 @@ CoeffSolver::CoeffSolver(int NumStochIter,
     std::cout << "\nnum vectors in locexpyy = " << LocEyyy->NumVectors()
               << "\n";
   }
-  for (int i = 0; i < eye->MyLength(); i++) {
-    int gr = eye->Map().GID(i);
-    eye->ReplaceGlobalValue(gr, gr, one);
+  for (int i = 0; i < identity->MyLength(); i++) {
+    int gr = identity->Map().GID(i);
+    identity->ReplaceGlobalValue(gr, gr, one);
   }
   if (debug_)
-    printnormMV(*Vnew, 2, "nrm of each vector in Vn:");
+    printnormMV(*V, 2, "nrm of each vector in Vn:");
 
   // Publish owned data into the shared state so BasisSolver sees it.
   sharedState_->y         = y_;
@@ -365,8 +365,8 @@ CoeffSolver::Bilinear(const Teuchos::RCP<Epetra_Vector>& ud,
 
 /* ******************************************************** */
 
-/* H - V'E<Vy,Vy>
- * Hn - E<Vy,Vy>
+/* BilinTensor - V'E<Vy,Vy>
+ * BilinTensorN - E<Vy,Vy>
  */
 void
 CoeffSolver::HBilinV()
@@ -376,27 +376,27 @@ CoeffSolver::HBilinV()
   for (int i = 0; i < m_; i++) {
 
 #if need_locaInterface == 1
-    CHECK_ZERO(domain_->Solve2Assembly(*Vnew, *fortVn));
-    CHECK_ZERO(domain_->Solve2Assembly(*udet, *fortudet));
+    CHECK_ZERO(domain_->Solve2Assembly(*V, *fortVn));
+    CHECK_ZERO(domain_->Solve2Assembly(*uMean, *fortudet));
     Bilinear(fortudet, Teuchos::rcp((*fortVn)(i), false), fortVn, fortviv);
-    CHECK_ZERO(domain_->Assembly2Solve(*fortviv, *viv));
+    CHECK_ZERO(domain_->Assembly2Solve(*fortviv, *bilinWork));
 
 #else  /* -----  not NEED_LOCAINTERFACE  ----- */
-    Bilinear(udet,Teuchos::rcp((*Vnew)(i), false), Vnew, viv);
+    Bilinear(uMean,Teuchos::rcp((*V)(i), false), V, bilinWork);
 #endif /* -----  not NEED_LOCAINTERFACE  ----- */
-    //   temp.Multiply('T', 'N', 1.0, *Vnew, *viv, 0.0);
+    //   temp.Multiply('T', 'N', 1.0, *V, *bilinWork, 0.0);
     k = 0;
     for (int j = i * m_; j < (i + 1) * m_; j++) {
-      //   (*H)(j)->Update(1.0, *(temp(k)), 0.0);
-      (*Hn)(j)->Update(1.0, *((*viv)(k)), 0.0);
+      //   (*BilinTensor)(j)->Update(1.0, *(temp(k)), 0.0);
+      (*BilinTensorN)(j)->Update(1.0, *((*bilinWork)(k)), 0.0);
       k = k + 1;
     }
   }
-  VHn->Multiply('T', 'N', 1.0, *Vnew, *Hn, 0.0);
+  VtBilinTensorN->Multiply('T', 'N', 1.0, *V, *BilinTensorN, 0.0);
   if (debug_)
   {
-    printnormMV(*Vnew, 2, "nrm of each vector in V:");
-    printnormMV(*Hn, 2, "nrm of each vector in Hn:");
+    printnormMV(*V, 2, "nrm of each vector in V:");
+    printnormMV(*BilinTensorN, 2, "nrm of each vector in BilinTensorN:");
   }
 }
 
@@ -408,7 +408,7 @@ CoeffSolver::computeRepEVyVy()
   /********* EVyVy = E[<Vy,Vy>] ********/
   // EVyVy->Scale((-subdt_));
   /********* repEVyVy = repmat(V' * (EVyVy), stochiter)*****/
-  int err = const_coeff->Multiply('T', 'N', 1.0, *Vnew, *EVyVy, 0.0);
+  int err = const_coeff->Multiply('T', 'N', 1.0, *V, *EVyVy, 0.0);
 
   if (debug_) {
     std::cout << "\nError in calculating V*expvyvy : " << err << std::endl;
@@ -422,9 +422,9 @@ void
 CoeffSolver::NonLinRHS()
 {
   if (!useNwtn_) {
-    rhsNonLin->Multiply('N', 'N', 1.0, *VHn, *YY, 0.0);
+    rhsNonLin->Multiply('N', 'N', 1.0, *VtBilinTensorN, *yyOuter, 0.0);
   } else {
-    rhsNonLin->Multiply('N', 'N', 1.0, *VHn, *YY, 0.0);
+    rhsNonLin->Multiply('N', 'N', 1.0, *VtBilinTensorN, *yyOuter, 0.0);
   }
   if (debug_) {
     (*rhsNonLin)(0)->Print(std::cout << "\nrhsnonlin(0) values are \n");
@@ -439,12 +439,12 @@ CoeffSolver::jacBilinTerm()
   JacNonLin->Scale(0.0);
   for (int i = 0; i < m_; i++) {
     for (int j = 0; j < m_; j++) {
-      (*JacNonLin)(i)->Update((*(*x0_)(i))[j], *((*H)(i * m_ + j)), 1.0);
+      (*JacNonLin)(i)->Update((*(*yOld)(i))[j], *((*BilinTensor)(i * m_ + j)), 1.0);
     }
   }
   for (int j = 0; j < m_; j++) {
     for (int i = 0; i < m_; i++) {
-      (*JacNonLin)(j)->Update((*(*x0_)(i))[i], *((*H)(i * m_ + j)), 1.0);
+      (*JacNonLin)(j)->Update((*(*yOld)(i))[i], *((*BilinTensor)(i * m_ + j)), 1.0);
     }
   }
 }
@@ -454,8 +454,8 @@ CoeffSolver::jacBilinTerm()
 void
 CoeffSolver::LinCoeff()
 {
-  A_->Multiply(false, *Vnew, *AV);
-  VAV->Multiply('T', 'N', 1.0, *Vnew, *AV, 0.0);
+  A_->Multiply(false, *V, *AV);
+  VAV->Multiply('T', 'N', 1.0, *V, *AV, 0.0);
   // lin_coeff = I - dt * (VAV)
   lin_coeff->Update(
     1.0, *VAV, 0.0); /* bilinear terms are not added in lin_coeff!!!!!! */
@@ -465,22 +465,22 @@ CoeffSolver::LinCoeff()
   }
   if (debug_) {
     std::cout << "\n frobenius norm of A : " << A_->NormFrobenius() << "\n";
-    printnormMV(*lin_coeff, 2, "norm of y-jac cols:");
+    printnormMV(*lin_coeff, 2, "norm of y-jacView cols:");
     printnormMV(*VAV, 2, "norm of VAV cols:");
-    printnormMV(*Vnew, 2, "norm of V cols:");
+    printnormMV(*V, 2, "norm of V cols:");
   }
   if (debug_) {
     std::cout << "\n In CoeffSolver::LinCoeff" << std::endl;
-    double nrm1[Vnew->NumVectors()];
+    double nrm1[V->NumVectors()];
     lin_coeff->Norm1(&nrm1[0]);
     std::cout << "One norm of I-dt*VAV" << std::endl;
-    for (int i = 0; i < Vnew->NumVectors(); ++i) {
+    for (int i = 0; i < V->NumVectors(); ++i) {
       std::cout << nrm1[i] << "  ";
     }
     std::cout << std::endl;
     lin_coeff->MaxValue(&nrm1[0]);
     std::cout << "max value of I-dt*VAV" << std::endl;
-    for (int i = 0; i < Vnew->NumVectors(); ++i) {
+    for (int i = 0; i < V->NumVectors(); ++i) {
       std::cout << nrm1[i] << "  ";
     }
     std::cout << std::endl;
@@ -507,16 +507,16 @@ void
 CoeffSolver::y_jac()
 {
   // jacBilinTerm();
-  *jac = *lin_coeff;
-  // jac->Update(subdt_,*JacNonLin,1.0);
+  *jacView = *lin_coeff;
+  // jacView->Update(subdt_,*JacNonLin,1.0);
 }
 /*
  * ===  FUNCTION
  * ======================================================================
  *         Name:  y_rhs
  *  Description:  calculates rhs of the system!!!
- *  x_ - the value obtained at previous time step
- *  x0_- the value to be obtained for current time step
+ *  yCurr - the value obtained at previous time step
+ *  yOld- the value to be obtained for current time step
  * =====================================================================================
  */
 void
@@ -525,7 +525,7 @@ CoeffSolver::y_rhs()
   if (!useNwtn_) {
     NonLinRHS();
     rhs->PutScalar(0.0);
-    rhs->Update(1.0, *x_, 1.0);
+    rhs->Update(1.0, *yCurr, 1.0);
     // rhs=-x+lin_coeff*x0
     std::cout.precision(16);
     // rhs= x + dt*(V'<Vx,Vx>-V'E[<Vx,Vx>])
@@ -534,8 +534,8 @@ CoeffSolver::y_rhs()
     rhs->Update(1.0, *VBdW, 1.0);
     if (debug_ && stochiter_ == 0) {
       double nrm;
-      double nrm1[Vnew->NumVectors()], nrm2[y_->NumVectors()];
-      printnormMV(*Vnew, 2, "norm of V: ");
+      double nrm1[V->NumVectors()], nrm2[y_->NumVectors()];
+      printnormMV(*V, 2, "norm of V: ");
       printnormMV(*rhsNonLin, 2, "norm of rhsnonlin: ");
       printnormMV(*zTrans_, 2, "norm of dW: ");
       printnormMV(*EyyOld_, 2, "norm of EyyOld_: ");
@@ -546,8 +546,8 @@ CoeffSolver::y_rhs()
   } else {
     NonLinRHS();
     rhs->PutScalar(0.0);
-    rhs->Multiply('N', 'N', 1.0, *lin_coeff, *x0_, 1.0); // rhs=-x+lin_coeff*x0
-    rhs->Update(-1.0, *x_, 1.0);
+    rhs->Multiply('N', 'N', 1.0, *lin_coeff, *yOld, 1.0); // rhs=-x+lin_coeff*x0
+    rhs->Update(-1.0, *yCurr, 1.0);
     rhs->Update(-subdt_, *repEVyVy, 1.0); // rhs=-x+lin_coeff*x0+const_coeff
     // rhs=-x + lin_coeff*x0 + const_coeff + rhs_nonlin
     rhs->Update(subdt_, *rhsNonLin, 1.0);
@@ -564,8 +564,8 @@ CoeffSolver::get_x_map()
 void
 CoeffSolver::set_x(const Teuchos::RCP<Epetra_MultiVector>& x0_temp)
 {
-  x0_ = x0_temp;
-  *x_ = *x0_temp;
+  yOld = x0_temp;
+  *yCurr = *x0_temp;
 }
 
 void
@@ -574,8 +574,8 @@ CoeffSolver::setDwiener(const Teuchos::RCP<Epetra_MultiVector>& z0_temp)
   dW = z0_temp;
 
   if ((0)) { /* TODO: Put it in debug_ or testing_*/
-    itrtr += 1;
-    std::string flnm = "wnr" + Teuchos::toString(itrtr) + ".mm";
+    debugWienerCount += 1;
+    std::string flnm = "wnr" + Teuchos::toString(debugWienerCount) + ".mm";
     std::cout << "\n filename is: " << flnm << "\n";
     auto tmpmv = StochIO::readMV(flnm, *map_z_);
     *dW = *tmpmv;
@@ -593,7 +593,7 @@ CoeffSolver::get_f_map()
 Teuchos::RCP<Epetra_MultiVector>
 CoeffSolver::get_x_init()
 {
-  return x0_;
+  return yOld;
 }
 
 Teuchos::RCP<Epetra_Vector>
@@ -606,30 +606,30 @@ CoeffSolver::Solve()
 {
   double* Viewx;
   double* ViewRHS;
-  dx_->ExtractView(&Viewx, &m_);
+  yDelta->ExtractView(&Viewx, &m_);
   rhs->ExtractView(&ViewRHS, &m_);
   DenseDx_ =
-    Epetra_SerialDenseMatrix(Epetra_DataAccess::Copy, Viewx, m_, m_, MyLDA);
+    Epetra_SerialDenseMatrix(Epetra_DataAccess::Copy, Viewx, m_, m_, numSamples);
   DenseRHS =
-    Epetra_SerialDenseMatrix(Epetra_DataAccess::Copy, ViewRHS, m_, m_, MyLDA);
+    Epetra_SerialDenseMatrix(Epetra_DataAccess::Copy, ViewRHS, m_, m_, numSamples);
 
   y_prob.SetVectors(DenseDx_, DenseRHS);
   y_prob.Solve();
   if (debug_) {
     y_prob.Matrix()->Print(std::cout << "inverted matrix \n");
-    Yjac->Print(std::cout << "Yjac \n");
-    std::cout << "\n norm one Yjac: " << Yjac->NormOne() << std::endl;
+    jacDense->Print(std::cout << "jacDense \n");
+    std::cout << "\n norm one jacDense: " << jacDense->NormOne() << std::endl;
     Epetra_SerialDenseMatrix res;
     res = DenseRHS;
-    res.Multiply('N', 'N', 1.0, *Yjac, DenseDx_, -1.0);
+    res.Multiply('N', 'N', 1.0, *jacDense, DenseDx_, -1.0);
     //res.Print(std::cout << "res \n");
     std::cout << "\n If Solved : " << y_prob.Solved() << std::endl;
     std::cout << "\n Debug_ value : " << debug_<< std::endl;
     getchar();
   }
 
-  for (int i = 0; i < MyLDA; i++)
-    (*dx_)[i] = DenseDx_[i];
+  for (int i = 0; i < numSamples; i++)
+    (*yDelta)[i] = DenseDx_[i];
 }
 
 void
@@ -637,7 +637,7 @@ CoeffSolver::StochasticIterations()
 {
   subdt_ = *dt_ / numSubTimeStep;
   double time, LocTime;
-  Epetra_Time timer1(Vnew->Comm());
+  Epetra_Time timer1(V->Comm());
 
   computeEVyVy();
 
@@ -670,27 +670,27 @@ CoeffSolver::StochasticIterations()
 
   if (debug_) {
     std::cout.precision(18);
-    std::cout << "\n frob-norm of det-jac: " << A_->NormFrobenius();
-    printnormMV(*jac, 2, "2-norm of y-jac");
+    std::cout << "\n frob-norm of det-jacView: " << A_->NormFrobenius();
+    printnormMV(*jacView, 2, "2-norm of y-jacView");
   }
-  Epetra_MultiVector JAC(*jac);
-  JAC = *jac;
+  Epetra_MultiVector JAC(*jacView);
+  JAC = *jacView;
 
   if (test_) {
     LocTime = timer3.ElapsedTime();
     Comm_->SumAll(&LocTime, &time, 1);
     if (Comm_->MyPID() == 0) {
       std::cout << "\n*******************************************\n";
-      std::cout << "average time per proc. for y-jac() "
+      std::cout << "average time per proc. for y-jacView() "
                 << (time) / (A_->Comm().NumProc()) << " sec\n";
       std::cout << "*******************************************\n\n";
     }
   }
   Epetra_Time timer4(timer1);
-  y_prob.SetMatrix(*Yjac);
+  y_prob.SetMatrix(*jacDense);
   if (debug_) {
-    printnormMV(*Vnew, 1, "1-norm of V in CoeffSolver::StochasticIterations():");
-    std::cout << "One Norm of Yjac = " << Yjac->NormOne() << std::endl;
+    printnormMV(*V, 1, "1-norm of V in CoeffSolver::StochasticIterations():");
+    std::cout << "One Norm of jacDense = " << jacDense->NormOne() << std::endl;
   }
   // shouldEquil=y_prob.ShouldEquilibrate();
   //  if(shouldEquil)
@@ -704,7 +704,7 @@ CoeffSolver::StochasticIterations()
   double* valptr;
   valptr = y_prob.AI();
   Epetra_MultiVector inv_jac(
-    Epetra_DataAccess::Copy, jac->Map(), valptr, m_, m_);
+    Epetra_DataAccess::Copy, jacView->Map(), valptr, m_, m_);
   if (test_) {
     LocTime = timer4.ElapsedTime();
     Comm_->SumAll(&LocTime, &time, 1);
@@ -716,12 +716,12 @@ CoeffSolver::StochasticIterations()
     }
   }
 
-  VB->Multiply('T', 'N', 1.0, *Vnew, *B, 0.0);
+  VB->Multiply('T', 'N', 1.0, *V, *W, 0.0);
   Epetra_Time timer5(timer1);
   for (int substep = 1; substep <= numSubTimeStep; substep++) {
     double avrg[zTrans_->NumVectors()];
     Epetra_MultiVector avgMV(*zTrans_);
-    for (int i = 0; i < B->NumVectors(); i++) {
+    for (int i = 0; i < W->NumVectors(); i++) {
       avrg[i] = 0;
       for (stochiter_ = 0; stochiter_ < yTrans_->MyLength(); stochiter_++) {
         (*(*zTrans_)(i))[stochiter_] = noiseGen_.sample();
@@ -740,22 +740,22 @@ CoeffSolver::StochasticIterations()
     /********* stoch_coeff = VB*dW ****************/
     VBdW->Multiply('N', 'N', 1.0, *VB, *dW, 0.0);
     if (!useNwtn_) {
-      dx_->PutScalar(0.0);
+      yDelta->PutScalar(0.0);
       y_rhs();
-      dx_->Multiply('N', 'N', 1.0, inv_jac, *rhs, 0.0);
-      x0_->Update(1.0, *dx_, 0.0);
+      yDelta->Multiply('N', 'N', 1.0, inv_jac, *rhs, 0.0);
+      yOld->Update(1.0, *yDelta, 0.0);
     } else
       Newton();
     if (debug_ && stochiter_ == 0) {
-      double nrm1[Vnew->NumVectors()];
+      double nrm1[V->NumVectors()];
       inv_jac.Norm2(&nrm1[0]);
-      std::cout << "\n norm of inv(Yjac)\n";
-      for (int i = 0; i < Vnew->NumVectors(); ++i) {
+      std::cout << "\n norm of inv(jacDense)\n";
+      for (int i = 0; i < V->NumVectors(); ++i) {
         std::cout << nrm1[i] << "  ";
       }
       std::cout << std::endl;
 
-      std::cout << "\n frob. norm of inv(y_jac)  = " << Yjac->NormOne()
+      std::cout << "\n frob. norm of inv(y_jac)  = " << jacDense->NormOne()
                 << std::endl;
       getchar();
     }
@@ -788,7 +788,7 @@ CoeffSolver::computeEVyVy()
   EVyVy->Scale(0.0);
   for (int i = 0; i < m_; i++) {
     for (int j = 0; j < m_; j++) {
-      EVyVy->Update((*Eyy)[j][i], (*((*Hn)(i * m_ + j))), 1.0);
+      EVyVy->Update((*Eyy)[j][i], (*((*BilinTensorN)(i * m_ + j))), 1.0);
     }
   }
 }
@@ -807,21 +807,21 @@ CoeffSolver::computeEyyTyT()
 {
   double* ViewYY;
   double* ViewLocExpyyy;
-  YY->ExtractView(&ViewYY, &rszyy);
+  yyOuter->ExtractView(&ViewYY, &sizeYY);
   LocEyyy->ExtractView(&ViewLocExpyyy, &m_);
   Epetra_Vector tmpy(*(*y_)(0));
   int err1;
-  for (int i = 0; i < MyLDA; i++) {
+  for (int i = 0; i < numSamples; i++) {
     tmpy = (*(*y_)(i));
     err1 = LocEyyy->Multiply('N', 'T', 1.0, tmpy, tmpy, 0.0);
-    for (int j = 0; j < YY->MyLength(); j++) {
-      ViewYY[i * YY->MyLength() + j] = ViewLocExpyyy[j];
+    for (int j = 0; j < yyOuter->MyLength(); j++) {
+      ViewYY[i * yyOuter->MyLength() + j] = ViewLocExpyyy[j];
     }
   }
   double cpyEyyy[EyyTyT->NumVectors()*EyyTyT->MyLength()];
   const int sz=EyyTyT->NumVectors()*EyyTyT->MyLength();
   double globSumEyyy[EyyTyT->NumVectors()*EyyTyT->MyLength()];
-  EyyTyT->Multiply('N', 'T', 1.0 / NumStochIter_, *YY, *y_, 0.0);
+  EyyTyT->Multiply('N', 'T', 1.0 / NumStochIter_, *yyOuter, *y_, 0.0);
 
   EyyTyT->ExtractCopy(cpyEyyy, EyyTyT->MyLength());
   int count = EyyTyT->NumVectors() * EyyTyT->MyLength();
@@ -838,7 +838,7 @@ CoeffSolver::computeEyyTyT()
 void
 CoeffSolver::computeEVyVyy()
 {
-  EVyVyy->Multiply('N', 'N', 1.0, *Hn, *EyyTyT, 0.0);
+  EVyVyy->Multiply('N', 'N', 1.0, *BilinTensorN, *EyyTyT, 0.0);
 }
 // ************************************************************************
 void
@@ -847,12 +847,12 @@ CoeffSolver::computeEDEyy()
 {
   Epetra_MultiVector Inv_Exp_yy(Eyy->Map(), Eyy->NumVectors());
   SymMatPseudoInverse(*Eyy, Inv_Exp_yy); /* compute pseudo-inverse */
-  Epetra_MultiVector zyT(*EzyDEyy), WzyT(*Vnew);
+  Epetra_MultiVector zyT(*EzyDEyy), WzyT(*V);
   /* Calculate zy' */
   zyT.Multiply('T', 'N', 1.0 / NumStochIter_, *zTrans_, *yTrans_, 0.0);
   /* Calculate W*E[zy'] */
-  WzyT.Multiply('N', 'N', numSubTimeStep, *B, zyT, 0.0);
-  Epetra_MultiVector Wzy_P_EVyVyy(*Vnew);
+  WzyT.Multiply('N', 'N', numSubTimeStep, *W, zyT, 0.0);
+  Epetra_MultiVector Wzy_P_EVyVyy(*V);
   /* Calculate W*E[zy']+E[<Vy,Vy>] */
   Wzy_P_EVyVyy.Update(*dt_, *EVyVyy, 1.0, WzyT, 0.0);
   /* Calculate (W*E[zy']+E[<Vy,Vy>])/E[yy'] */
@@ -861,12 +861,12 @@ CoeffSolver::computeEDEyy()
   if (debug_) {
     Eyy->Print(std::cout << "Eyy \n");
     Inv_Exp_yy.Print(std::cout << "Inv_Exp_yy \n");
-    Epetra_MultiVector eye(*Eyy);
-    eye.Multiply('N', 'N', 1.0, Inv_Exp_yy, *Eyy, 0.0);
-    eye.Print(std::cout << "Eyy * Inv(Eyy) \n");
-    printnormMV(*Vnew, 2, "norm of V : ");
+    Epetra_MultiVector identity(*Eyy);
+    identity.Multiply('N', 'N', 1.0, Inv_Exp_yy, *Eyy, 0.0);
+    identity.Print(std::cout << "Eyy * Inv(Eyy) \n");
+    printnormMV(*V, 2, "norm of V : ");
     printnormMV(*yTrans_, 2, "norm of Y^T : ");
-    printnormMV(*B, 2, "norm of W : ");
+    printnormMV(*W, 2, "norm of W : ");
     printnormMV(*VB, 2, "norm of VW : ");
     printTransNormMV(*rhs, 2, "norm of rhs^T: ");
     printTransNormMV(*dW, 2, "norm of dw^T: ");
@@ -915,7 +915,7 @@ CoeffSolver::PostProcess(Epetra_Vector& second_mmnt)
   CreateDistTransMultivec();
   double A[m_][m_];
   int LWORK = 1 + 5 * m_ * m_, intdum = 1;
-  double WORK[LWORK], W[m_], U[m_][m_], Vdum;
+  double WORK[LWORK], singValues[m_], U[m_][m_], Vdum;
   char COMPZ = 'V', UPLO = 'U';
   int INFO;
   char JOBU = 'A', JOBVT = 'O';
@@ -930,7 +930,7 @@ CoeffSolver::PostProcess(Epetra_Vector& second_mmnt)
                m_,
                &A[0][0],
                m_,
-               &W[0],
+               &singValues[0],
                &U[0][0],
                m_,
                &Vdum,
@@ -946,8 +946,8 @@ CoeffSolver::PostProcess(Epetra_Vector& second_mmnt)
     DeviationFile << scientific;
     DeviationFile.precision(16);
     for (int i = 0; i < m_; i++) {
-      std::cout << "  " << sqrt(W[i] / float(NumStochIter_)) << "\n";
-      DeviationFile << sqrt(W[i] / float(NumStochIter_)) << "\n";
+      std::cout << "  " << sqrt(singValues[i] / float(NumStochIter_)) << "\n";
+      DeviationFile << sqrt(singValues[i] / float(NumStochIter_)) << "\n";
     }
     std::cout << "\nVariances:\n";
     std::ofstream VarianceFile("VarFile.mm", ios::out);
@@ -956,16 +956,16 @@ CoeffSolver::PostProcess(Epetra_Vector& second_mmnt)
     VarianceFile << scientific;
     VarianceFile.precision(16);
     for (int i = 0; i < m_; i++) {
-      std::cout << "  " << W[i] / NumStochIter_ << "\n";
-      VarianceFile << W[i] / NumStochIter_ << "\n";
+      std::cout << "  " << singValues[i] / NumStochIter_ << "\n";
+      VarianceFile << singValues[i] / NumStochIter_ << "\n";
     }
   }
   int err;
   second_mmnt.PutScalar(0.0);
-  for (int i = 0; i < Vnew->NumVectors(); i++) {
-    for (int j = 0; j < Vnew->NumVectors(); j++) {
+  for (int i = 0; i < V->NumVectors(); i++) {
+    for (int j = 0; j < V->NumVectors(); j++) {
       second_mmnt.Multiply(
-        yy[i][j] / NumStochIter_, *(*Vnew)(i), *(*Vnew)(j), 1.0);
+        yy[i][j] / NumStochIter_, *(*V)(i), *(*V)(j), 1.0);
     }
   }
 }
@@ -974,7 +974,7 @@ void
 CoeffSolver::Newton()
 {
   isConverged_ = false;
-  dx_->PutScalar(0.0);
+  yDelta->PutScalar(0.0);
   // y_jac();
   y_rhs();
   rhs->Scale(-1.0);
@@ -983,15 +983,15 @@ CoeffSolver::Newton()
   NormRHS_ = *std::max_element(normsRHS.begin(), normsRHS.end());
   //std::cout << "\n norm of rhs = " << NormRHS_ << std::endl;
   //y_jac();
-  //y_prob.SetMatrix(*Yjac); // 2. Give the updated matrix to the SVD solver
+  //y_prob.SetMatrix(*jacDense); // 2. Give the updated matrix to the SVD solver
   //y_prob.Factor();
   INFO("Newton:      norm: " << NormRHStest_ );
   for (iter_ = 0; iter_ != maxNumIterations_; ++iter_) {
     Solve();
     if (debug_)
-      x0_->Update(1.0, *dx_, 0.0);
+      yOld->Update(1.0, *yDelta, 0.0);
     else {
-      x0_->Update(1.0, *dx_, 1.0);
+      yOld->Update(1.0, *yDelta, 1.0);
       y_rhs();
       rhs->Scale(-1.0);
     }
@@ -1001,11 +1001,11 @@ CoeffSolver::Newton()
     if (debug_) {
       std::cout << "\n RHS NORM = " << NormRHStest_ << std::endl;
       Epetra_Vector Err(*(*y_)(0));
-      Err.Multiply('N', 'N', 1.0, *jac, *x0_, 0.0);
+      Err.Multiply('N', 'N', 1.0, *jacView, *yOld, 0.0);
       Err.Update(1.0, *rhs, 1.0);
       double nrm;
       Err.Norm2(&nrm);
-      std::cout << "\n norm of err = jac*x0-rhs = " << nrm << std::endl;
+      std::cout << "\n norm of err = jacView*x0-rhs = " << nrm << std::endl;
     } else {
       if (NormRHStest_ < toleranceRHS_) {
         DEBUG("Success...");
@@ -1038,7 +1038,7 @@ CoeffSolver::RunBackTracking()
       break;
     }
     // Apply reduction to the state vector
-    x0_->Update(reduction, *dx_, 1.0);
+    yOld->Update(reduction, *yDelta, 1.0);
     y_rhs();
     std::vector<double> normsBT(rhs->NumVectors());
     rhs->Norm2(normsBT.data());

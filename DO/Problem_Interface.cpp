@@ -25,11 +25,11 @@ using namespace std;
 //-----------------------------------------------------------------------------
 Problem_Interface::Problem_Interface(const Teuchos::RCP<Epetra_CrsMatrix>& A,
                                      const Teuchos::RCP<Teuchos::ParameterList>& SolverParams,
-                                     const Teuchos::RCP<Epetra_Vector>& udet, int &m, double *t, double &dt,
+                                     const Teuchos::RCP<Epetra_Vector>& uMean, int &m, double *t, double &dt,
                                      const Teuchos::RCP<Epetra_MultiVector>& W, const Teuchos::RCP<Epetra_CrsMatrix>& mass,
                                      int iter)
     : // **************************************************************************************
-      A_(A), SolverParams_(SolverParams), udet_(udet), m_(m), t_(t), dt_(dt), W_(W), stochiter(iter), mass_(mass),
+      A_(A), SolverParams_(SolverParams), udet_(uMean), m_(m), t_(t), dt_(dt), W_(W), stochiter(iter), mass_(mass),
       v_prob(), v_solve()
 {
   MyPID = A_->Comm().MyPID();

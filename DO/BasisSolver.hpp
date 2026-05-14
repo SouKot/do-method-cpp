@@ -103,7 +103,7 @@ public:
      * @param A           Deterministic Jacobian (shared; updated externally).
      * @param SolverParams Parameter list; must contain "Solver Package",
      *                     "StochBasisFile", "Class Testing", etc.
-     * @param udet        Mean-field solution vector.
+     * @param uMean        Mean-field solution vector.
      * @param m           Number of stochastic basis modes.
      * @param t           Pointer to current simulation time (read only).
      * @param dt          Initial time-step size.
@@ -113,7 +113,7 @@ public:
      */
     BasisSolver(const Teuchos::RCP<Epetra_CrsMatrix>& A,
                 const Teuchos::RCP<Teuchos::ParameterList>& SolverParams,
-                const Teuchos::RCP<Epetra_Vector>& udet,
+                const Teuchos::RCP<Epetra_Vector>& uMean,
                 int& m,
                 double* t,
                 double& dt,
@@ -217,20 +217,20 @@ public:
     Teuchos::RCP<Epetra_CrsMatrix>  mass_;
     Teuchos::RCP<Epetra_Vector>     udet_;
 
-    int    stochiter, MyPID;
+    int    stochIter, MyPID;
     double *t_, Tol_;
 
     Teuchos::RCP<Epetra_MultiVector> W_;
-    Teuchos::RCP<Epetra_MultiVector> V1;
-    Teuchos::RCP<Epetra_MultiVector> eye;
+    Teuchos::RCP<Epetra_MultiVector> Vold;
+    Teuchos::RCP<Epetra_MultiVector> identity;
     Teuchos::RCP<Epetra_MultiVector> Ezy;
-    Teuchos::RCP<Epetra_MultiVector> Eyy, Rvec;
+    Teuchos::RCP<Epetra_MultiVector> Eyy, Rfactor;
     Teuchos::RCP<Epetra_MultiVector> Eyyy;
     Teuchos::RCP<Epetra_MultiVector> EVyVyBasis;
     Teuchos::RCP<Teuchos::SerialDenseMatrix<int, double>> R;
     Teuchos::RCP<Epetra_MultiVector> EyyInv;
     Teuchos::RCP<Epetra_Map>         map_, y_map;
-    Teuchos::RCP<Epetra_MultiVector> z, RHS_block_1;
+    Teuchos::RCP<Epetra_MultiVector> rhsWork, RHS_block_1;
     Teuchos::RCP<Epetra_LocalMap>    locmap_;
 
     // Scalar typedefs kept for callers that reference them via BasisSolver::ST etc.

@@ -46,7 +46,7 @@
  * | V          | BasisSolver    | CoeffSolver        |
  * | y          | CoeffSolver        | BasisSolver    |
  * | EDEyy  | CoeffSolver        | BasisSolver    |
- * | udet       | Mean solver    | both           |
+ * | uMean       | Mean solver    | both           |
  * | A          | Mean solver    | both           |
  * | W          | Mean solver    | both           |
  */
@@ -61,7 +61,7 @@ struct StochasticState {
     Teuchos::RCP<Epetra_MultiVector> EDEyy;
 
     /// Mean-field solution vector. Owned by the Mean solver.
-    Teuchos::RCP<Epetra_Vector> udet;
+    Teuchos::RCP<Epetra_Vector> uMean;
 
     /// Deterministic Jacobian. Owned by the Mean solver.
     Teuchos::RCP<Epetra_CrsMatrix> A;

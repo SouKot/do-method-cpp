@@ -180,25 +180,25 @@ public:
   void CreateDistTransMultivec();
   bool Converged() { return isConverged_; }
   int Iterations() { return iter_; }
-  Teuchos::RCP<Epetra_SerialDenseMatrix> getJacobian() { return Yjac; }
+  Teuchos::RCP<Epetra_SerialDenseMatrix> getJacobian() { return jacDense; }
   Teuchos::RCP<Epetra_MultiVector> getEyy()         { return Eyy; }
   Teuchos::RCP<Epetra_MultiVector> getEDEyy()   { return EDEyy; }
   Teuchos::RCP<Epetra_MultiVector> getY()           { return y_; }
   Epetra_MultiVector&              getYTrans()       { return *yTrans_; }
 
-  int numSubTimeStep, MyLDA;
-  int m_, rszyy;
+  int numSubTimeStep, numSamples;
+  int m_, sizeYY;
   int stochiter;
-  int N_, MyPID, itrtr = 0;
+  int nDOF, MyPID, debugWienerCount = 0;
   double subdt_;
   double* dt_;
   Teuchos::RCP<Epetra_CrsMatrix> A_, EYY;
   // Teuchos::RCP<Epetra_CrsMatrix> mass_;
-  Teuchos::RCP<Epetra_MultiVector> Vnew, fortVn, fortviv,
-    viv; //*********************************************FILL IT With the
+  Teuchos::RCP<Epetra_MultiVector> V, fortVn, fortviv,
+    bilinWork; //*********************************************FILL IT With the
          // value of bases
   //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*****************
-  Teuchos::RCP<Epetra_Vector> udet,fortudet;
+  Teuchos::RCP<Epetra_Vector> uMean,fortudet;
   Teuchos::RCP<Epetra_MultiVector> AV;
   Teuchos::RCP<Epetra_MultiVector> VAV;
   Teuchos::RCP<Epetra_MultiVector> udet_mtimes;
@@ -207,39 +207,39 @@ public:
   Teuchos::RCP<Epetra_MultiVector> VVudet;
   Teuchos::RCP<Epetra_MultiVector> lin_coeff, JacNonLin;
   Teuchos::RCP<Epetra_MultiVector> repEVyVy;
-  Teuchos::RCP<Epetra_MultiVector> Vtemp;
+  Teuchos::RCP<Epetra_MultiVector> Vwork;
   Teuchos::RCP<Epetra_Vector>
-    EVyVy; // map of udet from deterministic part( n*1 length vector )
+    EVyVy; // map of uMean from deterministic part( n*1 length vector )
   Teuchos::RCP<Epetra_MultiVector> const_coeff;
   Teuchos::RCP<Epetra_MultiVector> rhs;
-  Teuchos::RCP<Epetra_MultiVector> B;
+  Teuchos::RCP<Epetra_MultiVector> W;
   Teuchos::RCP<Epetra_MultiVector> VB;
   Teuchos::RCP<Epetra_MultiVector> dW;
   Teuchos::RCP<Epetra_MultiVector> VBdW;
   Teuchos::RCP<Epetra_Vector> xndiff;
-  Teuchos::RCP<Epetra_SerialDenseMatrix> Yjac;
-  Teuchos::RCP<Epetra_MultiVector> jac;
+  Teuchos::RCP<Epetra_SerialDenseMatrix> jacDense;
+  Teuchos::RCP<Epetra_MultiVector> jacView;
   Epetra_SerialDenseMatrix DenseDx_, DenseRHS;
   // Teuchos::RCP<Epetra_SerialDenseVector> DenseRHS;
   Teuchos::RCP<Epetra_MultiVector> z_, y_, rhsNonLin, yTrans_, zTrans_,
-    EVyVyyDEyy, EDEyy, eye;
+    EVyVyyDEyy, EDEyy, identity;
   Epetra_SerialDenseSVD y_prob;
-  Teuchos::RCP<Epetra_MultiVector> H, Hn, VHn, Rv, YY;
+  Teuchos::RCP<Epetra_MultiVector> BilinTensor, BilinTensorN, VtBilinTensorN, EyyInvView, yyOuter;
   Teuchos::RCP<Epetra_Map> Tmap, map_mm;
   Teuchos::RCP<Epetra_MultiVector> Ezy, EzyPrev, EzyDEyy, EVyVyy;
   Teuchos::RCP<Epetra_MultiVector> Eyy, LocEyyy, GlobEyyy,
-    EyyTyT, Utmp;
-  Epetra_SerialDenseMatrix ru;
-  Teuchos::RCP<Teuchos::SerialDenseMatrix<int, double>> Ru;
+    EyyTyT, workMxM;
+  Epetra_SerialDenseMatrix EyyInvEpetra;
+  Teuchos::RCP<Teuchos::SerialDenseMatrix<int, double>> EyyInvTeuchos;
 
-  // Epetra_MultiVector* viv;
+  // Epetra_MultiVector* bilinWork;
   // Teuchos::RCP<Epetra_Vector>Teuchos::RCP<Epetra_CrsMatrix> W_jac;
   // Teuchos::RCP<Epetra_MultiVector> y_jac_ ;
   // void model_bil(double* u, double* v, double* uv){};
   // typedef Sacado::Fad::DFad<double> FadType;
   // Teuchos::RCP< Epetra_Vector> x_old ;
-  Teuchos::RCP<Epetra_MultiVector> f_out;
-  Teuchos::RCP<Epetra_MultiVector> x0_, x_, dx_;
+  Teuchos::RCP<Epetra_MultiVector> residual;
+  Teuchos::RCP<Epetra_MultiVector> yOld, yCurr, yDelta;
   typedef Epetra_MultiVector MV;
   typedef Epetra_Operator OP;
   typedef Anasazi::MultiVecTraits<double, Epetra_MultiVector> MVT;

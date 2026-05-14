@@ -47,7 +47,7 @@ using Teuchos::rcpFromRef;
 // =====================================================================================
 BasisSolver::BasisSolver(const Teuchos::RCP<Epetra_CrsMatrix>& A,
                          const Teuchos::RCP<Teuchos::ParameterList>& SolverParams,
-                         const Teuchos::RCP<Epetra_Vector>& udet,
+                         const Teuchos::RCP<Epetra_Vector>& uMean,
                          int& m, double* t, double& dt,
                          const Teuchos::RCP<Epetra_MultiVector>& W,
                          const Teuchos::RCP<Epetra_CrsMatrix>& mass,
@@ -55,12 +55,12 @@ BasisSolver::BasisSolver(const Teuchos::RCP<Epetra_CrsMatrix>& A,
                          const Teuchos::RCP<StochasticState>& sharedState)
     : A_(A)
     , SolverParams_(SolverParams)
-    , udet_(udet)
+    , udet_(uMean)
     , m_(m)
     , t_(t)
     , dt_(dt)
     , W_(W)
-    , stochiter(iter)
+    , stochIter(iter)
     , mass_(mass)
     , sharedState_(sharedState)
     , solver_type_(SolverParams->get("Solver Package", "any"))
@@ -88,18 +88,18 @@ BasisSolver::BasisSolver(const Teuchos::RCP<Epetra_CrsMatrix>& A,
     iteration = 1;
 
     EVyVyBasis       = rcp(new Epetra_MultiVector(*sharedState_->V));
-    eye         = rcp(new Epetra_MultiVector(*map_, m_));
+    identity         = rcp(new Epetra_MultiVector(*map_, m_));
     Ezy      = rcp(new Epetra_MultiVector(*y_map, m_));
     Eyy      = rcp(new Epetra_MultiVector(*map_, m_));
     Eyyy     = rcp(new Epetra_MultiVector(*map_, m_));
     EyyInv  = rcp(new Epetra_MultiVector(*map_, m_));
     RHS_block_1 = rcp(new Epetra_MultiVector(A_->RowMap(), m_));
     sharedState_->EDEyy   = rcp(new Epetra_MultiVector(A->RowMap(), m_));
-    Rvec        = rcp(new Epetra_MultiVector(*locmap_, m_));
+    Rfactor        = rcp(new Epetra_MultiVector(*locmap_, m_));
 
     {
         double* r_val;
-        Rvec->ExtractView(&r_val, &m_);
+        Rfactor->ExtractView(&r_val, &m_);
         R = rcp(new Teuchos::SerialDenseMatrix<int, double>(
             Teuchos::DataAccess::View, r_val, m_, m_, m_));
     }
@@ -116,7 +116,7 @@ BasisSolver::BasisSolver(const Teuchos::RCP<Epetra_CrsMatrix>& A,
 
     double one = 1.0;
     for (int i = 0; i < m_; i++)
-        eye->ReplaceGlobalValue(i, i, one);
+        identity->ReplaceGlobalValue(i, i, one);
 }
 
 // =====================================================================================
@@ -376,7 +376,7 @@ void BasisSolver::TransferNorm()
     auto& y = sharedState_->y;
     Epetra_MultiVector ycpy(*y);
     ycpy = *y;
-    y->Multiply('N', 'N', 1.0, *Rvec, ycpy, 0.0);
+    y->Multiply('N', 'N', 1.0, *Rfactor, ycpy, 0.0);
 }
 
 // =====================================================================================

@@ -389,7 +389,7 @@ int main(int argc = 0, char *argv[] = NULL) {
 
         // ===== Shared stochastic state =====
         auto sharedState = Teuchos::rcp(new StochasticState());
-        sharedState->udet = soln;
+        sharedState->uMean = soln;
         sharedState->A    = Teuchos::rcpFromRef(detA);
         sharedState->W    = Wbase;
 
