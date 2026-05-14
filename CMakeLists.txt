@@ -222,13 +222,39 @@ if(SCALAPACK_found GREATER -1)
 endif()
 
 find_package(Doxygen)
-set(DOXYGEN_USE_MDFILE_AS_MAINPAGE "${PROJECT_SOURCE_DIR}/README.md")
+#set(DOXYGEN_USE_MDFILE_AS_MAINPAGE "${PROJECT_SOURCE_DIR}/README.md")
 if(DOXYGEN_FOUND)
+    set(ORIGINAL_README "${PROJECT_SOURCE_DIR}/README.md")
+    set(DOXYGEN_README "${CMAKE_CURRENT_BINARY_DIR}/README_doxygen.md")
+
+    if(EXISTS "${ORIGINAL_README}")
+        file(READ "${ORIGINAL_README}" README_CONTENTS)
+        
+        # Pass 1: Translate GitHub block math ($$...$$) to Doxygen block math (\f[...\f])
+        string(REGEX REPLACE "\\$\\$([^$]+)\\$\\$" "\\\\f[\\1\\\\f]" README_CONTENTS "${README_CONTENTS}")
+        
+        # Pass 2: Secure standard currency syntax (e.g., $10) so they don't break
+        # This prevents isolated numeric dollar instances from turning into math blocks
+        string(REGEX REPLACE " \\$([0-9])" " \\\\$\\1" README_CONTENTS "${README_CONTENTS}")
+        
+        # Pass 3: Translate GitHub inline math ($...$) to Doxygen inline math (\f$... \f$)
+        # The [^$]+ rule ensures it matches only true enclosed inline segments
+        string(REGEX REPLACE "\\$([^$ \n][^$\n]*[^$ \n])\\$" "\\\\f$\\1\\\\f$" README_CONTENTS "${README_CONTENTS}")
+        
+        file(WRITE "${DOXYGEN_README}" "${README_CONTENTS}")
+    else()
+        set(DOXYGEN_README "${ORIGINAL_README}") 
+    endif()
+
+    # Pass the converted file to your Doxygen processor
+    set(DOXYGEN_USE_MDFILE_AS_MAINPAGE "${DOXYGEN_README}")
+
     # Set Doxygen configuration variables
     set(DOXYGEN_PROJECT_NAME "DO Project")
     set(DOXYGEN_GENERATE_HTML YES)
     set(DOXYGEN_RECURSIVE YES)
-    
+    set(DOXYGEN_USE_MATHJAX YES)
+    set(DOXYGEN_MATHJAX_FORMAT "HTML-CSS") 
     # Crucial for your Fortran source files (swe/*.F90)
     set(DOXYGEN_OPTIMIZE_FOR_FORTRAN YES)
     set(DOXYGEN_EXTRACT_ALL YES)
@@ -249,7 +275,8 @@ if(DOXYGEN_FOUND)
     # Create the 'docs' target
     doxygen_add_docs(docs 
         ${DOXYGEN_SOURCE_DIR}
-        "${PROJECT_SOURCE_DIR}/README.md"
+        "${DOXYGEN_README}"
+        #"${PROJECT_SOURCE_DIR}/README.md"
         COMMENT "Generating API documentation with Doxygen"
     )
     

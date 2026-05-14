@@ -169,27 +169,27 @@ include the correct model headers.
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    timedependent_do.cpp                      │
-│              runSimulation<MeanType>(Comm, timer)            │
+│                    timedependent_do.cpp                     │
+│              runSimulation<MeanType>(Comm, timer)           │
 └────────┬───────────────────┬───────────────────┬────────────┘
          │                   │                   │
          ▼                   ▼                   ▼
-┌─────────────────┐  ┌──────────────┐   ┌──────────────────┐
+┌─────────────────-┐  ┌──────────────┐   ┌──────────────────┐
 │   Mean (Burger   │  │ BasisSolver  │   │    Y_Stoch       │
 │    or QG)        │  │  (V solver)  │   │ (coeff. solver)  │
 │                  │  │              │   │                  │
-│ ┌──────────────┐ │  │ LinearSolver │   │  NoiseGenerator  │
-│ │PDEAssembler  │ │  │   Wrapper    │   │                  │
-│ ├──────────────┤ │  └──────┬───────┘   └────────┬─────────┘
-│ │ForcingProvider│ │         │                    │
-│ ├──────────────┤ │         └────────┬───────────┘
-│ │LinearSolver  │ │                  │
-│ │  Wrapper     │ │                  ▼
-│ └──────────────┘ │       ┌──────────────────┐
-└──────────────────┘       │ StochasticState   │
-                           │  (shared V, Y,    │
-                           │   E[∂/∂yy],       │
-                           │   bilinearTerm)   │
+│ ┌──────────────-┐│  │ LinearSolver │   │  NoiseGenerator  │
+│ │PDEAssembler   ││  │   Wrapper    │   │                  │
+│ ├──────────────-┤│  └──────┬───────┘   └────────┬─────────┘
+│ │ForcingProvider││         │                    │
+│ ├──────────────-┤│         └────────┬───────────┘
+│ │LinearSolver   ││                  │
+│ │  Wrapper      ││                  ▼
+│ └──────────────-┘│       ┌──────────────────┐
+└──────────────────┘       │ StochasticState  │
+                           │  (shared V, Y,   │
+                           │   E[∂/∂yy],      │
+                           │   bilinearTerm)  │
                            └──────────────────┘
 ```
 
