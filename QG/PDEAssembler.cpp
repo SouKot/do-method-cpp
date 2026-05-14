@@ -78,7 +78,7 @@ void PDEAssembler::BilinearTerm(Teuchos::RCP<Epetra_Vector> u1,
 
 // =====================================================================================
 void PDEAssembler::assembleRHS(const Teuchos::RCP<Epetra_Vector>& u,
-                               const Teuchos::RCP<Epetra_Vector>& ExpVyVy,
+                               const Teuchos::RCP<Epetra_Vector>& EVyVy,
                                double dt)
 {
     double* viewRHS;
@@ -86,10 +86,10 @@ void PDEAssembler::assembleRHS(const Teuchos::RCP<Epetra_Vector>& u,
     u->ExtractView(&viewX);
     rhs_->ExtractView(&viewRHS);
     qg_->rhs(viewX, viewRHS);
-    rhs_->Update(1.0, *ExpVyVy, -1.0); // f1=ExpVyVy-rhs!! check stochastic.m
+    rhs_->Update(1.0, *EVyVy, -1.0); // f1=EVyVy-rhs!! check stochastic.m
     if (debug_) {
         printnormMV(*rhs_, 2, "norm of qg.rhs");
-        printnormMV(*ExpVyVy, 2, "PDEAssembler:: norm of ExpVyVy");
+        printnormMV(*EVyVy, 2, "PDEAssembler:: norm of EVyVy");
     }
     rhs_->Scale(dt);
 }

@@ -58,11 +58,11 @@ public:
     /**
      * @brief Assemble the PDE right-hand side F(u) scaled by dt.
      * @param u        Current solution.
-     * @param ExpVyVy  Stochastic correction term.
+     * @param EVyVy  Stochastic correction term.
      * @param dt       Time-step size.
      */
     void assembleRHS(const Teuchos::RCP<Epetra_Vector>& u,
-                     const Teuchos::RCP<Epetra_Vector>& ExpVyVy,
+                     const Teuchos::RCP<Epetra_Vector>& EVyVy,
                      double dt);
 
     /**

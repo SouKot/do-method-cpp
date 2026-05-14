@@ -61,7 +61,7 @@ public:
      * @brief Assemble the PDE right-hand side F(u) scaled by dt.
      */
     void assembleRHS(const Teuchos::RCP<Epetra_Vector>& u,
-                     const Teuchos::RCP<Epetra_Vector>& ExpVyVy,
+                     const Teuchos::RCP<Epetra_Vector>& EVyVy,
                      double dt);
 
     /**

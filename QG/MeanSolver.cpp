@@ -63,7 +63,7 @@ MeanSolver::MeanSolver(RCP<Teuchos::ParameterList> PrmLst, double* t, double* dt
     dx_       = rcp(new Epetra_Vector(*Map));
     x_        = rcp(new Epetra_Vector(*Map));
     ThetaRHS_ = rcp(new Epetra_Vector(*Map));
-    ExpVyVy_  = rcp(new Epetra_Vector(*Map));
+    EVyVy_  = rcp(new Epetra_Vector(*Map));
     MyPID_    = Comm->MyPID();
 
     // Setup solver
@@ -98,7 +98,7 @@ void MeanSolver::setSolution(Epetra_Vector& x)
  */
 void MeanSolver::ThetaStepper(const RCP<Epetra_Vector>& rhs_u0)
 {
-    pde_.assembleRHS(u_, ExpVyVy_, *dt_);
+    pde_.assembleRHS(u_, EVyVy_, *dt_);
     ThetaRHS_->Update(theta_, pde_.getRHSRef(), 0.0);
 
     ThetaRHS_->Update(1 - theta_, *rhs_u0, 1.0);
@@ -130,7 +130,7 @@ bool MeanSolver::NewtonSolver()
     isConverged_ = false;
     dx_->PutScalar(0.0);
 
-    pde_.assembleRHS(u0_, ExpVyVy_, *dt_);
+    pde_.assembleRHS(u0_, EVyVy_, *dt_);
     Epetra_Vector rhs_u0(pde_.getRHSRef());
     ThetaStepper(rcpFromRef(rhs_u0));
     ThetaRHS_->Scale(-1.0);
@@ -222,7 +222,7 @@ bool MeanSolver::newtonLineSearchSolve(Epetra_Vector& x0)
     isConverged_ = false;
     Epetra_Vector x(x0), gT(x0), xold(x0), xoldMod(x0);
 
-    pde_.assembleRHS(rcpFromRef(x0), ExpVyVy_, *dt_);
+    pde_.assembleRHS(rcpFromRef(x0), EVyVy_, *dt_);
     Epetra_Vector rhs_u0(pde_.getRHSRef());
     ThetaStepper(rcpFromRef(rhs_u0));
     ThetaRHS_->Scale(-1.0);

@@ -118,41 +118,41 @@ CoeffSolver::CoeffSolver(int NumStochIter,
   lin_coeff = rcp(new Epetra_MultiVector(*map_x_, m_));
   JacNonLin = rcp(new Epetra_MultiVector(*map_x_, m_));
   rhsNonLin = rcp(new Epetra_MultiVector(*map_x_, MyLDA));
-  Exp_zy = rcp(new Epetra_MultiVector(*map_z_, m_));
-  Exp_zy_ = rcp(new Epetra_MultiVector(*map_z_, m_));
-  Exp_yy_ = rcp(new Epetra_MultiVector(*map_x_, m_));
+  Ezy = rcp(new Epetra_MultiVector(*map_z_, m_));
+  EzyPrev = rcp(new Epetra_MultiVector(*map_z_, m_));
+  Eyy = rcp(new Epetra_MultiVector(*map_x_, m_));
   EyyTyT = rcp(new Epetra_MultiVector(*map_mm, m_));
-  ExpzyDExpyy = rcp(new Epetra_MultiVector(*map_z_, m_));
-  ExpVyVyyDExpyy = rcp(new Epetra_MultiVector(*Vnew));
-  ExpDExpyy = rcp(new Epetra_MultiVector(*Vnew));
-  LocExpyyy = rcp(new Epetra_MultiVector(*map_x_, Vnew->NumVectors()));
+  EzyDEyy = rcp(new Epetra_MultiVector(*map_z_, m_));
+  EVyVyyDEyy = rcp(new Epetra_MultiVector(*Vnew));
+  EDEyy = rcp(new Epetra_MultiVector(*Vnew));
+  LocEyyy = rcp(new Epetra_MultiVector(*map_x_, Vnew->NumVectors()));
 
-  Exp_VyVyy = rcp(new Epetra_MultiVector(*Vnew));
+  EVyVyy = rcp(new Epetra_MultiVector(*Vnew));
 
   Utmp = Teuchos::rcp(new Epetra_MultiVector(*map_x_, m_));
   Epetra_Map Glob_x_map(m_, 0, *Comm_);
-  ExpYY = rcp(new Epetra_CrsMatrix(Epetra_DataAccess::Copy, Glob_x_map, m_));
+  EYY = rcp(new Epetra_CrsMatrix(Epetra_DataAccess::Copy, Glob_x_map, m_));
   int GlobInd;
   double val;
   for (int i = 0; i < m_; i++) {
     for (int j = i; j < m_; j++) {
       val = 1.0;
-      GlobInd = ExpYY->InsertGlobalValues(i, 1, &val, &j);
+      GlobInd = EYY->InsertGlobalValues(i, 1, &val, &j);
     }
   }
 
-  ExpYY->FillComplete();
+  EYY->FillComplete();
   eye = Teuchos::rcp(new Epetra_MultiVector(Epetra_Map(m_, 0, A_->Comm()), m_));
   Vtemp = rcp(new Epetra_MultiVector(*Vnew));
   const_coeff = rcp(new Epetra_MultiVector(
     *map_x_, 1)); // map of udet from deterministic part( n*1 length vector )
-  rep_exp_vyvy = rcp(new Epetra_MultiVector(*map_x_, MyLDA));
+  repEVyVy = rcp(new Epetra_MultiVector(*map_x_, MyLDA));
   for (int i = 0; i < MyLDA; i++)
-    (*rep_exp_vyvy)[i] = (*const_coeff)[0];
+    (*repEVyVy)[i] = (*const_coeff)[0];
 
-  expv4 = rcp(new Epetra_Vector(
+  EVyVy = rcp(new Epetra_Vector(
     *udet)); // map of udet from deterministic part( n*1 length vector )
-  expv4->PutScalar(0.0);
+  EVyVy->PutScalar(0.0);
   xndiff = Teuchos::rcp(new Epetra_Vector(*map_x_, false));
   VB = rcp(new Epetra_MultiVector(*map_x_, B->NumVectors()));
   dW = rcp(new Epetra_MultiVector(*z_));
@@ -166,7 +166,7 @@ CoeffSolver::CoeffSolver(int NumStochIter,
   H = rcp(new Epetra_MultiVector(*map_x_, m_ * m_));
   Hn = rcp(new Epetra_MultiVector(Vnew->Map(), m_ * m_));
   VHn = rcp(new Epetra_MultiVector(*map_x_, m_ * m_));
-  Rv = Teuchos::rcp(new Epetra_MultiVector(*Exp_yy_));
+  Rv = Teuchos::rcp(new Epetra_MultiVector(*Eyy));
   {
     double* r_val;
     Rv->ExtractView(&r_val, &m_);
@@ -209,7 +209,7 @@ CoeffSolver::CoeffSolver(int NumStochIter,
   }
   double temval = 1.0, one = 1.0;
   if (debug_) {
-    std::cout << "\nnum vectors in locexpyy = " << LocExpyyy->NumVectors()
+    std::cout << "\nnum vectors in locexpyy = " << LocEyyy->NumVectors()
               << "\n";
   }
   for (int i = 0; i < eye->MyLength(); i++) {
@@ -221,7 +221,7 @@ CoeffSolver::CoeffSolver(int NumStochIter,
 
   // Publish owned data into the shared state so BasisSolver sees it.
   sharedState_->y         = y_;
-  sharedState_->ExpDExpyy = ExpDExpyy;
+  sharedState_->EDEyy = EDEyy;
 
 } /* end of constructor */
 
@@ -371,7 +371,7 @@ CoeffSolver::Bilinear(const Teuchos::RCP<Epetra_Vector>& ud,
 void
 CoeffSolver::HBilinV()
 {
-  //  Epetra_MultiVector temp(*Exp_yy_);
+  //  Epetra_MultiVector temp(*Eyy);
   int k;
   for (int i = 0; i < m_; i++) {
 
@@ -403,12 +403,12 @@ CoeffSolver::HBilinV()
 /* ******************************************************** */
 
 void
-CoeffSolver::computeExpVVyVy()
+CoeffSolver::computeRepEVyVy()
 {
-  /********* expv4 = E[<Vy,Vy>] ********/
-  // expv4->Scale((-subdt_));
-  /********* rep_exp_vyvy = repmat(V' * (expv4), stochiter)*****/
-  int err = const_coeff->Multiply('T', 'N', 1.0, *Vnew, *expv4, 0.0);
+  /********* EVyVy = E[<Vy,Vy>] ********/
+  // EVyVy->Scale((-subdt_));
+  /********* repEVyVy = repmat(V' * (EVyVy), stochiter)*****/
+  int err = const_coeff->Multiply('T', 'N', 1.0, *Vnew, *EVyVy, 0.0);
 
   if (debug_) {
     std::cout << "\nError in calculating V*expvyvy : " << err << std::endl;
@@ -529,7 +529,7 @@ CoeffSolver::y_rhs()
     // rhs=-x+lin_coeff*x0
     std::cout.precision(16);
     // rhs= x + dt*(V'<Vx,Vx>-V'E[<Vx,Vx>])
-    rhs->Update(subdt_, *rep_exp_vyvy, 1.0);
+    rhs->Update(subdt_, *repEVyVy, 1.0);
     rhs->Update(-subdt_, *rhsNonLin, 1.0);
     rhs->Update(1.0, *VBdW, 1.0);
     if (debug_ && stochiter_ == 0) {
@@ -538,7 +538,7 @@ CoeffSolver::y_rhs()
       printnormMV(*Vnew, 2, "norm of V: ");
       printnormMV(*rhsNonLin, 2, "norm of rhsnonlin: ");
       printnormMV(*zTrans_, 2, "norm of dW: ");
-      printnormMV(*exp_yy_, 2, "norm of exp_yy_: ");
+      printnormMV(*EyyOld_, 2, "norm of EyyOld_: ");
     }
 
     if (debug_ && stochiter_ == 0) {
@@ -548,7 +548,7 @@ CoeffSolver::y_rhs()
     rhs->PutScalar(0.0);
     rhs->Multiply('N', 'N', 1.0, *lin_coeff, *x0_, 1.0); // rhs=-x+lin_coeff*x0
     rhs->Update(-1.0, *x_, 1.0);
-    rhs->Update(-subdt_, *rep_exp_vyvy, 1.0); // rhs=-x+lin_coeff*x0+const_coeff
+    rhs->Update(-subdt_, *repEVyVy, 1.0); // rhs=-x+lin_coeff*x0+const_coeff
     // rhs=-x + lin_coeff*x0 + const_coeff + rhs_nonlin
     rhs->Update(subdt_, *rhsNonLin, 1.0);
     rhs->Update(-1.0, *VBdW, 1.0);
@@ -599,7 +599,7 @@ CoeffSolver::get_x_init()
 Teuchos::RCP<Epetra_Vector>
 CoeffSolver::getEVyVy()
 {
-  return expv4;
+  return EVyVy;
 }
 void
 CoeffSolver::Solve()
@@ -639,7 +639,7 @@ CoeffSolver::StochasticIterations()
   double time, LocTime;
   Epetra_Time timer1(Vnew->Comm());
 
-  computeExpVVyVy();
+  computeEVyVy();
 
   if (test_) {
     LocTime = timer1.ElapsedTime();
@@ -770,25 +770,25 @@ CoeffSolver::StochasticIterations()
       std::cout << "*******************************************\n" << std::endl;
     }
   }
-  computeExpVal();
+  computeExpectations();
 }
 
 void
-CoeffSolver::computeExpVal()
+CoeffSolver::computeExpectations()
 {
   computeCrossVariance();
   computeEyyTyT();
   computeEVyVyy();
-  computeExpDExpyy();
+  computeEDEyy();
 }
 
 void
 CoeffSolver::computeEVyVy()
 {
-  expv4->Scale(0.0);
+  EVyVy->Scale(0.0);
   for (int i = 0; i < m_; i++) {
     for (int j = 0; j < m_; j++) {
-      expv4->Update((*Exp_yy_)[j][i], (*((*Hn)(i * m_ + j))), 1.0);
+      EVyVy->Update((*Eyy)[j][i], (*((*Hn)(i * m_ + j))), 1.0);
     }
   }
 }
@@ -798,7 +798,7 @@ CoeffSolver::computeCrossVariance()
 {
   CreateDistTransMultivec(); /* Create zTrans and yTrans which have distributed
                                 map */
-  int tmp = Exp_yy_->Multiply(
+  int tmp = Eyy->Multiply(
     'T', 'N', 1.0 / NumStochIter_, *yTrans_, *yTrans_, 0.0); /* Calculate yy' */
 }
 
@@ -808,12 +808,12 @@ CoeffSolver::computeEyyTyT()
   double* ViewYY;
   double* ViewLocExpyyy;
   YY->ExtractView(&ViewYY, &rszyy);
-  LocExpyyy->ExtractView(&ViewLocExpyyy, &m_);
+  LocEyyy->ExtractView(&ViewLocExpyyy, &m_);
   Epetra_Vector tmpy(*(*y_)(0));
   int err1;
   for (int i = 0; i < MyLDA; i++) {
     tmpy = (*(*y_)(i));
-    err1 = LocExpyyy->Multiply('N', 'T', 1.0, tmpy, tmpy, 0.0);
+    err1 = LocEyyy->Multiply('N', 'T', 1.0, tmpy, tmpy, 0.0);
     for (int j = 0; j < YY->MyLength(); j++) {
       ViewYY[i * YY->MyLength() + j] = ViewLocExpyyy[j];
     }
@@ -838,32 +838,32 @@ CoeffSolver::computeEyyTyT()
 void
 CoeffSolver::computeEVyVyy()
 {
-  Exp_VyVyy->Multiply('N', 'N', 1.0, *Hn, *EyyTyT, 0.0);
+  EVyVyy->Multiply('N', 'N', 1.0, *Hn, *EyyTyT, 0.0);
 }
 // ************************************************************************
 void
-CoeffSolver::computeExpDExpyy()
+CoeffSolver::computeEDEyy()
 // ************************************************************************
 {
-  Epetra_MultiVector Inv_Exp_yy(Exp_yy_->Map(), Exp_yy_->NumVectors());
-  SymMatPseudoInverse(*Exp_yy_, Inv_Exp_yy); /* compute pseudo-inverse */
-  Epetra_MultiVector zyT(*ExpzyDExpyy), WzyT(*Vnew);
+  Epetra_MultiVector Inv_Exp_yy(Eyy->Map(), Eyy->NumVectors());
+  SymMatPseudoInverse(*Eyy, Inv_Exp_yy); /* compute pseudo-inverse */
+  Epetra_MultiVector zyT(*EzyDEyy), WzyT(*Vnew);
   /* Calculate zy' */
   zyT.Multiply('T', 'N', 1.0 / NumStochIter_, *zTrans_, *yTrans_, 0.0);
   /* Calculate W*E[zy'] */
   WzyT.Multiply('N', 'N', numSubTimeStep, *B, zyT, 0.0);
   Epetra_MultiVector Wzy_P_EVyVyy(*Vnew);
   /* Calculate W*E[zy']+E[<Vy,Vy>] */
-  Wzy_P_EVyVyy.Update(*dt_, *Exp_VyVyy, 1.0, WzyT, 0.0);
+  Wzy_P_EVyVyy.Update(*dt_, *EVyVyy, 1.0, WzyT, 0.0);
   /* Calculate (W*E[zy']+E[<Vy,Vy>])/E[yy'] */
-  ExpDExpyy->Multiply('N', 'N', 1.0, Wzy_P_EVyVyy, Inv_Exp_yy, 0.0);
+  EDEyy->Multiply('N', 'N', 1.0, Wzy_P_EVyVyy, Inv_Exp_yy, 0.0);
 
   if (debug_) {
-    Exp_yy_->Print(std::cout << "Exp_yy \n");
+    Eyy->Print(std::cout << "Eyy \n");
     Inv_Exp_yy.Print(std::cout << "Inv_Exp_yy \n");
-    Epetra_MultiVector eye(*Exp_yy_);
-    eye.Multiply('N', 'N', 1.0, Inv_Exp_yy, *Exp_yy_, 0.0);
-    eye.Print(std::cout << "Exp_yy * Inv(Exp_yy) \n");
+    Epetra_MultiVector eye(*Eyy);
+    eye.Multiply('N', 'N', 1.0, Inv_Exp_yy, *Eyy, 0.0);
+    eye.Print(std::cout << "Eyy * Inv(Eyy) \n");
     printnormMV(*Vnew, 2, "norm of V : ");
     printnormMV(*yTrans_, 2, "norm of Y^T : ");
     printnormMV(*B, 2, "norm of W : ");
@@ -872,7 +872,7 @@ CoeffSolver::computeExpDExpyy()
     printTransNormMV(*dW, 2, "norm of dw^T: ");
     printnormMV(*EyyTyT, 2, "norm of Eyyy: ");
     printnormMV(Wzy_P_EVyVyy, 2, "norm of WE[zyT]+E[VyVy]: ");
-    printnormMV(*ExpDExpyy, 2, "norm of ExpDExpyy: ");
+    printnormMV(*EDEyy, 2, "norm of EDEyy: ");
   }
 }
 

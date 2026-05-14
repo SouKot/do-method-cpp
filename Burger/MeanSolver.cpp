@@ -54,7 +54,7 @@ MeanSolver::MeanSolver(RCP<Teuchos::ParameterList> PrmLst, double* t, double* dt
     u0_       = rcp(new Epetra_Vector(Map));
     dx_       = rcp(new Epetra_Vector(Map));
     ThetaRHS_ = rcp(new Epetra_Vector(Map));
-    ExpVyVy_  = rcp(new Epetra_Vector(Map));
+    EVyVy_  = rcp(new Epetra_Vector(Map));
     MyPID_    = Comm->MyPID();
 
     // Set initial condition from PDEAssembler
@@ -99,10 +99,10 @@ MeanSolver::MeanSolver(RCP<Teuchos::ParameterList> PrmLst, double* t, double* dt
  */
 void MeanSolver::ThetaStepper()
 {
-    pde_.assembleRHS(u_, ExpVyVy_, *dt_);
+    pde_.assembleRHS(u_, EVyVy_, *dt_);
     ThetaRHS_->Update(theta_, pde_.getRHSRef(), 0.0);
 
-    pde_.assembleRHS(u0_, ExpVyVy_, *dt_);
+    pde_.assembleRHS(u0_, EVyVy_, *dt_);
     ThetaRHS_->Update(1 - theta_, pde_.getRHSRef(), 1.0);
     ThetaRHS_->Update(1.0, *u_, -1.0, *u0_, -1.0);
 }

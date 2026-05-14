@@ -87,14 +87,14 @@ BasisSolver::BasisSolver(const Teuchos::RCP<Epetra_CrsMatrix>& A,
     y_map   = rcp(new Epetra_Map(W_->NumVectors(), 0, A_->Comm()));
     iteration = 1;
 
-    expv3       = rcp(new Epetra_MultiVector(*sharedState_->V));
+    EVyVyBasis       = rcp(new Epetra_MultiVector(*sharedState_->V));
     eye         = rcp(new Epetra_MultiVector(*map_, m_));
-    Exp_zy      = rcp(new Epetra_MultiVector(*y_map, m_));
-    Exp_yy      = rcp(new Epetra_MultiVector(*map_, m_));
-    Exp_yyy     = rcp(new Epetra_MultiVector(*map_, m_));
-    exp_yy_inv  = rcp(new Epetra_MultiVector(*map_, m_));
+    Ezy      = rcp(new Epetra_MultiVector(*y_map, m_));
+    Eyy      = rcp(new Epetra_MultiVector(*map_, m_));
+    Eyyy     = rcp(new Epetra_MultiVector(*map_, m_));
+    EyyInv  = rcp(new Epetra_MultiVector(*map_, m_));
     RHS_block_1 = rcp(new Epetra_MultiVector(A_->RowMap(), m_));
-    sharedState_->ExpDExpyy   = rcp(new Epetra_MultiVector(A->RowMap(), m_));
+    sharedState_->EDEyy   = rcp(new Epetra_MultiVector(A->RowMap(), m_));
     Rvec        = rcp(new Epetra_MultiVector(*locmap_, m_));
 
     {
@@ -327,15 +327,15 @@ void BasisSolver::computeBlocks(double dt)
     Epetra_MultiVector AV(*sharedState_->V);
     Acopy->Multiply(false, *sharedState_->V, AV);
 
-    // Fv = dt*AV + sharedState_->ExpDExpyy
+    // Fv = dt*AV + sharedState_->EDEyy
     Epetra_MultiVector Fv(AV);
-    Fv.Update(dt_, AV, 1.0, *sharedState_->ExpDExpyy, 0.0);
+    Fv.Update(dt_, AV, 1.0, *sharedState_->EDEyy, 0.0);
 
     if (debug_)
     {
         HYMLS::MatrixUtils::Dump(AV, "AV");
         HYMLS::MatrixUtils::Dump(Fv, "FV");
-        HYMLS::MatrixUtils::Dump(*sharedState_->ExpDExpyy, "Expect");
+        HYMLS::MatrixUtils::Dump(*sharedState_->EDEyy, "Expect");
         double* FVarray;
         int Ldim;
         Fv.ExtractView(&FVarray, &Ldim);
@@ -354,7 +354,7 @@ void BasisSolver::computeBlocks(double dt)
         AV.Norm2(nrm1.data());
         std::cout << "\n nrm of AV";
         for (int i = 0; i < sharedState_->V->NumVectors(); i++) cout << "  " << nrm1[i];
-        sharedState_->ExpDExpyy->Norm2(nrm1.data());
+        sharedState_->EDEyy->Norm2(nrm1.data());
         std::cout << "\n nrm of (dt*E[<Vy,Vy>y']+numsubtimestep*E[zy'])/E[yy']";
         for (int i = 0; i < sharedState_->V->NumVectors(); i++) cout << "  " << nrm1[i];
     }
@@ -382,5 +382,5 @@ void BasisSolver::TransferNorm()
 // =====================================================================================
 // Legacy stubs (declared in header for link compatibility; not currently used)
 void BasisSolver::computeBlocksold(double /*dt*/) {}
-void BasisSolver::computeExpVal(double /*dt*/)    {}
+void BasisSolver::computeExpectations(double /*dt*/)    {}
 void BasisSolver::PostProcess()                   {}

@@ -65,7 +65,7 @@ public:
 
     /// @brief Evaluate the PDE right-hand side F(u) including stochastic correction.
     void computeF(Epetra_Vector& u, Epetra_Vector& F) {
-        pde_.assembleRHS(Teuchos::rcpFromRef(u), ExpVyVy_, *dt_);
+        pde_.assembleRHS(Teuchos::rcpFromRef(u), EVyVy_, *dt_);
         F = pde_.getRHSRef();
     }
 
@@ -103,7 +103,7 @@ public:
     // -- Accessors --
     Teuchos::RCP<Epetra_Vector> getSolution() { return u_; }
     Teuchos::RCP<Epetra_Vector> get_Xdim() { return x_; }
-    void setExpVyVy(Teuchos::RCP<Epetra_Vector> ExpVyVy) { ExpVyVy_ = ExpVyVy; }
+    void setEVyVy(Teuchos::RCP<Epetra_Vector> EVyVy) { EVyVy_ = EVyVy; }
     void setSolution(Epetra_Vector& x);
 
 private:
@@ -122,7 +122,7 @@ private:
     Teuchos::RCP<Epetra_Vector> dx_;
     Teuchos::RCP<Epetra_Vector> x_;
     Teuchos::RCP<Epetra_Vector> ThetaRHS_;
-    Teuchos::RCP<Epetra_Vector> ExpVyVy_;
+    Teuchos::RCP<Epetra_Vector> EVyVy_;
 
     // Parameters
     double* t_;

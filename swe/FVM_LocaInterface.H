@@ -115,8 +115,8 @@ public:
   //! get scaling object
   Teuchos::RCP<NOX::Epetra::Scaling> getScaling() {return scaling_;}
  
-  void setExpVyVy(Teuchos::RCP<Epetra_Vector>expv4){
-  expv4_=expv4;}
+  void setEVyVy(Teuchos::RCP<Epetra_Vector>EVyVy){
+  expv4_=EVyVy;}
 
   //! get dimension of stoch forcing (constant)
   int get_dim_W() {return nWvec_;} 

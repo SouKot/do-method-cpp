@@ -180,7 +180,7 @@ void PDEAssembler::BilinearTerm(Teuchos::RCP<Epetra_Vector> u1,
 
 // =====================================================================================
 void PDEAssembler::assembleRHS(const Teuchos::RCP<Epetra_Vector>& u,
-                               const Teuchos::RCP<Epetra_Vector>& ExpVyVy,
+                               const Teuchos::RCP<Epetra_Vector>& EVyVy,
                                double dt)
 {
     LinOp_->Multiply(false, *u, *rhs_);
@@ -188,7 +188,7 @@ void PDEAssembler::assembleRHS(const Teuchos::RCP<Epetra_Vector>& u,
     Op2x_->Multiply(false, *uu_, *tmp2_);
     tmp2_->Scale(0.5);
     rhs_->Update(-1.0, *tmp2_, 1.0);
-    rhs_->Update(-1.0, *ExpVyVy, 1.0);
+    rhs_->Update(-1.0, *EVyVy, 1.0);
     rhs_->Scale(dt);
 }
 

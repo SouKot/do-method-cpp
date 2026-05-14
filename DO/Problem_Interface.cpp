@@ -59,14 +59,14 @@ Problem_Interface::Problem_Interface(const Teuchos::RCP<Epetra_CrsMatrix>& A,
   locmap_ = Teuchos::rcp(new Epetra_LocalMap(m_, 0, A_->Comm()));
   y_map = Teuchos::rcp(new Epetra_Map(W_->NumVectors(), 0, A_->Comm()));
   iteration = 1;
-  expv3 = Teuchos::rcp(new Epetra_MultiVector(*V));
+  EVyVyBasis = Teuchos::rcp(new Epetra_MultiVector(*V));
   eye = Teuchos::rcp(new Epetra_MultiVector(*map_, m_));
-  Exp_zy = Teuchos::rcp(new Epetra_MultiVector(*y_map, m_));
-  Exp_yy = Teuchos::rcp(new Epetra_MultiVector(*map_, m_));
-  Exp_yyy = Teuchos::rcp(new Epetra_MultiVector(*map_, m_));
-  exp_yy_inv = Teuchos::rcp(new Epetra_MultiVector(*map_, m_));
+  Ezy = Teuchos::rcp(new Epetra_MultiVector(*y_map, m_));
+  Eyy = Teuchos::rcp(new Epetra_MultiVector(*map_, m_));
+  Eyyy = Teuchos::rcp(new Epetra_MultiVector(*map_, m_));
+  EyyInv = Teuchos::rcp(new Epetra_MultiVector(*map_, m_));
   RHS_block_1 = Teuchos::rcp(new Epetra_MultiVector(A_->RowMap(), m_));
-  ExpDExpyy = rcp(new Epetra_MultiVector(A->RowMap(), m_));
+  EDEyy = rcp(new Epetra_MultiVector(A->RowMap(), m_));
   LHS_block_1_ = rcp(new Epetra_CrsMatrix(Epetra_DataAccess::Copy, A_->RowMap(), 3));
   Rvec = Teuchos::rcp(new Epetra_MultiVector(*locmap_, m_));
   {
@@ -601,13 +601,13 @@ void Problem_Interface::computeBlocks(double dt)
   Acopy->Multiply(false, *V, AV);
   Epetra_MultiVector Fv(AV);
 
-  /* ExpDExpyy= (numsubtimesteps*W*Exp[zy]+dt*Exp[<Vy,Vy>y])/Exp[yy] */
-  Fv.Update(dt_, AV, 1.0, *ExpDExpyy, 0.0);
+  /* EDEyy= (numsubtimesteps*W*Exp[zy]+dt*Exp[<Vy,Vy>y])/Exp[yy] */
+  Fv.Update(dt_, AV, 1.0, *EDEyy, 0.0);
   if (debug_)
   {
     HYMLS::MatrixUtils::Dump(AV, "AV");
     HYMLS::MatrixUtils::Dump(Fv, "FV");
-    HYMLS::MatrixUtils::Dump(*ExpDExpyy, "Expect");
+    HYMLS::MatrixUtils::Dump(*EDEyy, "Expect");
     double *FVarray;
     int Ldim;
     Fv.ExtractView(&FVarray, &Ldim);
@@ -630,7 +630,7 @@ void Problem_Interface::computeBlocks(double dt)
     {
       cout << "  " << nrm1[i];
     }
-    ExpDExpyy->Norm2(&nrm1[0]);
+    EDEyy->Norm2(&nrm1[0]);
     std::cout << "\n nrm of (dt*E[<Vy,Vy>y']+numsubtimestep*E[zy'])/E[yy']" << std::endl;
     for (int i = 0; i < V->NumVectors(); i++)
     {

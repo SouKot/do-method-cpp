@@ -166,12 +166,12 @@ public:
   void jacBilinTerm();
   void NonLinRHS();
   void LinCoeff();
-  void computeExpVVyVy();
+  void computeRepEVyVy();
   void y_rhs();
   void y_jac();
   void Solve();
   void StochasticIterations();
-  void computeExpVal();
+  void computeExpectations();
   int BlockDavidsonMethod();
   void PostProcess(Epetra_Vector& second_mmnt);
   void Newton();
@@ -181,8 +181,8 @@ public:
   bool Converged() { return isConverged_; }
   int Iterations() { return iter_; }
   Teuchos::RCP<Epetra_SerialDenseMatrix> getJacobian() { return Yjac; }
-  Teuchos::RCP<Epetra_MultiVector> getEyy()         { return Exp_yy_; }
-  Teuchos::RCP<Epetra_MultiVector> getExpDExpyy()   { return ExpDExpyy; }
+  Teuchos::RCP<Epetra_MultiVector> getEyy()         { return Eyy; }
+  Teuchos::RCP<Epetra_MultiVector> getEDEyy()   { return EDEyy; }
   Teuchos::RCP<Epetra_MultiVector> getY()           { return y_; }
   Epetra_MultiVector&              getYTrans()       { return *yTrans_; }
 
@@ -192,7 +192,7 @@ public:
   int N_, MyPID, itrtr = 0;
   double subdt_;
   double* dt_;
-  Teuchos::RCP<Epetra_CrsMatrix> A_, ExpYY;
+  Teuchos::RCP<Epetra_CrsMatrix> A_, EYY;
   // Teuchos::RCP<Epetra_CrsMatrix> mass_;
   Teuchos::RCP<Epetra_MultiVector> Vnew, fortVn, fortviv,
     viv; //*********************************************FILL IT With the
@@ -206,10 +206,10 @@ public:
   Teuchos::RCP<Epetra_MultiVector> Vudet, udetV;
   Teuchos::RCP<Epetra_MultiVector> VVudet;
   Teuchos::RCP<Epetra_MultiVector> lin_coeff, JacNonLin;
-  Teuchos::RCP<Epetra_MultiVector> rep_exp_vyvy;
+  Teuchos::RCP<Epetra_MultiVector> repEVyVy;
   Teuchos::RCP<Epetra_MultiVector> Vtemp;
   Teuchos::RCP<Epetra_Vector>
-    expv4; // map of udet from deterministic part( n*1 length vector )
+    EVyVy; // map of udet from deterministic part( n*1 length vector )
   Teuchos::RCP<Epetra_MultiVector> const_coeff;
   Teuchos::RCP<Epetra_MultiVector> rhs;
   Teuchos::RCP<Epetra_MultiVector> B;
@@ -222,12 +222,12 @@ public:
   Epetra_SerialDenseMatrix DenseDx_, DenseRHS;
   // Teuchos::RCP<Epetra_SerialDenseVector> DenseRHS;
   Teuchos::RCP<Epetra_MultiVector> z_, y_, rhsNonLin, yTrans_, zTrans_,
-    ExpVyVyyDExpyy, ExpDExpyy, eye;
+    EVyVyyDEyy, EDEyy, eye;
   Epetra_SerialDenseSVD y_prob;
   Teuchos::RCP<Epetra_MultiVector> H, Hn, VHn, Rv, YY;
   Teuchos::RCP<Epetra_Map> Tmap, map_mm;
-  Teuchos::RCP<Epetra_MultiVector> Exp_zy, Exp_zy_, ExpzyDExpyy, Exp_VyVyy;
-  Teuchos::RCP<Epetra_MultiVector> Exp_yy, Exp_yy_, LocExpyyy, GlobExpyyy,
+  Teuchos::RCP<Epetra_MultiVector> Ezy, EzyPrev, EzyDEyy, EVyVyy;
+  Teuchos::RCP<Epetra_MultiVector> Eyy, LocEyyy, GlobEyyy,
     EyyTyT, Utmp;
   Epetra_SerialDenseMatrix ru;
   Teuchos::RCP<Teuchos::SerialDenseMatrix<int, double>> Ru;
@@ -251,7 +251,7 @@ public:
   void printTransNormMV(Epetra_MultiVector& mv, int normType, const std::string& str);
   void computeEVyVy();
   void computeCrossVariance();
-  void computeExpDExpyy();
+  void computeEDEyy();
   void computeEVyVyy();
   void computeEyyTyT();
   void SymMatPseudoInverse(Epetra_MultiVector& mat, Epetra_MultiVector& matInv);
@@ -277,7 +277,7 @@ private:
   bool backTracking_; // perhaps call this enableBacktracking_
   Teuchos::RCP<Epetra_Comm> Comm_;
   Teuchos::RCP<Epetra_LocalMap> map_z_, map_x_;
-  Teuchos::RCP<Epetra_MultiVector> exp_yy_;
+  Teuchos::RCP<Epetra_MultiVector> EyyOld_;
   Teuchos::RCP<StochasticState> sharedState_;
   DomainPtr domain_;
 };

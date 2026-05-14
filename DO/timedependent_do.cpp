@@ -78,7 +78,7 @@ static const double timesc = 1.0;
 //   RCP<Epetra_CrsMatrix>    getJacobian()
 //   RCP<Epetra_CrsMatrix>    getMassMatrix()
 //   RCP<Epetra_MultiVector>  get_W()
-//   void             setExpVyVy(RCP<Epetra_Vector>)
+//   void             setEVyVy(RCP<Epetra_Vector>)
 //   void             WriteSolution(string, double, const Epetra_Vector&)
 // =====================================================================================
 
@@ -251,7 +251,7 @@ void runSimulation(Teuchos::RCP<Epetra_Comm> Comm, Epetra_Time& timer)
     model->WriteSolution("MeanSol_" + std::to_string(t) + ".text", t, *soln);
     y_interface->HBilinV();
     y_interface->computeEyyTyT();
-    model->setExpVyVy(y_interface->getEVyVy());
+    model->setEVyVy(y_interface->getEVyVy());
 
 #if quasi_geo == 1
     model->setSolution(*soln);

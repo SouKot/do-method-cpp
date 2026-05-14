@@ -428,7 +428,7 @@ int main(int argc = 0, char *argv[] = NULL) {
         model->printSolution(*soln, t);
         y_interface->HBilinV();
         y_interface->computeEyyTyT();
-        model->setExpVyVy(y_interface->getEVyVy());
+        model->setEVyVy(y_interface->getEVyVy());
 
         if (MyPID == 0 && !isStochOn)
             cout << "\n WARNING: Stochastic classes initialized but Use Stochastic is FALSE.\n";

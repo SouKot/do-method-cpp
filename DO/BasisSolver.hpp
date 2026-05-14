@@ -178,7 +178,7 @@ public:
 
     // Legacy stubs (not yet implemented)
     void computeBlocksold(double dt);
-    void computeExpVal(double dt);
+    void computeExpectations(double dt);
     void PostProcess();
 
     /// @}
@@ -191,7 +191,7 @@ public:
     Epetra_Vector& getSolution()    { return *(sharedState_->V->operator()(0)); }
     Epetra_Vector& getMean()        { return getSolution(); }
     Epetra_CrsMatrix& getJacobian() { return *LHS_block_1_; }
-    Teuchos::RCP<Epetra_MultiVector> getExp_yy() { return Exp_yy; }
+    Teuchos::RCP<Epetra_MultiVector> getEyy() { return Eyy; }
     Teuchos::RCP<Epetra_MultiVector> get_y()     { return sharedState_->y; }
 
     /// Return the stochastic basis matrix V (RCP; caller shares ownership).
@@ -223,12 +223,12 @@ public:
     Teuchos::RCP<Epetra_MultiVector> W_;
     Teuchos::RCP<Epetra_MultiVector> V1;
     Teuchos::RCP<Epetra_MultiVector> eye;
-    Teuchos::RCP<Epetra_MultiVector> Exp_zy;
-    Teuchos::RCP<Epetra_MultiVector> Exp_yy, Rvec;
-    Teuchos::RCP<Epetra_MultiVector> Exp_yyy;
-    Teuchos::RCP<Epetra_MultiVector> expv3;
+    Teuchos::RCP<Epetra_MultiVector> Ezy;
+    Teuchos::RCP<Epetra_MultiVector> Eyy, Rvec;
+    Teuchos::RCP<Epetra_MultiVector> Eyyy;
+    Teuchos::RCP<Epetra_MultiVector> EVyVyBasis;
     Teuchos::RCP<Teuchos::SerialDenseMatrix<int, double>> R;
-    Teuchos::RCP<Epetra_MultiVector> exp_yy_inv;
+    Teuchos::RCP<Epetra_MultiVector> EyyInv;
     Teuchos::RCP<Epetra_Map>         map_, y_map;
     Teuchos::RCP<Epetra_MultiVector> z, RHS_block_1;
     Teuchos::RCP<Epetra_LocalMap>    locmap_;
