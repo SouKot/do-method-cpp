@@ -387,12 +387,19 @@ int main(int argc = 0, char *argv[] = NULL) {
         }
         Wbase->Scale(StochFrcStren);
 
+        // ===== Shared stochastic state =====
+        auto sharedState = Teuchos::rcp(new StochasticState());
+        sharedState->udet = soln;
+        sharedState->A    = Teuchos::rcpFromRef(detA);
+        sharedState->W    = Wbase;
+
         Teuchos::RCP<Problem_Interface> Vstoch =
                 Teuchos::rcp(new Problem_Interface(Teuchos::rcpFromRef(detA),
                                                    Teuchos::rcpFromRef(BasisParams),
                                                    model->getSolution(),
                                                    numvecV, &t, dt,
-                                                   Wbase, massmat, Stochit));
+                                                   Wbase, massmat, Stochit,
+                                                   sharedState));
         Vstoch->set_frcStrength(StochFrcStren);
         Vstoch->init_v(t);
 
@@ -407,6 +414,7 @@ int main(int argc = 0, char *argv[] = NULL) {
                                          &dt, Teuchos::rcpFromRef(detA), soln, domain,
                                          Vn, Wbase, Comm,
                                          Teuchos::rcpFromRef(CoefParams),
+                                         sharedState,
                                          maxnumiter, usebacktrack, backtrackstep,
                                          tolRHS, normRHS));
 
@@ -415,8 +423,7 @@ int main(int argc = 0, char *argv[] = NULL) {
 #endif
 
         if (MyPID == 0) cout << "DONE\n";
-        Vstoch->syncExpDExpyy(y_interface->getExpDExpyy());
-        Vstoch->syncCoeffs(y_interface->getY());
+        // No sync needed — both solvers share data via sharedState.
 
         model->printSolution(*soln, t);
         y_interface->HBilinV();

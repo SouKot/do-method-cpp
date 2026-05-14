@@ -22,6 +22,7 @@
 #define DO_TIME_LOOP_HPP
 
 #include "DOUtils.hpp"
+#include "StochasticState.hpp"
 #include "StochIO.hpp"
 #include "Problem_Interface.hpp"
 #include "StochSys.hpp"

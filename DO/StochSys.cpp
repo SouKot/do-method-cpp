@@ -51,6 +51,7 @@ Y_Stoch::Y_Stoch(int NumStochIter,
                  const Teuchos::RCP<Epetra_MultiVector>& Wb,
                  const Teuchos::RCP<Epetra_Comm>& comm, // pass comm
                  const Teuchos::RCP<Teuchos::ParameterList>& CoefParams,
+                 const Teuchos::RCP<StochasticState>& sharedState,
                  int maxNumIter,
                  bool useBacktracking,
                  double numBackTrackingSteps,
@@ -64,6 +65,7 @@ Y_Stoch::Y_Stoch(int NumStochIter,
   , A_(A)
   , udet(uav)
   , domain_(domain)
+  , sharedState_(sharedState)
   , Vnew(Vn)
   , B(Wb)
   , N_(uav->GlobalLength())
@@ -225,6 +227,10 @@ Y_Stoch::Y_Stoch(int NumStochIter,
   if (debug_)
     printnormMV(*Vnew, 2, "nrm of each vector in Vn:");
 
+  // Publish owned data into the shared state so BasisSolver sees it.
+  sharedState_->y         = y_;
+  sharedState_->ExpDExpyy = ExpDExpyy;
+
   // Test on consistency of Jacobian and bilinear form.
 } /* end of 1st constructor */
 #else
@@ -239,14 +245,14 @@ Y_Stoch::Y_Stoch(int NumStochIter,
                  const Teuchos::RCP<Epetra_MultiVector>& Wb,
                  const Teuchos::RCP<Epetra_Comm>& comm, // pass comm
                  const Teuchos::RCP<Teuchos::ParameterList>& CoefParams,
-                 const Teuchos::RCP<Mean>& model,
+                 const Teuchos::RCP<StochasticState>& sharedState,
                  int maxNumIter,
                  bool useBacktracking,
                  double numBackTrackingSteps,
                  double toleranceRHS,
                  double NormRHS)
   : Comm_(comm)
-  , model_(model)
+  , sharedState_(sharedState)
   , NumStochIter_(NumStochIter)
   , numSubTimeStep(num_Subtime_Step)
   , m_(m)
@@ -417,6 +423,11 @@ Y_Stoch::Y_Stoch(int NumStochIter,
     int gr = eye->Map().GID(i);
     eye->ReplaceGlobalValue(gr, gr, one);
   }
+
+  // Publish owned data into the shared state so BasisSolver sees it.
+  sharedState_->y         = y_;
+  sharedState_->ExpDExpyy = ExpDExpyy;
+
 #if 0
   // Test on consistency rhs and bilinear form after pitchfork bifurcation
   // If xp, xn are the solutions of the two stable branches then the average
@@ -532,7 +543,7 @@ Y_Stoch::Bilinear(const Teuchos::RCP<Epetra_Vector>& ud,
         model_bil(udet_ptr, u_ptr, v_ptr, uv_ptr);
 #else
         /* -----  not NEED_LOCAINTERFACE  ----- */
-        model_->BilinearTerm(Teuchos::rcpFromRef(*((*u)(i))),
+        sharedState_->bilinearTerm(Teuchos::rcpFromRef(*((*u)(i))),
                              Teuchos::rcpFromRef(*((*v)(j))),
                              Teuchos::rcpFromRef(*((*uv)(i))));
 #endif /* -----  not NEED_LOCAINTERFACE  ----- */
@@ -548,7 +559,7 @@ Y_Stoch::Bilinear(const Teuchos::RCP<Epetra_Vector>& ud,
         (*uv)(j)->ExtractView(&uv_ptr);
         model_bil(udet_ptr, u_ptr, v_ptr, uv_ptr);
 #else  /* -----  not NEED_LOCAINTERFACE  ----- */
-        model_->BilinearTerm(Teuchos::rcpFromRef(*((*u)(i))),
+        sharedState_->bilinearTerm(Teuchos::rcpFromRef(*((*u)(i))),
                              Teuchos::rcpFromRef(*((*v)(j))),
                              Teuchos::rcpFromRef(*((*uv)(j))));
 #endif /* -----  not NEED_LOCAINTERFACE  ----- */

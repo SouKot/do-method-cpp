@@ -51,7 +51,8 @@ BasisSolver::BasisSolver(const Teuchos::RCP<Epetra_CrsMatrix>& A,
                          int& m, double* t, double& dt,
                          const Teuchos::RCP<Epetra_MultiVector>& W,
                          const Teuchos::RCP<Epetra_CrsMatrix>& mass,
-                         int iter)
+                         int iter,
+                         const Teuchos::RCP<StochasticState>& sharedState)
     : A_(A)
     , SolverParams_(SolverParams)
     , udet_(udet)
@@ -61,6 +62,7 @@ BasisSolver::BasisSolver(const Teuchos::RCP<Epetra_CrsMatrix>& A,
     , W_(W)
     , stochiter(iter)
     , mass_(mass)
+    , sharedState_(sharedState)
     , solver_type_(SolverParams->get("Solver Package", "any"))
 {
     MyPID = A_->Comm().MyPID();
@@ -79,20 +81,20 @@ BasisSolver::BasisSolver(const Teuchos::RCP<Epetra_CrsMatrix>& A,
              << ") has been chosen as stoch basis solver";
 
     Epetra_Map rowmap(A_->RowMap());
-    V       = rcp(new Epetra_MultiVector(rowmap, m_));
+    sharedState_->V       = rcp(new Epetra_MultiVector(rowmap, m_));
     map_    = rcp(new Epetra_Map(m_, 0, A_->Comm()));
     locmap_ = rcp(new Epetra_LocalMap(m_, 0, A_->Comm()));
     y_map   = rcp(new Epetra_Map(W_->NumVectors(), 0, A_->Comm()));
     iteration = 1;
 
-    expv3       = rcp(new Epetra_MultiVector(*V));
+    expv3       = rcp(new Epetra_MultiVector(*sharedState_->V));
     eye         = rcp(new Epetra_MultiVector(*map_, m_));
     Exp_zy      = rcp(new Epetra_MultiVector(*y_map, m_));
     Exp_yy      = rcp(new Epetra_MultiVector(*map_, m_));
     Exp_yyy     = rcp(new Epetra_MultiVector(*map_, m_));
     exp_yy_inv  = rcp(new Epetra_MultiVector(*map_, m_));
     RHS_block_1 = rcp(new Epetra_MultiVector(A_->RowMap(), m_));
-    ExpDExpyy   = rcp(new Epetra_MultiVector(A->RowMap(), m_));
+    sharedState_->ExpDExpyy   = rcp(new Epetra_MultiVector(A->RowMap(), m_));
     Rvec        = rcp(new Epetra_MultiVector(*locmap_, m_));
 
     {
@@ -153,30 +155,30 @@ void BasisSolver::init_v(double /*t*/)
 {
     if (InitFile_ == "None")
     {
-        V->Random();
+        sharedState_->V->Random();
 #if need_locaInterface == 1
-        Epetra_Vector massDiag(V->Map());
+        Epetra_Vector massDiag(sharedState_->V->Map());
         mass_->ExtractDiagonalCopy(massDiag);
         for (int i = 0; i < massDiag.MyLength(); i++)
         {
             if (abs(massDiag[i]) < 10e-10)
-                for (int j = 0; j < V->NumVectors(); j++)
-                    (*V)[j][i] = 0.0;
+                for (int j = 0; j < sharedState_->V->NumVectors(); j++)
+                    (*sharedState_->V)[j][i] = 0.0;
         }
 #endif
         MOrth();
         if (debug_ && DbgLvl_ % 3 == 0)
-            printnormMV(*V, 2, "norm of V after m-orthogonalization:");
+            printnormMV(*sharedState_->V, 2, "norm of V after m-orthogonalization:");
     }
     else
     {
         if (A_->Comm().MyPID() == 0)
             std::cout << "\nInitializing basis from " << InitFile_ << "\n";
 
-        auto vt = StochIO::readMV(InitFile_, V->Map());
-        V = vt;
+        auto vt = StochIO::readMV(InitFile_, sharedState_->V->Map());
+        sharedState_->V = vt;
         if (debug_ && A_->Comm().MyPID() == 0)
-            printnormMV(*V, 2, "initial norm of V without m-orthogonalization:");
+            printnormMV(*sharedState_->V, 2, "initial norm of V without m-orthogonalization:");
         MOrth();
     }
 }
@@ -184,19 +186,19 @@ void BasisSolver::init_v(double /*t*/)
 // =====================================================================================
 void BasisSolver::MOrth()
 {
-    Epetra_MultiVector Mmv(*V);
+    Epetra_MultiVector Mmv(*sharedState_->V);
     double time = 0.0, LocTime = 0.0;
     Epetra_Time timer2(A_->Comm());
     R->putScalar(0.0);
 
     typedef Epetra_MultiVector mv;
     typedef Epetra_Operator    OP;
-    mass_->Multiply(false, *V, Mmv);
+    mass_->Multiply(false, *sharedState_->V, Mmv);
     A_->Comm().Barrier();
 
     Belos::IMGSOrthoManager<double, mv, OP> orthman;
     orthman.setOp(mass_);
-    int rank = orthman.normalize(*V, rcpFromRef(Mmv), R);
+    int rank = orthman.normalize(*sharedState_->V, rcpFromRef(Mmv), R);
     (void)rank;
 
     if (test_)
@@ -211,12 +213,12 @@ void BasisSolver::MOrth()
     }
     if (debug_ && DbgLvl_ % 5 == 0)
     {
-        Teuchos::RCP<mv> temv = rcp(new mv(*V));
-        std::vector<double> nrm1(V->NumVectors());
-        mass_->Multiply(false, *V, *temv);
-        temv->Dot(*V, nrm1.data());
+        Teuchos::RCP<mv> temv = rcp(new mv(*sharedState_->V));
+        std::vector<double> nrm1(sharedState_->V->NumVectors());
+        mass_->Multiply(false, *sharedState_->V, *temv);
+        temv->Dot(*sharedState_->V, nrm1.data());
         cout << "\n Norm of V'MV\n";
-        for (int i = 0; i < V->NumVectors(); i++)
+        for (int i = 0; i < sharedState_->V->NumVectors(); i++)
             std::cout << "  " << nrm1[i];
     }
 }
@@ -225,7 +227,7 @@ void BasisSolver::MOrth()
 int BasisSolver::v_stoch_init(Epetra_MultiVector* Vold)
 {
     Epetra_MultiVector X1(*RHS_block_1);
-    Epetra_MultiVector X2(*V);
+    Epetra_MultiVector X2(*sharedState_->V);
     std::string label;
 
     // Numeric factorisation (Amesos/Amesos2) or preconditioner compute (Belos)
@@ -236,17 +238,17 @@ int BasisSolver::v_stoch_init(Epetra_MultiVector* Vold)
                    : "average time per proc. for solving X1=J^-1*RHS_block_1";
     SolveV(X1, *RHS_block_1, label);
 
-    /**** Solve X2 = J^-1 * (M*V) ****/
-    Epetra_MultiVector MV(*V);
+    /**** Solve X2 = J^-1 * (M*sharedState_->V) ****/
+    Epetra_MultiVector MV(*sharedState_->V);
     label = debug_ ? "J*X2-MV"
                    : "average time per proc. for solving X2=J^-1*MV";
-    mass_->Multiply(false, *V, MV);
+    mass_->Multiply(false, *sharedState_->V, MV);
     SolveV(X2, MV, label);
 
     /**** Solve Y = (MV'*X2)^-1 * (MV'*X1) ****/
-    int numvecV = V->NumVectors();
+    int numvecV = sharedState_->V->NumVectors();
     double one = 1.0;
-    Epetra_LocalMap MVtX_map(numvecV, 0, V->Comm());
+    Epetra_LocalMap MVtX_map(numvecV, 0, sharedState_->V->Comm());
     Epetra_CrsMatrix MVtX2(Epetra_DataAccess::Copy, MVtX_map, numvecV);
     for (int i = 0; i < numvecV; i++)
         for (int j = 0; j < numvecV; j++)
@@ -293,12 +295,12 @@ int BasisSolver::v_stoch_init(Epetra_MultiVector* Vold)
     /**** X = X1 - X2*Y, then V = Vold + X ****/
     Epetra_MultiVector X_sol(X1);
     X_sol.Multiply('N', 'N', -1.0, X2, Y_sol, 1.0);
-    V->Update(1.0, *Vold, 0.0);
-    V->Update(1.0, X_sol, 1.0);
+    sharedState_->V->Update(1.0, *Vold, 0.0);
+    sharedState_->V->Update(1.0, X_sol, 1.0);
     MOrth();
 
     if (debug_ && DbgLvl_ % 3 == 0)
-        printnormMV(*V, 2, "norm of V after m-orthogonalization:");
+        printnormMV(*sharedState_->V, 2, "norm of V after m-orthogonalization:");
 
     return EXIT_SUCCESS;
 }
@@ -322,18 +324,18 @@ void BasisSolver::computeBlocks(double dt)
     // AV = A * V
     RCP<Epetra_CrsMatrix> Acopy = rcp(new Epetra_CrsMatrix(*A_));
     *Acopy = *A_;
-    Epetra_MultiVector AV(*V);
-    Acopy->Multiply(false, *V, AV);
+    Epetra_MultiVector AV(*sharedState_->V);
+    Acopy->Multiply(false, *sharedState_->V, AV);
 
-    // Fv = dt*AV + ExpDExpyy
+    // Fv = dt*AV + sharedState_->ExpDExpyy
     Epetra_MultiVector Fv(AV);
-    Fv.Update(dt_, AV, 1.0, *ExpDExpyy, 0.0);
+    Fv.Update(dt_, AV, 1.0, *sharedState_->ExpDExpyy, 0.0);
 
     if (debug_)
     {
         HYMLS::MatrixUtils::Dump(AV, "AV");
         HYMLS::MatrixUtils::Dump(Fv, "FV");
-        HYMLS::MatrixUtils::Dump(*ExpDExpyy, "Expect");
+        HYMLS::MatrixUtils::Dump(*sharedState_->ExpDExpyy, "Expect");
         double* FVarray;
         int Ldim;
         Fv.ExtractView(&FVarray, &Ldim);
@@ -351,10 +353,10 @@ void BasisSolver::computeBlocks(double dt)
         std::vector<double> nrm1(m_);
         AV.Norm2(nrm1.data());
         std::cout << "\n nrm of AV";
-        for (int i = 0; i < V->NumVectors(); i++) cout << "  " << nrm1[i];
-        ExpDExpyy->Norm2(nrm1.data());
+        for (int i = 0; i < sharedState_->V->NumVectors(); i++) cout << "  " << nrm1[i];
+        sharedState_->ExpDExpyy->Norm2(nrm1.data());
         std::cout << "\n nrm of (dt*E[<Vy,Vy>y']+numsubtimestep*E[zy'])/E[yy']";
-        for (int i = 0; i < V->NumVectors(); i++) cout << "  " << nrm1[i];
+        for (int i = 0; i < sharedState_->V->NumVectors(); i++) cout << "  " << nrm1[i];
     }
 
     RHS_block_1->Update(1.0, Fv, 0.0);
@@ -364,13 +366,14 @@ void BasisSolver::computeBlocks(double dt)
         std::vector<double> nrm1(m_);
         RHS_block_1->Norm2(nrm1.data());
         std::cout << "\n  nrm of RHS_block_1";
-        for (int i = 0; i < V->NumVectors(); i++) cout << "  " << nrm1[i];
+        for (int i = 0; i < sharedState_->V->NumVectors(); i++) cout << "  " << nrm1[i];
     }
 }
 
 // =====================================================================================
 void BasisSolver::TransferNorm()
 {
+    auto& y = sharedState_->y;
     Epetra_MultiVector ycpy(*y);
     ycpy = *y;
     y->Multiply('N', 'N', 1.0, *Rvec, ycpy, 0.0);

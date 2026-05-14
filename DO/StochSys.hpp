@@ -35,6 +35,7 @@
 #include <Epetra_SerialDenseSolver.h>
 #include <Teuchos_SerialDenseMatrix.hpp>
 #include "NoiseGenerator.hpp"
+#include "StochasticState.hpp"
 // #include "Sacado.hpp"
 // #include "Sacado_Fad_BLAS.hpp"
 #include "AnasaziBlockDavidsonSolMgr.hpp"
@@ -81,6 +82,7 @@ public:
           const Teuchos::RCP<Epetra_MultiVector>& Wb,
           const Teuchos::RCP<Epetra_Comm>& comm,
           const Teuchos::RCP<Teuchos::ParameterList>& CoefParams,
+          const Teuchos::RCP<StochasticState>& sharedState,
           int maxNumIter,
           bool useBacktracking,
           double numBackTrackingSteps,
@@ -114,7 +116,7 @@ public:
           const Teuchos::RCP<Epetra_MultiVector>& Wb,
           const Teuchos::RCP<Epetra_Comm>& comm,
           const Teuchos::RCP<Teuchos::ParameterList>& CoefParams,
-          const Teuchos::RCP<Mean>& model,
+          const Teuchos::RCP<StochasticState>& sharedState,
           int maxNumIter,
           bool useBacktracking,
           double numBackTrackingSteps,
@@ -275,10 +277,9 @@ private:
   Teuchos::RCP<Epetra_CrsGraph> W_graph_;
   Teuchos::RCP<Epetra_CrsMatrix> stress_;
   Teuchos::RCP<Epetra_MultiVector> exp_yy_;
+  Teuchos::RCP<StochasticState> sharedState_;
 #if need_locaInterface == 1
   Teuchos::RCP<FVM::Domain> domain_;
-#else  /* -----  not NEED_LOCAINTERFACE  ----- */
-  Teuchos::RCP<Mean> model_;
 #endif /* -----  not NEED_LOCAINTERFACE  ----- */
 };
 #endif

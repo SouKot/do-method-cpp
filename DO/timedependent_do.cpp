@@ -209,12 +209,24 @@ void runSimulation(Teuchos::RCP<Epetra_Comm> Comm, Epetra_Time& timer)
     int numvecW = Wbase->NumVectors();
     Wbase->Scale(StochFrcStren);
 
+    // ===== Shared stochastic state =====
+    auto sharedState = Teuchos::rcp(new StochasticState());
+    sharedState->udet = soln;
+    sharedState->A    = Teuchos::rcpFromRef(detA);
+    sharedState->W    = Wbase;
+    sharedState->bilinearTerm = [&model](const Teuchos::RCP<Epetra_Vector>& u,
+                                         const Teuchos::RCP<Epetra_Vector>& v,
+                                         const Teuchos::RCP<Epetra_Vector>& uv) {
+        model->BilinearTerm(u, v, uv);
+    };
+
     Teuchos::RCP<Problem_Interface> Vstoch =
         Teuchos::rcp(new Problem_Interface(Teuchos::rcpFromRef(detA),
                                            Teuchos::rcpFromRef(BasisParams),
                                            model->getSolution(),
                                            numvecV, &t, dt,
-                                           Wbase, massmat, Stochit));
+                                           Wbase, massmat, Stochit,
+                                           sharedState));
     Vstoch->set_frcStrength(StochFrcStren);
     Vstoch->init_v(t);
 
@@ -229,13 +241,12 @@ void runSimulation(Teuchos::RCP<Epetra_Comm> Comm, Epetra_Time& timer)
                                  &dt, Teuchos::rcpFromRef(detA), soln,
                                  Vn, Wbase, Comm,
                                  Teuchos::rcpFromRef(CoefParams),
-                                 model,
+                                 sharedState,
                                  maxnumiter, usebacktrack, backtrackstep,
                                  tolRHS, normRHS));
 
     if (MyPID == 0) cout << "DONE\n";
-    Vstoch->syncExpDExpyy(y_interface->getExpDExpyy());
-    Vstoch->syncCoeffs(y_interface->getY());
+    // No sync needed — both solvers share data via sharedState.
 
     model->WriteSolution("MeanSol_" + std::to_string(t) + ".text", t, *soln);
     y_interface->HBilinV();

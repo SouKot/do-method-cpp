@@ -37,6 +37,7 @@
 #define DO_BASIS_SOLVER_HPP
 
 #include "LinearSolverWrapper.hpp"
+#include "StochasticState.hpp"
 #include "DOUtils.hpp"
 
 #include "AnasaziEpetraAdapter.hpp"
@@ -118,7 +119,8 @@ public:
                 double& dt,
                 const Teuchos::RCP<Epetra_MultiVector>& W,
                 const Teuchos::RCP<Epetra_CrsMatrix>& mass,
-                int iter);
+                int iter,
+                const Teuchos::RCP<StochasticState>& sharedState);
 
     ~BasisSolver();
 
@@ -186,22 +188,16 @@ public:
     // -----------------------------------------------------------------------
     /// @{
 
-    Epetra_Vector& getSolution()    { return *(V->operator()(0)); }
+    Epetra_Vector& getSolution()    { return *(sharedState_->V->operator()(0)); }
     Epetra_Vector& getMean()        { return getSolution(); }
     Epetra_CrsMatrix& getJacobian() { return *LHS_block_1_; }
     Teuchos::RCP<Epetra_MultiVector> getExp_yy() { return Exp_yy; }
-    Teuchos::RCP<Epetra_MultiVector> get_y()     { return y; }
+    Teuchos::RCP<Epetra_MultiVector> get_y()     { return sharedState_->y; }
 
     /// Return the stochastic basis matrix V (RCP; caller shares ownership).
-    Teuchos::RCP<Epetra_MultiVector> getBasisV() const { return V; }
+    Teuchos::RCP<Epetra_MultiVector> getBasisV() const { return sharedState_->V; }
 
-    /// Share Y_Stoch's ExpDExpyy RCP so both objects reference the same data.
-    void syncExpDExpyy(const Teuchos::RCP<Epetra_MultiVector>& p) { ExpDExpyy = p; }
-
-    /// Share Y_Stoch's coefficient RCP so both objects reference the same data.
-    void syncCoeffs(const Teuchos::RCP<Epetra_MultiVector>& p) { y = p; }
-
-    void   set_y(const Epetra_MultiVector& yy) { *y = yy; }
+    void   set_y(const Epetra_MultiVector& yy) { *(sharedState_->y) = yy; }
     double& get_frcStrenth()                   { return stchFrcStren_; }
     void   set_frcStrength(double v)           { stchFrcStren_ = v; }
 
@@ -249,10 +245,8 @@ public:
     bool test_, debug_;
 
 private:
-    // Encapsulated: access via getBasisV() / syncExpDExpyy() / syncCoeffs().
-    Teuchos::RCP<Epetra_MultiVector> V;
-    Teuchos::RCP<Epetra_MultiVector> ExpDExpyy;
-    Teuchos::RCP<Epetra_MultiVector> y;
+    /// Shared state with Y_Stoch — replaces former sync methods.
+    Teuchos::RCP<StochasticState> sharedState_;
 
     // Emplaced in the constructor body after LHS_block_1_ is built.
     std::optional<LinearSolverWrapper> solver_;
