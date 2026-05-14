@@ -22,11 +22,10 @@
 #define DO_TIME_LOOP_HPP
 
 #include "DOUtils.hpp"
+#include "StochIO.hpp"
 #include "Problem_Interface.hpp"
 #include "StochSys.hpp"
 #include "EpetraExt_MatrixMatrix.h"
-#include "EpetraExt_MultiVectorOut.h"
-#include "EpetraExt_RowMatrixOut.h"
 #include "HYMLS_MatrixUtils.hpp"
 #include "Teuchos_RCP.hpp"
 #include "Teuchos_TimeMonitor.hpp"
@@ -71,8 +70,8 @@ struct StochTimers {
 inline void dumpInitialJacobian(const Teuchos::RCP<Epetra_CrsMatrix>& A,
                                 Epetra_CrsMatrix &detA,
                                 Epetra_CrsMatrix &massmat) {
-    EpetraExt::RowMatrixToMatrixMarketFile("mass.mm", massmat);
-    EpetraExt::RowMatrixToMatrixMarketFile("jac.mm", detA);
+    StochIO::writeMatrix("mass.mm", massmat);
+    StochIO::writeMatrix("jac.mm", detA);
     EpetraExt::MatrixMatrix::Add(*A, false, 1.0, detA, 0.0);
 }
 
@@ -201,20 +200,20 @@ inline void saveTimestepOutputs(double t,
 #if need_locaInterface == 1
             HYMLS::MatrixUtils::mmwrite(fname, Vn);
 #else
-            EpetraExt::MultiVectorToMatrixMarketFile(fname.c_str(), Vn);
+            StochIO::writeMV(fname, Vn);
 #endif
             fname = "yT_" + Teuchos::toString(float(t)) + ".mm";
 #if need_locaInterface == 1
             HYMLS::MatrixUtils::mmwrite(fname, yTrans);
 #else
-            EpetraExt::MultiVectorToMatrixMarketFile(fname.c_str(), yTrans);
+            StochIO::writeMV(fname, yTrans);
 #endif
         }
         fname = "mean_" + Teuchos::toString(float(t)) + ".mm";
 #if need_locaInterface == 1
         HYMLS::MatrixUtils::mmwrite(fname, soln);
 #else
-        EpetraExt::MultiVectorToMatrixMarketFile(fname.c_str(), soln);
+        StochIO::writeMV(fname, soln);
 #endif
         count += prntintvl;
     }

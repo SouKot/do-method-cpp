@@ -63,9 +63,11 @@ set(GEN_SOURCES
   general/Filestreams.C)
 
 # Sources shared by all DO targets (stochastic solver, basis solver)
+# Phase 2: Problem_Interface.cpp replaced by BasisSolver.cpp + LinearSolverWrapper.cpp
 set(DO_COMMON_SOURCES
   DO/StochSys.cpp
-  DO/Problem_Interface.cpp
+  DO/BasisSolver.cpp
+  DO/LinearSolverWrapper.cpp
 )
 
 # Burgers and QG targets: direct Newton solver, no NOX/LOCA
@@ -121,6 +123,7 @@ include_directories(includes)
 #message("Python_VERSION:${PYTHON_VERSION}")
 #message("Python_Development_FOUND:${PYTHON_DEVELOPMENT_FOUND}")
 #message("Python_LIBRARIES:${PYTHON_LIBRARIES}")
+find_package(MPI REQUIRED)
 set(istrng "0")
 if (DEFINED ENV{TRNG_HOME})
   include_directories($ENV{TRNG_HOME}/include)
@@ -132,7 +135,7 @@ endif()
 if (DEFINED ENV{TRILINOS_HOME})
  set(Trilinos_DIR "$ENV{TRILINOS_HOME}/lib/cmake/Trilinos")
 endif()
-find_package(Trilinos)
+find_package(Trilinos REQUIRED)
 
 include_directories(${Trilinos_INCLUDE_DIRS})
 include_directories(${Trilinos_TPL_INCLUDE_DIRS})
@@ -155,8 +158,7 @@ link_directories("$ENV{TRILINOS_HOME}/lib")
 if (DEFINED ENV{HYMLS_HOME})
   set(HYMLS_DIR "$ENV{HYMLS_HOME}/lib/cmake/HYMLS")
 endif()
-find_package(HYMLS)
-
+find_package(HYMLS REQUIRED)
 ######target_link_libraries(SWEtimedep "libhymls.a" -lgfortran )
 include_directories(${HYMLS_INCLUDE_DIRS})
 

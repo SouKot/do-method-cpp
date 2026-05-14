@@ -47,6 +47,7 @@ using namespace std;
 #include "EpetraExt_MultiVectorOut.h"
 #include "EpetraExt_OperatorOut.h"
 #include "EpetraExt_RowMatrixOut.h"
+#include "StochIO.hpp"
 #include "EpetraExt_VectorIn.h"
 #include "HYMLS_HyperCube.hpp"
 #include "HYMLS_MatrixUtils.hpp"
@@ -138,8 +139,8 @@ static void test_jac_billin(Teuchos::RCP<FVM::LocaInterface> model,
     diff->Update(1.0, *xv, 1.0, *vx, 0.0);
     diff->Update(1.0, J0v, -1.0, Jxv, 1.0);
     diff->MaxValue(&nrm);
-    EpetraExt::RowMatrixToMatrixMarketFile("jacobian.mm", testJac);
-    EpetraExt::MultiVectorToMatrixMarketFile("diff.mm", *diff);
+    StochIO::writeMatrix("jacobian.mm", testJac);
+    StochIO::writeMV("diff.mm", *diff);
     diff->Norm2(&nrm);
     std::cout << "\n Norm of J(0)*v - Bilin(x,v) - Bilin(v,x) - J(x)*v = " << nrm << "\n";
     getchar();
@@ -397,7 +398,7 @@ int main(int argc = 0, char *argv[] = NULL) {
 
         // ===== PHASE 5: Initialize stochastic coefficient solver =====
 
-        Teuchos::RCP<Epetra_MultiVector> Vn = Vstoch->V;
+        Teuchos::RCP<Epetra_MultiVector> Vn = Vstoch->getBasisV();
         printnormMV(*Vn, 2, "initial norm of V");
         if (MyPID == 0) cout << "\nInitializing Stoch. Coeff. class...\n";
 
@@ -414,8 +415,8 @@ int main(int argc = 0, char *argv[] = NULL) {
 #endif
 
         if (MyPID == 0) cout << "DONE\n";
-        Vstoch->ExpDExpyy = y_interface->ExpDExpyy;
-        Vstoch->y = y_interface->y_;
+        Vstoch->syncExpDExpyy(y_interface->getExpDExpyy());
+        Vstoch->syncCoeffs(y_interface->getY());
 
         model->printSolution(*soln, t);
         y_interface->HBilinV();
@@ -515,7 +516,7 @@ int main(int argc = 0, char *argv[] = NULL) {
                 model->setParameters(*pVector);
 
                 saveTimestepOutputs(t, eyyBufferIdx, nv, Eyy, *expyy,
-                                    isStochOn, *Vn, *(y_interface->yTrans_),
+                                    isStochOn, *Vn, y_interface->getYTrans(),
                                     *soln, prntintvl, count);
 
                 step++;
@@ -594,7 +595,7 @@ int main(int argc = 0, char *argv[] = NULL) {
         model->WriteConfiguration("MeanSolnFinal.txt", *pVector, *soln);
         INFO("done!");
         HYMLS::MatrixUtils::mmwrite("V_BASE.mm", *Vn);
-        HYMLS::MatrixUtils::mmwrite("YTrans_COEFF.mm", *(y_interface->yTrans_));
+        HYMLS::MatrixUtils::mmwrite("YTrans_COEFF.mm", y_interface->getYTrans());
 
         (*outstream) << "Final Parameters:\n" << *paramList << "\n";
 
