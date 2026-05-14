@@ -77,7 +77,7 @@ static const double timesc = 1.0;
 //   RCP<Epetra_Vector>       getSolution()
 //   RCP<Epetra_CrsMatrix>    getJacobian()
 //   RCP<Epetra_CrsMatrix>    getMassMatrix()
-//   RCP<Epetra_MultiVector>  get_W()
+//   RCP<Epetra_MultiVector>  getW()
 //   void             setEVyVy(RCP<Epetra_Vector>)
 //   void             WriteSolution(string, double, const Epetra_Vector&)
 // =====================================================================================
@@ -205,7 +205,7 @@ void runSimulation(Teuchos::RCP<Epetra_Comm> Comm, Epetra_Time& timer)
     detA.FillComplete();
     dumpInitialJacobian(A, detA, *massmat);
 
-    Teuchos::RCP<Epetra_MultiVector> Wbase = model->get_W();
+    Teuchos::RCP<Epetra_MultiVector> Wbase = model->getW();
     int numvecW = Wbase->NumVectors();
     Wbase->Scale(StochFrcStren);
 
@@ -227,7 +227,7 @@ void runSimulation(Teuchos::RCP<Epetra_Comm> Comm, Epetra_Time& timer)
                                            numvecV, &t, dt,
                                            Wbase, massmat, Stochit,
                                            sharedState));
-    Vstoch->set_frcStrength(StochFrcStren);
+    Vstoch->setFrcStrength(StochFrcStren);
     Vstoch->init_v(t);
 
     // ===== Initialise stochastic coefficient solver (Y) =====
@@ -249,7 +249,7 @@ void runSimulation(Teuchos::RCP<Epetra_Comm> Comm, Epetra_Time& timer)
     // No sync needed — both solvers share data via sharedState.
 
     model->WriteSolution("MeanSol_" + std::to_string(t) + ".text", t, *soln);
-    y_interface->HBilinV();
+    y_interface->computeBilinTensor();
     y_interface->computeEyyTyT();
     model->setEVyVy(y_interface->getEVyVy());
 

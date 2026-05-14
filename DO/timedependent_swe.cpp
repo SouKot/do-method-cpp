@@ -370,7 +370,7 @@ int main(int argc = 0, char *argv[] = NULL) {
         }
 
         // Stochastic forcing via Fortran interface
-        int numvecW = model->get_dim_W();
+        int numvecW = model->getDimW();
         Teuchos::RCP<Epetra_MultiVector> Wbase =
                 Teuchos::rcp(new Epetra_MultiVector(soln->Map(), numvecW));
         {
@@ -400,7 +400,7 @@ int main(int argc = 0, char *argv[] = NULL) {
                                                    numvecV, &t, dt,
                                                    Wbase, massmat, Stochit,
                                                    sharedState));
-        Vstoch->set_frcStrength(StochFrcStren);
+        Vstoch->setFrcStrength(StochFrcStren);
         Vstoch->init_v(t);
 
         // ===== Initialise stochastic coefficient solver (Y) =====
@@ -426,7 +426,7 @@ int main(int argc = 0, char *argv[] = NULL) {
         // No sync needed — both solvers share data via sharedState.
 
         model->printSolution(*soln, t);
-        y_interface->HBilinV();
+        y_interface->computeBilinTensor();
         y_interface->computeEyyTyT();
         model->setEVyVy(y_interface->getEVyVy());
 
@@ -478,7 +478,7 @@ int main(int argc = 0, char *argv[] = NULL) {
             soln_old = *soln;
 
             //model->createW(t);
-            //Wbase = model->get_W();
+            //Wbase = model->getW();
 
             runStochStep(isStochOn, timeProf, dt, y_interface, Vstoch, Vn, stochTimers);
 

@@ -119,7 +119,7 @@ public:
   expv4_=EVyVy;}
 
   //! get dimension of stoch forcing (constant)
-  int get_dim_W() {return nWvec_;} 
+  int getDimW() {return nWvec_;} 
   
 
 

@@ -154,7 +154,7 @@ bool MeanSolver::NewtonSolver()
             break;
         }
         if (backTracking_ && (NormRHS_ < NormRHStest_))
-            RunBackTracking();
+            runBackTracking();
         NormRHS_ = NormRHStest_;
     }
 
@@ -170,7 +170,7 @@ bool MeanSolver::NewtonSolver()
 }
 
 // =====================================================================================
-void MeanSolver::RunBackTracking()
+void MeanSolver::runBackTracking()
 {
     double reduction = -1.0 / 2;
     for (backTrack_ = 0; backTrack_ != numBackTrackingSteps_; ++backTrack_) {

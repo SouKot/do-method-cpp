@@ -35,7 +35,7 @@ namespace Burger {
  * @f]
  *
  * W_ is allocated on first call to createW() and updated in-place on subsequent
- * calls, so shared RCPs obtained via get_W() remain valid.
+ * calls, so shared RCPs obtained via getW() remain valid.
  */
 class ForcingProvider {
 public:
@@ -65,10 +65,10 @@ public:
     void refreshForcing(double t) { createW(t); }
 
     /// @brief Return the number of stochastic forcing vectors.
-    int get_dim_W() const { return NumStchFrcVec_; }
+    int getDimW() const { return NumStchFrcVec_; }
 
     /// @brief Return an RCP to the stochastic forcing multi-vector W.
-    Teuchos::RCP<Epetra_MultiVector> get_W() { return W_; }
+    Teuchos::RCP<Epetra_MultiVector> getW() { return W_; }
 
 private:
     int NumStchFrcVec_;

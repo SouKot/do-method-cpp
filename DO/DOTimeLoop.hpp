@@ -90,7 +90,7 @@ inline void dumpInitialJacobian(const Teuchos::RCP<Epetra_CrsMatrix>& A,
  *   -# **Coefficient update** — CoeffSolver::StochasticIterations() updates the coefficient matrix Y.
  *   -# **Basis update** — Problem_Interface::computeBlocks(), v_stoch_init(), TransferNorm()
  *      update the stochastic basis V.
- *   -# **Statistics update** — HBilinV(), computeEyyTyT(), computeRepEVyVy() update the
+ *   -# **Statistics update** — computeBilinTensor(), computeEyyTyT(), computeRepEVyVy() update the
  *      second-moment statistics needed by the mean solver.
  *
  * The caller is responsible for refreshing the stochastic forcing (via
@@ -132,7 +132,7 @@ inline void runStochStep(bool isStochOn,
     }
 
     if (timeProf) tmr.bilin->start();
-    y_interface->HBilinV();
+    y_interface->computeBilinTensor();
     y_interface->computeEyyTyT();
     y_interface->computeRepEVyVy();
     if (timeProf) {

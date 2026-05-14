@@ -94,15 +94,15 @@ public:
   /**
    * @brief Construct the stochastic coefficient solver.
    *
-   * @param NumStochIter  Number of stochastic realisations.
-   * @param num_Subtime_Step  Sub-time-steps per outer step (subdt = dt / num_Subtime_Step).
+   * @param numSamplesIn  Number of stochastic realisations.
+   * @param numSubSteps  Sub-time-steps per outer step (subdt = dt / numSubSteps).
    * @param m  Number of DO basis modes.
    * @param dt  Pointer to the current time-step size.
    * @param A  Jacobian of the deterministic RHS.
-   * @param uav  Mean-field solution vector.
+   * @param uMean  Mean-field solution vector.
    * @param domain  FVM domain (LOCA builds) or Teuchos::null (non-LOCA builds).
    * @param Vn  Stochastic basis multi-vector (N × m).
-   * @param Wb  Stochastic forcing multi-vector.
+   * @param W_init  Stochastic forcing multi-vector.
    * @param comm  Epetra communicator.
    * @param CoefParams  Parameter list for this class.
    * @param sharedState  Shared state object visible to BasisSolver.
@@ -110,17 +110,17 @@ public:
    * @param useBacktracking  Enable backtracking line-search.
    * @param numBackTrackingSteps  Number of backtracking steps.
    * @param toleranceRHS  Newton convergence tolerance.
-   * @param NormRHS  Initial RHS norm.
+   * @param initialRHSNorm  Initial RHS norm.
    */
-  CoeffSolver(int NumStochIter,
-          int num_Subtime_Step,
+  CoeffSolver(int numSamplesIn,
+          int numSubSteps,
           int m,
           double* dt,
           const Teuchos::RCP<Epetra_CrsMatrix>& A,
-          const Teuchos::RCP<Epetra_Vector>& uav,
+          const Teuchos::RCP<Epetra_Vector>& uMeanIn,
           const DomainPtr& domain,
           const Teuchos::RCP<Epetra_MultiVector>& Vn,
-          const Teuchos::RCP<Epetra_MultiVector>& Wb,
+          const Teuchos::RCP<Epetra_MultiVector>& W_init,
           const Teuchos::RCP<Epetra_Comm>& comm,
           const Teuchos::RCP<Teuchos::ParameterList>& CoefParams,
           const Teuchos::RCP<StochasticState>& sharedState,
@@ -128,7 +128,7 @@ public:
           bool useBacktracking,
           double numBackTrackingSteps,
           double toleranceRHS,
-          double NormRHS);
+          double initialRHSNorm);
   //** \name Overridden from EpetraExt::ModelEvaluator . */
   Teuchos::RCP<Epetra_Map> get_x_map();
   Teuchos::RCP<Epetra_Map> get_f_map();
@@ -161,23 +161,23 @@ public:
                 const Teuchos::RCP<Epetra_MultiVector>& u,
                 const Teuchos::RCP<Epetra_MultiVector>& v,
                 const Teuchos::RCP<Epetra_MultiVector>& uv);
-  void HBilinV();
+  void computeBilinTensor();
   // void BilinTerm();
-  void jacBilinTerm();
-  void NonLinRHS();
-  void LinCoeff();
+  void computeBilinearJacobian();
+  void computeNonlinearRHS();
+  void computeLinearCoeff();
   void computeRepEVyVy();
-  void y_rhs();
-  void y_jac();
+  void assembleRHS();
+  void assembleJacobian();
   void Solve();
   void StochasticIterations();
   void computeExpectations();
   int BlockDavidsonMethod();
   void PostProcess(Epetra_Vector& second_mmnt);
   void Newton();
-  void RunBackTracking();
-  void CreateLocMultiVec(const std::string& WhichOne);
-  void CreateDistTransMultivec();
+  void runBackTracking();
+  void CreateLocalMultiVec(const std::string& WhichOne);
+  void localToDistributed();
   bool Converged() { return isConverged_; }
   int Iterations() { return iter_; }
   Teuchos::RCP<Epetra_SerialDenseMatrix> getJacobian() { return jacDense; }
@@ -225,7 +225,7 @@ public:
     EVyVyyDEyy, EDEyy, identity;
   Epetra_SerialDenseSVD y_prob;
   Teuchos::RCP<Epetra_MultiVector> BilinTensor, BilinTensorN, VtBilinTensorN, EyyInvView, yyOuter;
-  Teuchos::RCP<Epetra_Map> Tmap, map_mm;
+  Teuchos::RCP<Epetra_Map> stochMap, localMapYY;
   Teuchos::RCP<Epetra_MultiVector> Ezy, EzyPrev, EzyDEyy, EVyVyy;
   Teuchos::RCP<Epetra_MultiVector> Eyy, LocEyyy, GlobEyyy,
     EyyTyT, workMxM;
@@ -248,7 +248,7 @@ public:
   Teuchos::RCP<MV> evecs;
   Anasazi::Eigensolution<double, MV> EigSol;
 
-  void printTransNormMV(Epetra_MultiVector& mv, int normType, const std::string& str);
+  void printTransposedNorms(Epetra_MultiVector& mv, int normType, const std::string& str);
   void computeEVyVy();
   void computeCrossVariance();
   void computeEDEyy();
@@ -276,7 +276,7 @@ private:
   bool isConverged_;
   bool backTracking_; // perhaps call this enableBacktracking_
   Teuchos::RCP<Epetra_Comm> Comm_;
-  Teuchos::RCP<Epetra_LocalMap> map_z_, map_x_;
+  Teuchos::RCP<Epetra_LocalMap> localMapZ, localMapY;
   Teuchos::RCP<Epetra_MultiVector> EyyOld_;
   Teuchos::RCP<StochasticState> sharedState_;
   DomainPtr domain_;

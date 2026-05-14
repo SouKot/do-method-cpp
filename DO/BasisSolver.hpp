@@ -192,14 +192,14 @@ public:
     Epetra_Vector& getMean()        { return getSolution(); }
     Epetra_CrsMatrix& getJacobian() { return *LHS_block_1_; }
     Teuchos::RCP<Epetra_MultiVector> getEyy() { return Eyy; }
-    Teuchos::RCP<Epetra_MultiVector> get_y()     { return sharedState_->y; }
+    Teuchos::RCP<Epetra_MultiVector> getY()     { return sharedState_->y; }
 
     /// Return the stochastic basis matrix V (RCP; caller shares ownership).
     Teuchos::RCP<Epetra_MultiVector> getBasisV() const { return sharedState_->V; }
 
-    void   set_y(const Epetra_MultiVector& yy) { *(sharedState_->y) = yy; }
-    double& get_frcStrenth()                   { return stchFrcStren_; }
-    void   set_frcStrength(double v)           { stchFrcStren_ = v; }
+    void   setY(const Epetra_MultiVector& yy) { *(sharedState_->y) = yy; }
+    double& getFrcStrength()                   { return stchFrcStren_; }
+    void   setFrcStrength(double v)           { stchFrcStren_ = v; }
 
     /// @}
 
@@ -229,9 +229,9 @@ public:
     Teuchos::RCP<Epetra_MultiVector> EVyVyBasis;
     Teuchos::RCP<Teuchos::SerialDenseMatrix<int, double>> R;
     Teuchos::RCP<Epetra_MultiVector> EyyInv;
-    Teuchos::RCP<Epetra_Map>         map_, y_map;
+    Teuchos::RCP<Epetra_Map>         mapDOF, noiseMap;
     Teuchos::RCP<Epetra_MultiVector> rhsWork, RHS_block_1;
-    Teuchos::RCP<Epetra_LocalMap>    locmap_;
+    Teuchos::RCP<Epetra_LocalMap>    localMapM;
 
     // Scalar typedefs kept for callers that reference them via BasisSolver::ST etc.
     typedef double                  ST;

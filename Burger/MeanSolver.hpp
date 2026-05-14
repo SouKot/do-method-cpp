@@ -79,8 +79,8 @@ public:
 
     // -- Forcing (delegated) --
     void refreshForcing(double t) { forcing_.refreshForcing(t); }
-    int get_dim_W() { return forcing_.get_dim_W(); }
-    Teuchos::RCP<Epetra_MultiVector> get_W() { return forcing_.get_W(); }
+    int getDimW() { return forcing_.getDimW(); }
+    Teuchos::RCP<Epetra_MultiVector> getW() { return forcing_.getW(); }
 
     // -- Time stepping --
     /// @brief Run Newton iteration to advance the mean field one implicit time step.
@@ -96,7 +96,7 @@ public:
 
 private:
     void ThetaStepper();
-    void RunBackTracking();
+    void runBackTracking();
     int  LinSolve(Epetra_Vector& LHS, Epetra_Vector& RHS);
 
     // Composed subsystems

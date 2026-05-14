@@ -40,15 +40,15 @@
 #include "FVM_model_interface.h"
 #endif /* -----  not NEED_LOCAINTERFACE  ----- */
 
-CoeffSolver::CoeffSolver(int NumStochIter,
-                 int num_Subtime_Step,
+CoeffSolver::CoeffSolver(int numSamplesIn,
+                 int numSubSteps,
                  int m,
                  double* dt,
                  const Teuchos::RCP<Epetra_CrsMatrix>& A,
-                 const Teuchos::RCP<Epetra_Vector>& uav,
+                 const Teuchos::RCP<Epetra_Vector>& uMeanIn,
                  const DomainPtr& domain,
                  const Teuchos::RCP<Epetra_MultiVector>& Vn,
-                 const Teuchos::RCP<Epetra_MultiVector>& Wb,
+                 const Teuchos::RCP<Epetra_MultiVector>& W_init,
                  const Teuchos::RCP<Epetra_Comm>& comm,
                  const Teuchos::RCP<Teuchos::ParameterList>& CoefParams,
                  const Teuchos::RCP<StochasticState>& sharedState,
@@ -56,51 +56,51 @@ CoeffSolver::CoeffSolver(int NumStochIter,
                  bool useBacktracking,
                  double numBackTrackingSteps,
                  double toleranceRHS,
-                 double NormRHS)
+                 double initialRHSNorm)
   : Comm_(comm)
-  , NumStochIter_(NumStochIter)
-  , numSubTimeStep(num_Subtime_Step)
+  , NumStochIter_(numSamplesIn)
+  , numSubTimeStep(numSubSteps)
   , m_(m)
   , dt_(dt)
   , A_(A)
-  , uMean(uav)
+  , uMean(uMeanIn)
   , domain_(domain)
   , sharedState_(sharedState)
   , V(Vn)
-  , W(Wb)
-  , nDOF(uav->GlobalLength())
+  , W(W_init)
+  , nDOF(uMeanIn->GlobalLength())
   , y_prob()
   , isConverged_(false)
   , backTracking_(useBacktracking)
   , iter_(0)
   , maxNumIterations_(maxNumIter)
   , toleranceRHS_(toleranceRHS)
-  , NormRHS_(NormRHS)
+  , NormRHS_(initialRHSNorm)
   , numBackTrackingSteps_(numBackTrackingSteps)
   , noiseGen_(A->Comm().NumProc(), A->Comm().MyPID())
 {
   MyPID = A->Comm().MyPID();
   using Teuchos::rcp;
-  map_x_ = rcp(new Epetra_LocalMap(m_, 0, *Comm_));
-  map_z_ = rcp(new Epetra_LocalMap(W->NumVectors(), 0, A_->Comm()));
-  map_mm = rcp(new Epetra_LocalMap(m_ * m_, 0, *Comm_));
-  Tmap = rcp(new Epetra_Map(NumStochIter_, 0, *Comm_));
+  localMapY = rcp(new Epetra_LocalMap(m_, 0, *Comm_));
+  localMapZ = rcp(new Epetra_LocalMap(W->NumVectors(), 0, A_->Comm()));
+  localMapYY = rcp(new Epetra_LocalMap(m_ * m_, 0, *Comm_));
+  stochMap = rcp(new Epetra_Map(NumStochIter_, 0, *Comm_));
 
-  yTrans_ = Teuchos::rcp(new Epetra_MultiVector(*Tmap, m_));
-  zTrans_ = Teuchos::rcp(new Epetra_MultiVector(*Tmap, W->NumVectors()));
+  yTrans_ = Teuchos::rcp(new Epetra_MultiVector(*stochMap, m_));
+  zTrans_ = Teuchos::rcp(new Epetra_MultiVector(*stochMap, W->NumVectors()));
   numSamples = yTrans_->MyLength();
-  y_ = Teuchos::rcp(new Epetra_MultiVector(*map_x_, numSamples));
-  z_ = Teuchos::rcp(new Epetra_MultiVector(*map_z_, numSamples));
-  yyOuter = Teuchos::rcp(new Epetra_MultiVector(*map_mm, numSamples));
+  y_ = Teuchos::rcp(new Epetra_MultiVector(*localMapY, numSamples));
+  z_ = Teuchos::rcp(new Epetra_MultiVector(*localMapZ, numSamples));
+  yyOuter = Teuchos::rcp(new Epetra_MultiVector(*localMapYY, numSamples));
   sizeYY = m_ * m_;
-  yOld = rcp(new Epetra_MultiVector(*map_x_, numSamples));
-  yCurr = rcp(new Epetra_MultiVector(*map_x_, numSamples));
-  yDelta = rcp(new Epetra_MultiVector(*map_x_, numSamples));
-  residual = Teuchos::rcp(new Epetra_Vector(*map_x_, numSamples));
+  yOld = rcp(new Epetra_MultiVector(*localMapY, numSamples));
+  yCurr = rcp(new Epetra_MultiVector(*localMapY, numSamples));
+  yDelta = rcp(new Epetra_MultiVector(*localMapY, numSamples));
+  residual = Teuchos::rcp(new Epetra_Vector(*localMapY, numSamples));
   int n;
   n = A->NumMyRows();
   bilinWork = rcp(new Epetra_MultiVector(*V));
-  rhs = rcp(new Epetra_MultiVector(*map_x_, numSamples));
+  rhs = rcp(new Epetra_MultiVector(*localMapY, numSamples));
 #if need_locaInterface == 1
   // Allocate Fortran-map work vectors for the LOCA/SWE bilinear interface.
   Teuchos::RCP<Epetra_Map> fortMap = domain_->GetAssemblyMap();
@@ -109,27 +109,27 @@ CoeffSolver::CoeffSolver(int NumStochIter,
   fortviv = Teuchos::rcp(new Epetra_MultiVector(*fortMap, m_));
 #endif
   AV = rcp(new Epetra_MultiVector(*V));
-  VAV = rcp(new Epetra_MultiVector(*map_x_, m_));
+  VAV = rcp(new Epetra_MultiVector(*localMapY, m_));
   udet_mtimes = rcp(new Epetra_MultiVector(*V));
-  ones = rcp(new Epetra_Vector(*map_x_));
+  ones = rcp(new Epetra_Vector(*localMapY));
   Vudet = rcp(new Epetra_MultiVector(*V));
   udetV = rcp(new Epetra_MultiVector(*V));
-  VVudet = rcp(new Epetra_MultiVector(*map_x_, m_));
-  lin_coeff = rcp(new Epetra_MultiVector(*map_x_, m_));
-  JacNonLin = rcp(new Epetra_MultiVector(*map_x_, m_));
-  rhsNonLin = rcp(new Epetra_MultiVector(*map_x_, numSamples));
-  Ezy = rcp(new Epetra_MultiVector(*map_z_, m_));
-  EzyPrev = rcp(new Epetra_MultiVector(*map_z_, m_));
-  Eyy = rcp(new Epetra_MultiVector(*map_x_, m_));
-  EyyTyT = rcp(new Epetra_MultiVector(*map_mm, m_));
-  EzyDEyy = rcp(new Epetra_MultiVector(*map_z_, m_));
+  VVudet = rcp(new Epetra_MultiVector(*localMapY, m_));
+  lin_coeff = rcp(new Epetra_MultiVector(*localMapY, m_));
+  JacNonLin = rcp(new Epetra_MultiVector(*localMapY, m_));
+  rhsNonLin = rcp(new Epetra_MultiVector(*localMapY, numSamples));
+  Ezy = rcp(new Epetra_MultiVector(*localMapZ, m_));
+  EzyPrev = rcp(new Epetra_MultiVector(*localMapZ, m_));
+  Eyy = rcp(new Epetra_MultiVector(*localMapY, m_));
+  EyyTyT = rcp(new Epetra_MultiVector(*localMapYY, m_));
+  EzyDEyy = rcp(new Epetra_MultiVector(*localMapZ, m_));
   EVyVyyDEyy = rcp(new Epetra_MultiVector(*V));
   EDEyy = rcp(new Epetra_MultiVector(*V));
-  LocEyyy = rcp(new Epetra_MultiVector(*map_x_, V->NumVectors()));
+  LocEyyy = rcp(new Epetra_MultiVector(*localMapY, V->NumVectors()));
 
   EVyVyy = rcp(new Epetra_MultiVector(*V));
 
-  workMxM = Teuchos::rcp(new Epetra_MultiVector(*map_x_, m_));
+  workMxM = Teuchos::rcp(new Epetra_MultiVector(*localMapY, m_));
   Epetra_Map Glob_x_map(m_, 0, *Comm_);
   EYY = rcp(new Epetra_CrsMatrix(Epetra_DataAccess::Copy, Glob_x_map, m_));
   int GlobInd;
@@ -145,16 +145,16 @@ CoeffSolver::CoeffSolver(int NumStochIter,
   identity = Teuchos::rcp(new Epetra_MultiVector(Epetra_Map(m_, 0, A_->Comm()), m_));
   Vwork = rcp(new Epetra_MultiVector(*V));
   const_coeff = rcp(new Epetra_MultiVector(
-    *map_x_, 1)); // map of uMean from deterministic part( n*1 length vector )
-  repEVyVy = rcp(new Epetra_MultiVector(*map_x_, numSamples));
+    *localMapY, 1)); // map of uMean from deterministic part( n*1 length vector )
+  repEVyVy = rcp(new Epetra_MultiVector(*localMapY, numSamples));
   for (int i = 0; i < numSamples; i++)
     (*repEVyVy)[i] = (*const_coeff)[0];
 
   EVyVy = rcp(new Epetra_Vector(
     *uMean)); // map of uMean from deterministic part( n*1 length vector )
   EVyVy->PutScalar(0.0);
-  xndiff = Teuchos::rcp(new Epetra_Vector(*map_x_, false));
-  VB = rcp(new Epetra_MultiVector(*map_x_, W->NumVectors()));
+  xndiff = Teuchos::rcp(new Epetra_Vector(*localMapY, false));
+  VB = rcp(new Epetra_MultiVector(*localMapY, W->NumVectors()));
   dW = rcp(new Epetra_MultiVector(*z_));
   VBdW = rcp(new Epetra_MultiVector(*yCurr));
   jacView = Teuchos::rcp(new Epetra_MultiVector(*lin_coeff));
@@ -163,9 +163,9 @@ CoeffSolver::CoeffSolver(int NumStochIter,
     jacView->ExtractView(&jac_val, &m_);
     jacDense = rcp(new Epetra_SerialDenseMatrix(Epetra_DataAccess::View, jac_val, m_, m_, m_));
   }
-  BilinTensor = rcp(new Epetra_MultiVector(*map_x_, m_ * m_));
+  BilinTensor = rcp(new Epetra_MultiVector(*localMapY, m_ * m_));
   BilinTensorN = rcp(new Epetra_MultiVector(V->Map(), m_ * m_));
-  VtBilinTensorN = rcp(new Epetra_MultiVector(*map_x_, m_ * m_));
+  VtBilinTensorN = rcp(new Epetra_MultiVector(*localMapY, m_ * m_));
   EyyInvView = Teuchos::rcp(new Epetra_MultiVector(*Eyy));
   {
     double* r_val;
@@ -193,19 +193,19 @@ CoeffSolver::CoeffSolver(int NumStochIter,
   {
     if (MyPID == 0)
       std::cout << " Initializing Coeff.'s using " << CoefFile << ".\n";
-    auto y_coeff = StochIO::readMV(CoefFile, *Tmap);
+    auto y_coeff = StochIO::readMV(CoefFile, *stochMap);
     *yTrans_ = *y_coeff;
-    CreateLocMultiVec("y");
+    CreateLocalMultiVec("y");
   }
   if (TypeCoeffFile == "Variance") {
     if (MyPID == 0)
       std::cout << " Using provided variance vector for initializing Stoch. "
                 << "Coeff.'s \n";
-    auto y_coeff = StochIO::readMV(CoefFile, *map_x_);
+    auto y_coeff = StochIO::readMV(CoefFile, *localMapY);
     for (int i = 0; i < yTrans_->NumVectors(); i++)
       for (int j = 0; j < yTrans_->MyLength(); j++)
         (*(*yTrans_)(i))[j] = sqrt((*(*y_coeff)(0))[i]) * noiseGen_.sample();
-    CreateLocMultiVec("y");
+    CreateLocalMultiVec("y");
   }
   double temval = 1.0, one = 1.0;
   if (debug_) {
@@ -277,7 +277,7 @@ CoeffSolver::CoeffSolver(int NumStochIter,
 /* ******************************************************** */
 
 void
-CoeffSolver::CreateLocMultiVec(const std::string& WhichOne)
+CoeffSolver::CreateLocalMultiVec(const std::string& WhichOne)
 {
   if (WhichOne == "y") {
     for (int i = 0; i < yTrans_->MyLength(); i++) {
@@ -298,7 +298,7 @@ CoeffSolver::CreateLocMultiVec(const std::string& WhichOne)
 /* ******************************************************** */
 
 void
-CoeffSolver::CreateDistTransMultivec()
+CoeffSolver::localToDistributed()
 {
   for (int i = 0; i < yTrans_->MyLength(); i++) {
     for (int j = 0; j < yTrans_->NumVectors(); j++) {
@@ -369,7 +369,7 @@ CoeffSolver::Bilinear(const Teuchos::RCP<Epetra_Vector>& ud,
  * BilinTensorN - E<Vy,Vy>
  */
 void
-CoeffSolver::HBilinV()
+CoeffSolver::computeBilinTensor()
 {
   //  Epetra_MultiVector temp(*Eyy);
   int k;
@@ -419,7 +419,7 @@ CoeffSolver::computeRepEVyVy()
 /* ******************************************************** */
 
 void
-CoeffSolver::NonLinRHS()
+CoeffSolver::computeNonlinearRHS()
 {
   if (!useNwtn_) {
     rhsNonLin->Multiply('N', 'N', 1.0, *VtBilinTensorN, *yyOuter, 0.0);
@@ -434,7 +434,7 @@ CoeffSolver::NonLinRHS()
 /* ******************************************************** */
 
 void
-CoeffSolver::jacBilinTerm()
+CoeffSolver::computeBilinearJacobian()
 {
   JacNonLin->Scale(0.0);
   for (int i = 0; i < m_; i++) {
@@ -452,7 +452,7 @@ CoeffSolver::jacBilinTerm()
 /* ******************************************************** */
 
 void
-CoeffSolver::LinCoeff()
+CoeffSolver::computeLinearCoeff()
 {
   A_->Multiply(false, *V, *AV);
   VAV->Multiply('T', 'N', 1.0, *V, *AV, 0.0);
@@ -470,7 +470,7 @@ CoeffSolver::LinCoeff()
     printnormMV(*V, 2, "norm of V cols:");
   }
   if (debug_) {
-    std::cout << "\n In CoeffSolver::LinCoeff" << std::endl;
+    std::cout << "\n In CoeffSolver::computeLinearCoeff" << std::endl;
     double nrm1[V->NumVectors()];
     lin_coeff->Norm1(&nrm1[0]);
     std::cout << "One norm of I-dt*VAV" << std::endl;
@@ -497,33 +497,33 @@ CoeffSolver::LinCoeff()
 /*
  * ===  FUNCTION
  * ======================================================================
- *         Name:  y_jac
+ *         Name:  assembleJacobian
  *  Description:  computes the jacobian. It uses SACADO package computing for
  * nonlinear
  *                part of jacobian.
  * =====================================================================================
  */
 void
-CoeffSolver::y_jac()
+CoeffSolver::assembleJacobian()
 {
-  // jacBilinTerm();
+  // computeBilinearJacobian();
   *jacView = *lin_coeff;
   // jacView->Update(subdt_,*JacNonLin,1.0);
 }
 /*
  * ===  FUNCTION
  * ======================================================================
- *         Name:  y_rhs
+ *         Name:  assembleRHS
  *  Description:  calculates rhs of the system!!!
  *  yCurr - the value obtained at previous time step
  *  yOld- the value to be obtained for current time step
  * =====================================================================================
  */
 void
-CoeffSolver::y_rhs()
+CoeffSolver::assembleRHS()
 {
   if (!useNwtn_) {
-    NonLinRHS();
+    computeNonlinearRHS();
     rhs->PutScalar(0.0);
     rhs->Update(1.0, *yCurr, 1.0);
     // rhs=-x+lin_coeff*x0
@@ -544,7 +544,7 @@ CoeffSolver::y_rhs()
     if (debug_ && stochiter_ == 0) {
     }
   } else {
-    NonLinRHS();
+    computeNonlinearRHS();
     rhs->PutScalar(0.0);
     rhs->Multiply('N', 'N', 1.0, *lin_coeff, *yOld, 1.0); // rhs=-x+lin_coeff*x0
     rhs->Update(-1.0, *yCurr, 1.0);
@@ -558,7 +558,7 @@ CoeffSolver::y_rhs()
 Teuchos::RCP<Epetra_Map>
 CoeffSolver::get_x_map()
 {
-  return map_x_;
+  return localMapY;
 }
 
 void
@@ -577,7 +577,7 @@ CoeffSolver::setDwiener(const Teuchos::RCP<Epetra_MultiVector>& z0_temp)
     debugWienerCount += 1;
     std::string flnm = "wnr" + Teuchos::toString(debugWienerCount) + ".mm";
     std::cout << "\n filename is: " << flnm << "\n";
-    auto tmpmv = StochIO::readMV(flnm, *map_z_);
+    auto tmpmv = StochIO::readMV(flnm, *localMapZ);
     *dW = *tmpmv;
   } else {
     dW->Scale(sqrt(subdt_));
@@ -587,7 +587,7 @@ CoeffSolver::setDwiener(const Teuchos::RCP<Epetra_MultiVector>& z0_temp)
 Teuchos::RCP<Epetra_Map>
 CoeffSolver::get_f_map()
 {
-  return map_x_;
+  return localMapY;
 }
 
 Teuchos::RCP<Epetra_MultiVector>
@@ -646,27 +646,27 @@ CoeffSolver::StochasticIterations()
     Comm_->SumAll(&LocTime, &time, 1);
     if (Comm_->MyPID() == 0) {
       std::cout << "\n*******************************************\n";
-      std::cout << "average time per proc. for HBilinV: "
+      std::cout << "average time per proc. for computeBilinTensor: "
                 << (time) / (A_->Comm().NumProc()) << " sec\n";
       std::cout << "*******************************************\n\n";
     }
   }
   Epetra_Time timer2(timer1);
 
-  LinCoeff();
+  computeLinearCoeff();
 
   if (test_) {
     LocTime = timer2.ElapsedTime();
     Comm_->SumAll(&LocTime, &time, 1);
     if (Comm_->MyPID() == 0) {
       std::cout << "\n*******************************************\n";
-      std::cout << "average time per proc. for LinCoeff: "
+      std::cout << "average time per proc. for computeLinearCoeff: "
                 << (time) / (A_->Comm().NumProc()) << " sec\n";
       std::cout << "*******************************************\n\n";
     }
   }
   Epetra_Time timer3(timer1);
-  y_jac();
+  assembleJacobian();
 
   if (debug_) {
     std::cout.precision(18);
@@ -734,14 +734,14 @@ CoeffSolver::StochasticIterations()
     zTrans_->Update(-1.0, avgMV, 1.0);
 
     std::string type = "z";
-    CreateLocMultiVec(type);
+    CreateLocalMultiVec(type);
     set_x(y_);
     setDwiener(z_);
     /********* stoch_coeff = VB*dW ****************/
     VBdW->Multiply('N', 'N', 1.0, *VB, *dW, 0.0);
     if (!useNwtn_) {
       yDelta->PutScalar(0.0);
-      y_rhs();
+      assembleRHS();
       yDelta->Multiply('N', 'N', 1.0, inv_jac, *rhs, 0.0);
       yOld->Update(1.0, *yDelta, 0.0);
     } else
@@ -755,7 +755,7 @@ CoeffSolver::StochasticIterations()
       }
       std::cout << std::endl;
 
-      std::cout << "\n frob. norm of inv(y_jac)  = " << jacDense->NormOne()
+      std::cout << "\n frob. norm of inv(assembleJacobian)  = " << jacDense->NormOne()
                 << std::endl;
       getchar();
     }
@@ -796,7 +796,7 @@ CoeffSolver::computeEVyVy()
 void
 CoeffSolver::computeCrossVariance()
 {
-  CreateDistTransMultivec(); /* Create zTrans and yTrans which have distributed
+  localToDistributed(); /* Create zTrans and yTrans which have distributed
                                 map */
   int tmp = Eyy->Multiply(
     'T', 'N', 1.0 / NumStochIter_, *yTrans_, *yTrans_, 0.0); /* Calculate yy' */
@@ -868,8 +868,8 @@ CoeffSolver::computeEDEyy()
     printnormMV(*yTrans_, 2, "norm of Y^T : ");
     printnormMV(*W, 2, "norm of W : ");
     printnormMV(*VB, 2, "norm of VW : ");
-    printTransNormMV(*rhs, 2, "norm of rhs^T: ");
-    printTransNormMV(*dW, 2, "norm of dw^T: ");
+    printTransposedNorms(*rhs, 2, "norm of rhs^T: ");
+    printTransposedNorms(*dW, 2, "norm of dw^T: ");
     printnormMV(*EyyTyT, 2, "norm of Eyyy: ");
     printnormMV(Wzy_P_EVyVyy, 2, "norm of WE[zyT]+E[VyVy]: ");
     printnormMV(*EDEyy, 2, "norm of EDEyy: ");
@@ -912,7 +912,7 @@ CoeffSolver::PostProcess(Epetra_Vector& second_mmnt)
 // ************************************************************************
 {
   using namespace std;
-  CreateDistTransMultivec();
+  localToDistributed();
   double A[m_][m_];
   int LWORK = 1 + 5 * m_ * m_, intdum = 1;
   double WORK[LWORK], singValues[m_], U[m_][m_], Vdum;
@@ -920,7 +920,7 @@ CoeffSolver::PostProcess(Epetra_Vector& second_mmnt)
   int INFO;
   char JOBU = 'A', JOBVT = 'O';
   Epetra_LAPACK lapack;
-  Epetra_MultiVector yy(*map_x_, m_);
+  Epetra_MultiVector yy(*localMapY, m_);
 
   yy.Multiply('T', 'N', 1.0, *yTrans_, *yTrans_, 0.0);
   yy.ExtractCopy(&A[0][0], m_);
@@ -975,14 +975,14 @@ CoeffSolver::Newton()
 {
   isConverged_ = false;
   yDelta->PutScalar(0.0);
-  // y_jac();
-  y_rhs();
+  // assembleJacobian();
+  assembleRHS();
   rhs->Scale(-1.0);
   std::vector<double> normsRHS(rhs->NumVectors());
   rhs->Norm2(normsRHS.data());
   NormRHS_ = *std::max_element(normsRHS.begin(), normsRHS.end());
   //std::cout << "\n norm of rhs = " << NormRHS_ << std::endl;
-  //y_jac();
+  //assembleJacobian();
   //y_prob.SetMatrix(*jacDense); // 2. Give the updated matrix to the SVD solver
   //y_prob.Factor();
   INFO("Newton:      norm: " << NormRHStest_ );
@@ -992,7 +992,7 @@ CoeffSolver::Newton()
       yOld->Update(1.0, *yDelta, 0.0);
     else {
       yOld->Update(1.0, *yDelta, 1.0);
-      y_rhs();
+      assembleRHS();
       rhs->Scale(-1.0);
     }
     std::vector<double> normsTest(rhs->NumVectors());
@@ -1012,7 +1012,7 @@ CoeffSolver::Newton()
         break;
       }
       if (backTracking_ and (NormRHS_ < NormRHStest_))
-        RunBackTracking();
+        runBackTracking();
       NormRHS_ = NormRHStest_;
     }
   }
@@ -1028,7 +1028,7 @@ CoeffSolver::Newton()
 }
 //======================================================================
 void
-CoeffSolver::RunBackTracking()
+CoeffSolver::runBackTracking()
 {
   // Initialize reduction with -1/2
   double reduction = -1.0 / 2;
@@ -1039,7 +1039,7 @@ CoeffSolver::RunBackTracking()
     }
     // Apply reduction to the state vector
     yOld->Update(reduction, *yDelta, 1.0);
-    y_rhs();
+    assembleRHS();
     std::vector<double> normsBT(rhs->NumVectors());
     rhs->Norm2(normsBT.data());
     NormRHStest_ = *std::max_element(normsBT.begin(), normsBT.end());
@@ -1057,7 +1057,7 @@ CoeffSolver::RunBackTracking()
 }
 
 void
-CoeffSolver::printTransNormMV(Epetra_MultiVector& mv, int normType, const std::string& str)
+CoeffSolver::printTransposedNorms(Epetra_MultiVector& mv, int normType, const std::string& str)
 {
   Epetra_Map mp(mv.NumVectors(), 0, mv.Comm());
   Epetra_MultiVector mvT(mp, mv.MyLength());

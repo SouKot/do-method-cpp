@@ -86,8 +86,8 @@ public:
 
     // -- Forcing (delegated) --
     void refreshForcing(double) {} // QG forcing is time-invariant
-    int get_dim_W() { return forcing_->get_dim_W(); }
-    Teuchos::RCP<Epetra_MultiVector> get_W() { return forcing_->get_W(); }
+    int getDimW() { return forcing_->getDimW(); }
+    Teuchos::RCP<Epetra_MultiVector> getW() { return forcing_->getW(); }
 
     // -- Time stepping --
     /// @brief Run Newton iteration (eta-squared step) for one implicit time step.
@@ -108,7 +108,7 @@ public:
 
 private:
     void ThetaStepper(const Teuchos::RCP<Epetra_Vector>& rhs_u0);
-    void RunBackTracking(Epetra_Vector& rhs_u0);
+    void runBackTracking(Epetra_Vector& rhs_u0);
     int  LinSolve(Epetra_Vector* LHS, Epetra_Vector* RHS);
 
     // Composed subsystems

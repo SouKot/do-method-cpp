@@ -184,7 +184,7 @@ bool MeanSolver::NewtonSolver()
 }
 
 // =====================================================================================
-void MeanSolver::RunBackTracking(Epetra_Vector& rhs_u0)
+void MeanSolver::runBackTracking(Epetra_Vector& rhs_u0)
 {
     double reduction = -1.0 / 2;
     for (backTrack_ = 0; backTrack_ != numBackTrackingSteps_; ++backTrack_) {

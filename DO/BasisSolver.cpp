@@ -82,20 +82,20 @@ BasisSolver::BasisSolver(const Teuchos::RCP<Epetra_CrsMatrix>& A,
 
     Epetra_Map rowmap(A_->RowMap());
     sharedState_->V       = rcp(new Epetra_MultiVector(rowmap, m_));
-    map_    = rcp(new Epetra_Map(m_, 0, A_->Comm()));
-    locmap_ = rcp(new Epetra_LocalMap(m_, 0, A_->Comm()));
-    y_map   = rcp(new Epetra_Map(W_->NumVectors(), 0, A_->Comm()));
+    mapDOF    = rcp(new Epetra_Map(m_, 0, A_->Comm()));
+    localMapM = rcp(new Epetra_LocalMap(m_, 0, A_->Comm()));
+    noiseMap   = rcp(new Epetra_Map(W_->NumVectors(), 0, A_->Comm()));
     iteration = 1;
 
     EVyVyBasis       = rcp(new Epetra_MultiVector(*sharedState_->V));
-    identity         = rcp(new Epetra_MultiVector(*map_, m_));
-    Ezy      = rcp(new Epetra_MultiVector(*y_map, m_));
-    Eyy      = rcp(new Epetra_MultiVector(*map_, m_));
-    Eyyy     = rcp(new Epetra_MultiVector(*map_, m_));
-    EyyInv  = rcp(new Epetra_MultiVector(*map_, m_));
+    identity         = rcp(new Epetra_MultiVector(*mapDOF, m_));
+    Ezy      = rcp(new Epetra_MultiVector(*noiseMap, m_));
+    Eyy      = rcp(new Epetra_MultiVector(*mapDOF, m_));
+    Eyyy     = rcp(new Epetra_MultiVector(*mapDOF, m_));
+    EyyInv  = rcp(new Epetra_MultiVector(*mapDOF, m_));
     RHS_block_1 = rcp(new Epetra_MultiVector(A_->RowMap(), m_));
     sharedState_->EDEyy   = rcp(new Epetra_MultiVector(A->RowMap(), m_));
-    Rfactor        = rcp(new Epetra_MultiVector(*locmap_, m_));
+    Rfactor        = rcp(new Epetra_MultiVector(*localMapM, m_));
 
     {
         double* r_val;
