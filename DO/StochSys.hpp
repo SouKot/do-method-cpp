@@ -187,7 +187,7 @@ public:
   Epetra_MultiVector&              getYTrans()       { return *yTrans_; }
 
   int numSubTimeStep, MyLDA;
-  int m_, ttt, rszyy;
+  int m_, rszyy;
   int stochiter;
   int N_, MyPID, itrtr = 0;
   double subdt_;
@@ -206,7 +206,7 @@ public:
   Teuchos::RCP<Epetra_MultiVector> Vudet, udetV;
   Teuchos::RCP<Epetra_MultiVector> VVudet;
   Teuchos::RCP<Epetra_MultiVector> lin_coeff, JacNonLin;
-  Teuchos::RCP<Epetra_MultiVector> ExpVar, Vexpv4, rep_exp_vyvy, row_one;
+  Teuchos::RCP<Epetra_MultiVector> rep_exp_vyvy;
   Teuchos::RCP<Epetra_MultiVector> Vtemp;
   Teuchos::RCP<Epetra_Vector>
     expv4; // map of udet from deterministic part( n*1 length vector )
@@ -225,11 +225,10 @@ public:
     ExpVyVyyDExpyy, ExpDExpyy, eye;
   Epetra_SerialDenseSVD y_prob;
   Teuchos::RCP<Epetra_MultiVector> H, Hn, VHn, Rv, YY;
-  Teuchos::RCP<Epetra_Map> map_expv4, Tmap, map_mm;
+  Teuchos::RCP<Epetra_Map> Tmap, map_mm;
   Teuchos::RCP<Epetra_MultiVector> Exp_zy, Exp_zy_, ExpzyDExpyy, Exp_VyVyy;
   Teuchos::RCP<Epetra_MultiVector> Exp_yy, Exp_yy_, LocExpyyy, GlobExpyyy,
     EyyTyT, Utmp;
-  Teuchos::RCP<Epetra_SerialDenseMatrix> sol;
   Epetra_SerialDenseMatrix ru;
   Teuchos::RCP<Teuchos::SerialDenseMatrix<int, double>> Ru;
 
@@ -265,8 +264,6 @@ private:
   NoiseGenerator noiseGen_;
   int iter_;
   int maxNumIterations_;
-  int numPrecRecomputes_;
-  double sig_;
   int backTrack_;
   int numBackTrackingSteps_;
   double toleranceRHS_;
@@ -275,15 +272,11 @@ private:
   int stochiter_;
   int NumStochIter_;
   //!
-  bool isInitialized_, test_, debug_, useNwtn_, shouldEquil;
+  bool test_, debug_, useNwtn_, shouldEquil;
   bool isConverged_;
   bool backTracking_; // perhaps call this enableBacktracking_
-  bool showGetInvalidArg_;
   Teuchos::RCP<Epetra_Comm> Comm_;
   Teuchos::RCP<Epetra_LocalMap> map_z_, map_x_;
-  Teuchos::RCP<Epetra_Vector> p_;
-  Teuchos::RCP<Epetra_CrsGraph> W_graph_;
-  Teuchos::RCP<Epetra_CrsMatrix> stress_;
   Teuchos::RCP<Epetra_MultiVector> exp_yy_;
   Teuchos::RCP<StochasticState> sharedState_;
   DomainPtr domain_;

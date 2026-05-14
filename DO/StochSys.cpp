@@ -77,7 +77,6 @@ Y_Stoch::Y_Stoch(int NumStochIter,
   , toleranceRHS_(toleranceRHS)
   , NormRHS_(NormRHS)
   , numBackTrackingSteps_(numBackTrackingSteps)
-  , ttt(1)
   , noiseGen_(A->Comm().NumProc(), A->Comm().MyPID())
 {
   MyPID = A->Comm().MyPID();
@@ -144,7 +143,6 @@ Y_Stoch::Y_Stoch(int NumStochIter,
 
   ExpYY->FillComplete();
   eye = Teuchos::rcp(new Epetra_MultiVector(Epetra_Map(m_, 0, A_->Comm()), m_));
-  ExpVar = rcp(new Epetra_MultiVector(*map_x_, m_, false));
   Vtemp = rcp(new Epetra_MultiVector(*Vnew));
   const_coeff = rcp(new Epetra_MultiVector(
     *map_x_, 1)); // map of udet from deterministic part( n*1 length vector )
