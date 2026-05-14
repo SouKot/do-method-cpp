@@ -79,7 +79,7 @@ private:
 #else
     typedef boost::mt19937                          ENG;
     typedef boost::normal_distribution<double>      DIST;
-    typedef boost::variate_generator<ENG, DIST>     GEN;
+    typedef boost::variate_generator<ENG&, DIST>    GEN;
     ENG                 eng_;
     DIST                dist_;
     Teuchos::RCP<GEN>   gen_;
