@@ -6,6 +6,6 @@ pipelines:
         name: Mirror to GitHub
         script:
           - git remote add github git@github.com:SouKot/do-method-cpp.git
-          - git fetch --all --tags --prune
-          - git push github --all --prune
+          - git fetch --all --tags
+          - git push github --all
           - git push github --tags
