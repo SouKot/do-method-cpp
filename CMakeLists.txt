@@ -83,12 +83,14 @@ set(DO_SWE_SOURCES
 )
 
 set(BRGR_SOURCES
-  Burger/Mean.cpp)
+  Burger/Mean.cpp
+  Burger/PDEAssembler.cpp)
 
 set(QG_SOURCES
   QG/QG_Data.cpp
   QG/QG.cpp
   QG/Mean.cpp
+  QG/PDEAssembler.cpp
 )
 
 set(SWE_SOURCES 
