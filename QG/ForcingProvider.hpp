@@ -3,8 +3,7 @@
  *
  *       Filename:  ForcingProvider.hpp
  *
- *    Description:  Time-invariant stochastic forcing provider for QG.
- *                  Extracted from QG::Mean as part of Phase 5 decomposition.
+ *    Description:  Time-invariant stochastic forcing provider for the QG equation.
  *                  W is computed once from a Gaussian-weighted divergence pattern
  *                  and never updated during time stepping (refreshForcing is a no-op).
  *

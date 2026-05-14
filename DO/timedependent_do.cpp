@@ -85,7 +85,7 @@ static const double timesc = 1.0;
 // =====================================================================================
 /// @brief Run the full DO simulation for a given Mean model type.
 ///
-/// Encapsulates phases 2–7 (parameter reading, model construction, stochastic
+/// Encapsulates the full simulation pipeline (parameter reading, model construction, stochastic
 /// solver initialisation, time loop, post-processing).  The model type is
 /// resolved at compile time via the MeanType template parameter; no runtime
 /// branching on model type occurs inside this function.
@@ -117,7 +117,7 @@ void runSimulation(Teuchos::RCP<Epetra_Comm> Comm, Epetra_Time& timer)
     Teuchos::RCP<Teuchos::Time> meanTime   = Teuchos::TimeMonitor::getNewTimer("Mean solve time");
     StochTimers stochTimers = { coeffTime, coeffTime2, basisTime };
 
-    // ===== PHASE 2: Read parameter lists =====
+    // ===== Load simulation parameters from XML =====
 
     Teuchos::Ptr<Teuchos::ParameterList> paramListptr = Teuchos::ptr(new Teuchos::ParameterList);
     Teuchos::updateParametersFromXmlFile("params.xml", paramListptr);
@@ -133,7 +133,7 @@ void runSimulation(Teuchos::RCP<Epetra_Comm> Comm, Epetra_Time& timer)
     bool   timeProf  = transParams.get("Time Profiling",      false);
     double t         = t_start;
 
-    // ===== PHASE 3: Initialize Mean model =====
+    // ===== Construct and initialise the mean-field model =====
 
     Teuchos::RCP<MeanType> model =
         Teuchos::rcp(new MeanType(rcpFromRef(MeanSolveList), &t, &dt, Comm));
@@ -167,7 +167,7 @@ void runSimulation(Teuchos::RCP<Epetra_Comm> Comm, Epetra_Time& timer)
         }
     }
 
-    // ===== PHASE 4: Initialize basis and forcing =====
+    // ===== Initialise stochastic basis (V) and forcing (W) =====
 
     Teuchos::Ptr<Teuchos::ParameterList> stochParamListptr =
         Teuchos::ptr(new Teuchos::ParameterList);
@@ -230,7 +230,7 @@ void runSimulation(Teuchos::RCP<Epetra_Comm> Comm, Epetra_Time& timer)
     Vstoch->set_frcStrength(StochFrcStren);
     Vstoch->init_v(t);
 
-    // ===== PHASE 5: Initialize stochastic coefficient solver =====
+    // ===== Initialise stochastic coefficient solver (Y) =====
 
     Teuchos::RCP<Epetra_MultiVector> Vn = Vstoch->getBasisV();
     printnormMV(*Vn, 2, "initial norm of V");
@@ -282,7 +282,7 @@ void runSimulation(Teuchos::RCP<Epetra_Comm> Comm, Epetra_Time& timer)
         outstream2 = Teuchos::rcp(new Teuchos::oblackholestream());
     }
 
-    // ===== PHASE 6: Time integration =====
+    // ===== Time integration loop =====
 
     INFO("Start Time integration");
     if (MyPID == 0)
@@ -322,7 +322,7 @@ void runSimulation(Teuchos::RCP<Epetra_Comm> Comm, Epetra_Time& timer)
         (*outstream2) << t << "\t" << dt << "\t" << nrmF << "\n";
     }
 
-    // ===== PHASE 7: Post-processing and final output =====
+    // ===== Post-processing and final output =====
 
     Epetra_Vector scnd_mmnt(*soln);
     y_interface->PostProcess(scnd_mmnt);
@@ -360,7 +360,7 @@ int main(int argc = 0, char* argv[] = NULL)
 #endif
     bool status = true;
 
-    // ===== PHASE 1: Communicator and global output stream =====
+    // ===== MPI communicator and global output stream =====
 
 #ifdef HAVE_MPI
     Teuchos::RCP<Epetra_MpiComm> Comm = Teuchos::rcp(new Epetra_MpiComm(MPI_COMM_WORLD));

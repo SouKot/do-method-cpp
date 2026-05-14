@@ -3,8 +3,7 @@
  *
  *       Filename:  ForcingProvider.hpp
  *
- *    Description:  Time-dependent stochastic forcing provider for Burgers.
- *                  Extracted from Burger::Mean as part of Phase 5 decomposition.
+ *    Description:  Time-dependent stochastic forcing provider for the Burgers equation.
  *                  Computes W(t) = 0.5[cos(4πx)e^{-10t} + cos(2πx)e^{5(t-1)}].
  *
  *        Version:  1.0

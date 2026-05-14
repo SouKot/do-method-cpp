@@ -3,8 +3,7 @@
  *
  *       Filename:  PDEAssembler.hpp
  *
- *    Description:  PDE operator assembly for the Burgers equation.
- *                  Extracted from Burger::Mean as part of Phase 5 decomposition.
+ *    Description:  PDE operator assembly for the viscous Burgers equation.
  *                  Owns the FD stencil matrices (Laplacian, gradient, identity) and
  *                  assembles the RHS F(u), Jacobian J(u), and theta-method operator.
  *
@@ -30,10 +29,12 @@
 namespace Burger {
 
 /**
- * @brief PDE operator assembly for the Burgers equation.
+ * @brief Finite-difference PDE operators for the 1-D viscous Burgers equation.
  *
- * Builds and manages the finite-difference stencil operators (Laplacian, gradient,
- * identity) and assembles the nonlinear RHS and Jacobian for the mean-field system.
+ * Discretises @f$ u_t + u\,u_x = \mu\,u_{xx} @f$ on a periodic domain using
+ * second-order central differences.  Owns the stencil matrices (Laplacian,
+ * gradient, identity) and assembles the nonlinear RHS and Jacobian needed
+ * by the theta-method time stepper in Burger::Mean.
  */
 class PDEAssembler {
 public:

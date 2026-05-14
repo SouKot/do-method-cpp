@@ -155,7 +155,7 @@ int main(int argc = 0, char *argv[] = NULL) {
 #endif
     bool status = true;
 
-    // ===== PHASE 1: Communicator and output streams =====
+    // ===== MPI communicator and output streams =====
 
 #ifdef HAVE_MPI
     Teuchos::RCP<Epetra_MpiComm> Comm = Teuchos::rcp(new Epetra_MpiComm(MPI_COMM_WORLD));
@@ -195,7 +195,7 @@ int main(int argc = 0, char *argv[] = NULL) {
     StochTimers stochTimers = {coeffTime, coeffTime2, basisTime};
 
     try {
-        // ===== PHASE 2: Read parameter lists =====
+        // ===== Load simulation parameters from XML =====
 
         Teuchos::Ptr<Teuchos::ParameterList> paramListptr = Teuchos::ptr(new Teuchos::ParameterList);
         Teuchos::updateParametersFromXmlFile("params.xml", paramListptr);
@@ -255,7 +255,7 @@ int main(int argc = 0, char *argv[] = NULL) {
         double maxEffort = 0.8;
         int step = 1;
 
-        // ===== PHASE 3: Initialize FVM model and implicit time stepper =====
+        // ===== Construct FVM model and implicit time stepper =====
 
         Teuchos::RCP<LOCA::Abstract::Factory> epetraFactory =
                 Teuchos::rcp(new LOCA::Epetra::Factory);
@@ -305,7 +305,7 @@ int main(int argc = 0, char *argv[] = NULL) {
             if (MyPID == 0) cout << "||f|| of starting solution: " << nrm << "\n";
         }
 
-        // ===== PHASE 4: Initialize basis and forcing =====
+        // ===== Initialise stochastic basis (V) and forcing (W) =====
 
         Teuchos::Ptr<Teuchos::ParameterList> stochParamListptr =
                 Teuchos::ptr(new Teuchos::ParameterList);
@@ -403,7 +403,7 @@ int main(int argc = 0, char *argv[] = NULL) {
         Vstoch->set_frcStrength(StochFrcStren);
         Vstoch->init_v(t);
 
-        // ===== PHASE 5: Initialize stochastic coefficient solver =====
+        // ===== Initialise stochastic coefficient solver (Y) =====
 
         Teuchos::RCP<Epetra_MultiVector> Vn = Vstoch->getBasisV();
         printnormMV(*Vn, 2, "initial norm of V");
@@ -455,7 +455,7 @@ int main(int argc = 0, char *argv[] = NULL) {
             outstream2 = Teuchos::rcp(new Teuchos::oblackholestream());
         }
 
-        // ===== PHASE 6: Time integration (adaptive, NOX-driven) =====
+        // ===== Time integration (adaptive, NOX-driven) =====
 
         INFO("Start Time integration");
         if (MyPID == 0)
@@ -577,7 +577,7 @@ int main(int argc = 0, char *argv[] = NULL) {
             }
         }
 
-        // ===== PHASE 7: Post-processing and final output =====
+        // ===== Post-processing and final output =====
 
         if (Scaling) {
             Epetra_MultiVector Vtemp(*Vn);

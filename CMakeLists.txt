@@ -63,7 +63,7 @@ set(GEN_SOURCES
   general/Filestreams.C)
 
 # Sources shared by all DO targets (stochastic solver, basis solver)
-# Phase 2: Problem_Interface.cpp replaced by BasisSolver.cpp + LinearSolverWrapper.cpp
+# Stochastic solver core: basis solver, coefficient solver, linear solver back-end
 set(DO_COMMON_SOURCES
   DO/StochSys.cpp
   DO/BasisSolver.cpp

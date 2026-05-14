@@ -3,9 +3,10 @@
  *
  *       Filename:  PDEAssembler.cpp
  *
- *    Description:  Implementation of the Burger PDE assembler.
- *                  Extracted from Burger::Mean::createLinOp, BilinearTerm,
- *                  createRHS, and computeJac.
+ *    Description:  Finite-difference PDE operators for the 1-D viscous Burgers equation
+ *                  @f$ u_t + u\,u_x = \mu\,u_{xx} @f$ with periodic boundary conditions.
+ *                  Builds the Laplacian, gradient, and identity stencil matrices and
+ *                  assembles the nonlinear RHS and Jacobian at each time step.
  *
  *        Version:  1.0
  *        Created:  2026-05-13

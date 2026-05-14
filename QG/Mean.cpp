@@ -8,9 +8,9 @@
  *                  PDE assembly delegated to QG::PDEAssembler, solver to
  *                  LinearSolverWrapper.
  *
- *        Version:  2.0  (Phase 5 decomposition)
+ *        Version:  2.0
  *        Created:  04/14/2018 07:55:56 AM
- *       Revision:  2026-05-13  Phase 5 SRP decomposition
+ *       Revision:  2026-05-13
  *       Compiler:  gcc / clang (C++17)
  *
  *         Author:  Sourabh Kotnala (), sauravkotnala@gmail.com
@@ -87,7 +87,15 @@ void Mean::setSolution(Epetra_Vector& x)
     *u_  = x;
 }
 
-// =====================================================================================
+/**
+ * @brief Assemble the theta-method residual for the mean QG equation.
+ *
+ * Computes  R = θ·F(u) + (1−θ)·F(u₀) + M·(u − u₀)  where M is the QG mass
+ * matrix and F the spatially discretised RHS (vorticity advection + diffusion
+ * + stochastic correction).
+ *
+ * @param rhs_u0  Pre-computed RHS evaluated at the old solution u₀.
+ */
 void Mean::ThetaStepper(const RCP<Epetra_Vector>& rhs_u0)
 {
     pde_.assembleRHS(u_, ExpVyVy_, *dt_);
@@ -107,7 +115,16 @@ int Mean::LinSolve(Epetra_Vector* LHS, Epetra_Vector* RHS)
     return solver_->solve(*LHS, *RHS, "Mean solve");
 }
 
-// =====================================================================================
+/**
+ * @brief Full Newton iteration for the implicit mean-field QG step.
+ *
+ * Uses an eta-squared step-length heuristic: the Newton correction is scaled by
+ * @f$ \sqrt{|s_0/s|} @f$ where @f$ s = \delta u^T J \delta u @f$ and
+ * @f$ s_0 = R^T \delta u @f$, to improve robustness for the nonlinear
+ * vorticity equation.
+ *
+ * @return @c true if the Newton loop converged.
+ */
 bool Mean::NewtonSolver()
 {
     isConverged_ = false;
@@ -184,7 +201,17 @@ void Mean::RunBackTracking(Epetra_Vector& rhs_u0)
         std::cout << "\nNewton: --> BACKTRACKING FAILED" << __FILE__ << __LINE__;
 }
 
-// =====================================================================================
+/**
+ * @brief Cubic-backtracking line-search Newton solver for the QG mean field.
+ *
+ * Implements a safeguarded line-search strategy (Armijo condition with cubic
+ * interpolation) over the theta-method nonlinear system.  Falls back to
+ * quadratic interpolation on the first backtrack.  Used as an alternative to
+ * NewtonSolver() when the standard eta-squared step length is insufficient.
+ *
+ * @param x0  Initial guess (usually the solution from the previous time step).
+ * @return @c true if the solver converged within tolerance.
+ */
 bool Mean::newtonLineSearchSolve(Epetra_Vector& x0)
 {
     int nIter = 0;

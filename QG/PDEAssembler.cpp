@@ -3,9 +3,10 @@
  *
  *       Filename:  PDEAssembler.cpp
  *
- *    Description:  Implementation of the QG PDE assembler.
- *                  Extracted from QG::Mean — delegates to QG::QG for RHS, Jacobian,
- *                  and bilinear-form evaluation.
+ *    Description:  PDE operator assembly for the barotropic quasi-geostrophic (QG)
+ *                  vorticity equation on a rectangular domain.  Delegates spatial
+ *                  discretisation to QG::QG (Fortran/C++ wrapper) and provides the
+ *                  theta-method operator M − dt·θ·J for the implicit time step.
  *
  *        Version:  1.0
  *        Created:  2026-05-13

@@ -62,11 +62,28 @@
 #else
 #include "Epetra_SerialComm.h"
 #endif
-/*!
- \brief Class for calculating stochastic coefficients.
-
- \class Y_Stoch StochSys.hpp "StochSys.hpp"
-*/
+/**
+ * @brief Stochastic coefficient solver for the Dynamically Orthogonal (DO) method.
+ *
+ * Solves the evolution equation for the stochastic coefficient matrix
+ * @f$ Y(t) \in \mathbb{R}^{m \times S} @f$, where @e m is the number of
+ * DO basis modes and @e S is the number of stochastic realisations.
+ *
+ * The DO decomposition represents a stochastic field as
+ * @f$ u(x,t,\omega) = \bar{u}(x,t) + V(x,t)\,Y(t,\omega) @f$,
+ * where @f$ \bar{u} @f$ is the mean (solved by the Mean class) and @f$ V @f$
+ * is the orthonormal basis (solved by BasisSolver).  This class handles:
+ *   - Assembly of the coefficient RHS and Jacobian from bilinear/linear terms.
+ *   - A Newton iteration (with optional backtracking) to advance Y one time step.
+ *   - Computation of second-moment statistics @f$ E[yy^T] @f$ and
+ *     @f$ E[V y V^T y y^T] @f$ needed by the basis and mean solvers.
+ *   - Generation of Wiener increments via NoiseGenerator.
+ *
+ * @see BasisSolver  The companion class solving for the spatial basis V.
+ * @see StochasticState  The shared data contract coupling Y_Stoch and BasisSolver.
+ *
+ * @class Y_Stoch StochSys.hpp "StochSys.hpp"
+ */
 class Y_Stoch
 {
 public:
@@ -141,14 +158,16 @@ public:
   void setDwiener(const Teuchos::RCP<Epetra_MultiVector>& z0_temp);
   Teuchos::RCP<Epetra_Vector> getEVyVy();
   /**
-   * ===  FUNCTION
-   *======================================================================
-   *         Name:  Bilinear
-   *  Description:  Bilinear form should be defined here!!! This function should
-   *  be called for computing a bilinear term!!!
-   *		  (TODO:: how to call it in y_jac for non-linear term????!!!)
-   * =====================================================================================
-   **/
+   * @brief Evaluate the bilinear form B(ud, u_i) for each column of u.
+   *
+   * For the non-LOCA path this delegates to the StochasticState::bilinearTerm
+   * callback set by the driver; for the LOCA path it calls the Fortran model_bil.
+   *
+   * @param ud  Mean-field vector.
+   * @param u   Multi-vector of basis or coefficient columns.
+   * @param v   Second argument multi-vector.
+   * @param uv  Result multi-vector, overwritten with B(u_i, v_i).
+   */
   void Bilinear(const Teuchos::RCP<Epetra_Vector>& ud,
                 const Teuchos::RCP<Epetra_MultiVector>& u,
                 const Teuchos::RCP<Epetra_MultiVector>& v,

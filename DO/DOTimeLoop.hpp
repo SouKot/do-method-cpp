@@ -39,7 +39,7 @@
 /// @{
 
 /**
- * @brief Teuchos timer handles for the three phases of a stochastic update step.
+ * @brief Teuchos timer handles for the three stages of a stochastic update step.
  *
  * Passed as a bundle into runStochStep() so that timing instrumentation can be
  * enabled or disabled in one place without changing the helper's signature.
@@ -86,11 +86,11 @@ inline void dumpInitialJacobian(const Teuchos::RCP<Epetra_CrsMatrix>& A,
 /**
  * @brief Advance the stochastic (Y, V) unknowns for one time step.
  *
- * Performs the three-phase stochastic sub-step:
- *   -# **Coeff phase** — Y_Stoch::StochasticIterations() updates the coefficient matrix Y.
- *   -# **Basis phase** — Problem_Interface::computeBlocks(), v_stoch_init(), TransferNorm()
+ * Performs the three-stage stochastic sub-step:
+ *   -# **Coefficient update** — Y_Stoch::StochasticIterations() updates the coefficient matrix Y.
+ *   -# **Basis update** — Problem_Interface::computeBlocks(), v_stoch_init(), TransferNorm()
  *      update the stochastic basis V.
- *   -# **Bilinear phase** — HBilinV(), computeEyyTyT(), computeEVyVy() update the
+ *   -# **Statistics update** — HBilinV(), computeEyyTyT(), computeEVyVy() update the
  *      second-moment statistics needed by the mean solver.
  *
  * The caller is responsible for refreshing the stochastic forcing (via

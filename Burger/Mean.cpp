@@ -8,9 +8,9 @@
  *                  PDE assembly delegated to PDEAssembler, solver to
  *                  LinearSolverWrapper.
  *
- *        Version:  2.0  (Phase 5 decomposition)
+ *        Version:  2.0
  *        Created:  04/14/2018 07:55:56 AM
- *       Revision:  2026-05-13  Phase 5 SRP decomposition
+ *       Revision:  2026-05-13
  *       Compiler:  gcc / clang (C++17)
  *
  *         Author:  Sourabh Kotnala (), sauravkotnala@gmail.com
@@ -90,7 +90,13 @@ Mean::Mean(RCP<Teuchos::ParameterList> PrmLst, double* t, double* dt,
                     pde_.getThetaJacobian(), test_, debug_, 0);
 }
 
-// =====================================================================================
+/**
+ * @brief Assemble the theta-method residual for the mean Burgers equation.
+ *
+ * Computes  R = θ·F(u) + (1−θ)·F(u₀) + (u − u₀)  where F is the
+ * spatially discretised RHS including diffusion, advection, and stochastic
+ * correction.  The residual is stored in ThetaRHS_.
+ */
 void Mean::ThetaStepper()
 {
     pde_.assembleRHS(u_, ExpVyVy_, *dt_);
@@ -108,7 +114,15 @@ int Mean::LinSolve(Epetra_Vector& LHS, Epetra_Vector& RHS)
     return solver_->solve(LHS, RHS, "Mean solve");
 }
 
-// =====================================================================================
+/**
+ * @brief Full Newton iteration for the implicit mean-field Burgers step.
+ *
+ * Starting from the previous solution u₀, iterates
+ * @f$ u^{k+1} = u^k + \Delta u @f$ with backtracking until the theta-method
+ * residual drops below toleranceRHS_ or maxNumIterations_ is reached.
+ *
+ * @return @c true if the Newton loop converged.
+ */
 bool Mean::NewtonSolver()
 {
     isConverged_ = false;

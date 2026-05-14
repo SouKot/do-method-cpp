@@ -5,8 +5,8 @@
  *
  *    Description:  Backward-compatibility shim for the DO basis solver.
  *
- *                  The class was renamed to BasisSolver in Phase 2d of the
- *                  refactoring.  This header provides an alias so that all
+ *                  The class was renamed to BasisSolver.  This header provides
+ *                  a backward-compatibility alias so that all
  *                  existing call sites continue to compile without modification.
  *
  *                  New code should include BasisSolver.hpp directly.

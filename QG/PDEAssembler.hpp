@@ -3,8 +3,7 @@
  *
  *       Filename:  PDEAssembler.hpp
  *
- *    Description:  PDE operator assembly for the Quasi-Geostrophic equation.
- *                  Extracted from QG::Mean as part of Phase 5 decomposition.
+ *    Description:  PDE operator assembly for the barotropic Quasi-Geostrophic equation.
  *                  Delegates to the QG::QG Fortran/C++ wrapper for RHS, Jacobian,
  *                  and bilinear-form evaluation.
  *
@@ -30,9 +29,12 @@
 namespace QG {
 
 /**
- * @brief PDE operator assembly for the Quasi-Geostrophic equation.
+ * @brief PDE operators for the barotropic Quasi-Geostrophic vorticity equation.
  *
- * Wraps the QG::QG solver object and provides a uniform assembly interface.
+ * Wraps the QG::QG solver (Fortran/C++ core) to provide a uniform assembly
+ * interface for the RHS @f$ F(\psi) @f$, the Jacobian @f$ J(\psi) @f$, and
+ * the bilinear advection form.  Also builds the theta-method operator
+ * @f$ M - \Delta t\,\theta\,J @f$ used by QG::Mean's Newton solver.
  */
 class PDEAssembler {
 public:

@@ -3,15 +3,16 @@
  *
  *       Filename:  Mean.hpp
  *
- *    Description:  Mean-field solver for the stochastic Quasi-Geostrophic equation.
- *                  Thin coordinator that delegates to:
- *                    - PDEAssembler:       RHS and Jacobian assembly (via QG::QG)
- *                    - ForcingProvider:    time-invariant stochastic forcing W
- *                    - LinearSolverWrapper: linear solve (Amesos/Amesos2)
+ *    Description:  Mean-field solver for the stochastic barotropic Quasi-Geostrophic
+ *                  vorticity equation on a rectangular ocean basin.  Coordinates
+ *                  PDE assembly (QG::PDEAssembler), time-invariant stochastic
+ *                  forcing (QG::ForcingProvider), and linear solves
+ *                  (LinearSolverWrapper) behind an implicit theta-method Newton
+ *                  iteration with an eta-squared or line-search step strategy.
  *
- *        Version:  2.0  (Phase 5 decomposition)
+ *        Version:  2.0
  *        Created:  04/15/2018 03:38:12 PM
- *       Revision:  2026-05-13  Phase 5 SRP decomposition
+ *       Revision:  2026-05-13
  *       Compiler:  gcc / clang (C++17)
  *
  *         Author:  Sourabh Kotnala (), sauravkotnala@gmail.com
@@ -42,10 +43,12 @@
 #include <string>
 
 /**
- * @brief Mean-field solver for the stochastic QG equation.
+ * @brief Mean-field solver for the stochastic barotropic Quasi-Geostrophic equation.
  *
- * Thin coordinator: PDE assembly lives in QG::PDEAssembler,
- * stochastic forcing in QG::ForcingProvider, solver back-end in
+ * Solves the deterministic component @f$ \bar{\psi}(x,y,t) @f$ of the DO expansion
+ * using an implicit theta-method with a Newton iteration (eta-squared or
+ * line-search variant).  PDE assembly is delegated to QG::PDEAssembler,
+ * stochastic forcing to QG::ForcingProvider, and the linear solver to
  * LinearSolverWrapper.
  */
 class Mean {
@@ -60,6 +63,7 @@ public:
                       Teuchos::RCP<Epetra_Vector> u3)
     { pde_.BilinearTerm(u1, u2, u3); }
 
+    /// @brief Evaluate the PDE right-hand side F(u) including stochastic correction.
     void computeF(Epetra_Vector& u, Epetra_Vector& F) {
         pde_.assembleRHS(Teuchos::rcpFromRef(u), ExpVyVy_, *dt_);
         F = pde_.getRHSRef();
@@ -71,6 +75,7 @@ public:
 
     Epetra_Vector& getF() { return pde_.getRHSRef(); }
 
+    /// @brief Assemble the Jacobian J(u) and the theta-method operator M − dt·θ·J.
     void computeJacobian(Epetra_Vector& x, Epetra_CrsMatrix& A) {
         pde_.assembleJacobian(Teuchos::rcpFromRef(x), *dt_, theta_);
         A = *pde_.getJacobian();
@@ -85,8 +90,13 @@ public:
     Teuchos::RCP<Epetra_MultiVector> get_W() { return forcing_->get_W(); }
 
     // -- Time stepping --
+    /// @brief Run Newton iteration (eta-squared step) for one implicit time step.
     bool NewtonSolver();
+
+    /// @brief Alternative Newton solver with cubic-backtracking line search.
     bool newtonLineSearchSolve(Epetra_Vector& x0);
+
+    /// @brief Write the mean solution to a text file.
     void WriteSolution(std::string filename, double param,
                        const Epetra_Vector& soln);
 
