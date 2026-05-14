@@ -50,3 +50,6 @@ Thumbs.db
 *.wmv
 
 code_status.md
+.vscode/
+compile_commands.json
+chat-*.txt
