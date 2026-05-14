@@ -3,12 +3,11 @@
  *
  *       Filename:  Mean.hpp
  *
- *    Description:  Mean-field solver for the stochastic barotropic Quasi-Geostrophic
- *                  vorticity equation on a rectangular ocean basin.  Coordinates
- *                  PDE assembly (QG::PDEAssembler), time-invariant stochastic
- *                  forcing (QG::ForcingProvider), and linear solves
- *                  (LinearSolverWrapper) behind an implicit theta-method Newton
- *                  iteration with an eta-squared or line-search step strategy.
+ *    Description:  Mean-field solver for the stochastic 1-D viscous Burgers equation
+ *                  u_t + u*u_x = mu*u_xx + sigma*dW.  Coordinates PDE assembly
+ *                  (PDEAssembler), time-dependent stochastic forcing
+ *                  (ForcingProvider), and linear solves (LinearSolverWrapper)
+ *                  behind an implicit theta-method Newton iteration.
  *
  *        Version:  2.0
  *        Created:  04/15/2018 03:38:12 PM
@@ -20,13 +19,12 @@
  *
  * =====================================================================================
  */
-#ifndef mean_solve_h
-#define mean_solve_h
+#ifndef MEAN_SOLVER_HPP
+#define MEAN_SOLVER_HPP
 
 #include "PDEAssembler.hpp"
 #include "ForcingProvider.hpp"
 #include "../DO/LinearSolverWrapper.hpp"
-#include "../DO/DOUtils.hpp"
 
 #include "Epetra_CrsMatrix.h"
 #include "Epetra_Vector.h"
@@ -43,17 +41,16 @@
 #include <string>
 
 /**
- * @brief Mean-field solver for the stochastic barotropic Quasi-Geostrophic equation.
+ * @brief Mean-field solver for the stochastic 1-D viscous Burgers equation.
  *
- * Solves the deterministic component @f$ \bar{\psi}(x,y,t) @f$ of the DO expansion
- * using an implicit theta-method with a Newton iteration (eta-squared or
- * line-search variant).  PDE assembly is delegated to QG::PDEAssembler,
- * stochastic forcing to QG::ForcingProvider, and the linear solver to
- * LinearSolverWrapper.
+ * Solves the deterministic component @f$ \bar{u}(x,t) @f$ of the DO expansion
+ * @f$ u = \bar{u} + V Y @f$ using an implicit theta-method with Newton iteration.
+ * PDE assembly is delegated to Burger::PDEAssembler, stochastic forcing to
+ * Burger::ForcingProvider, and the linear solver back-end to LinearSolverWrapper.
  */
-class Mean {
+class MeanSolver {
 public:
-    Mean(Teuchos::RCP<Teuchos::ParameterList> PrmLst,
+    MeanSolver(Teuchos::RCP<Teuchos::ParameterList> PrmLst,
          double* t, double* dt,
          Teuchos::RCP<Epetra_Comm> Comm);
 
@@ -69,13 +66,9 @@ public:
         F = pde_.getRHSRef();
     }
 
-    void getProblemRHS(Epetra_Vector& u, Epetra_Vector& F) {
-        pde_.getProblemRHS(u, F);
-    }
-
     Epetra_Vector& getF() { return pde_.getRHSRef(); }
 
-    /// @brief Assemble the Jacobian J(u) and the theta-method operator M − dt·θ·J.
+    /// @brief Assemble the Jacobian J(u) and the theta-method operator I − dt·θ·J.
     void computeJacobian(Epetra_Vector& x, Epetra_CrsMatrix& A) {
         pde_.assembleJacobian(Teuchos::rcpFromRef(x), *dt_, theta_);
         A = *pde_.getJacobian();
@@ -85,16 +78,13 @@ public:
     Teuchos::RCP<Epetra_CrsMatrix> getMassMatrix() { return pde_.getMassMatrix(); }
 
     // -- Forcing (delegated) --
-    void refreshForcing(double) {} // QG forcing is time-invariant
-    int get_dim_W() { return forcing_->get_dim_W(); }
-    Teuchos::RCP<Epetra_MultiVector> get_W() { return forcing_->get_W(); }
+    void refreshForcing(double t) { forcing_.refreshForcing(t); }
+    int get_dim_W() { return forcing_.get_dim_W(); }
+    Teuchos::RCP<Epetra_MultiVector> get_W() { return forcing_.get_W(); }
 
     // -- Time stepping --
-    /// @brief Run Newton iteration (eta-squared step) for one implicit time step.
+    /// @brief Run Newton iteration to advance the mean field one implicit time step.
     bool NewtonSolver();
-
-    /// @brief Alternative Newton solver with cubic-backtracking line search.
-    bool newtonLineSearchSolve(Epetra_Vector& x0);
 
     /// @brief Write the mean solution to a text file.
     void WriteSolution(std::string filename, double param,
@@ -102,25 +92,22 @@ public:
 
     // -- Accessors --
     Teuchos::RCP<Epetra_Vector> getSolution() { return u_; }
-    Teuchos::RCP<Epetra_Vector> get_Xdim() { return x_; }
     void setExpVyVy(Teuchos::RCP<Epetra_Vector> ExpVyVy) { ExpVyVy_ = ExpVyVy; }
-    void setSolution(Epetra_Vector& x);
 
 private:
-    void ThetaStepper(const Teuchos::RCP<Epetra_Vector>& rhs_u0);
-    void RunBackTracking(Epetra_Vector& rhs_u0);
-    int  LinSolve(Epetra_Vector* LHS, Epetra_Vector* RHS);
+    void ThetaStepper();
+    void RunBackTracking();
+    int  LinSolve(Epetra_Vector& LHS, Epetra_Vector& RHS);
 
     // Composed subsystems
-    QG::PDEAssembler                 pde_;
-    std::optional<QG::ForcingProvider> forcing_;
+    Burger::PDEAssembler     pde_;
+    Burger::ForcingProvider  forcing_;
     std::optional<LinearSolverWrapper> solver_;
 
     // Solution state
     Teuchos::RCP<Epetra_Vector> u_;
     Teuchos::RCP<Epetra_Vector> u0_;
     Teuchos::RCP<Epetra_Vector> dx_;
-    Teuchos::RCP<Epetra_Vector> x_;
     Teuchos::RCP<Epetra_Vector> ThetaRHS_;
     Teuchos::RCP<Epetra_Vector> ExpVyVy_;
 

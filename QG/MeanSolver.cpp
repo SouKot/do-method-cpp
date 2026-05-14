@@ -18,7 +18,7 @@
  *
  * =====================================================================================
  */
-#include "Mean.hpp"
+#include "MeanSolver.hpp"
 #include "HYMLS_MatrixUtils.hpp"
 #include "Teuchos_XMLParameterListHelpers.hpp"
 #include "Teuchos_oblackholestream.hpp"
@@ -31,7 +31,7 @@
 using namespace Teuchos;
 
 // =====================================================================================
-Mean::Mean(RCP<Teuchos::ParameterList> PrmLst, double* t, double* dt,
+MeanSolver::MeanSolver(RCP<Teuchos::ParameterList> PrmLst, double* t, double* dt,
            RCP<Epetra_Comm> Comm)
     : pde_(PrmLst->get("nx", 200),
            PrmLst->get("ny", 200),
@@ -81,7 +81,7 @@ Mean::Mean(RCP<Teuchos::ParameterList> PrmLst, double* t, double* dt,
 }
 
 // =====================================================================================
-void Mean::setSolution(Epetra_Vector& x)
+void MeanSolver::setSolution(Epetra_Vector& x)
 {
     *u0_ = x;
     *u_  = x;
@@ -96,7 +96,7 @@ void Mean::setSolution(Epetra_Vector& x)
  *
  * @param rhs_u0  Pre-computed RHS evaluated at the old solution u₀.
  */
-void Mean::ThetaStepper(const RCP<Epetra_Vector>& rhs_u0)
+void MeanSolver::ThetaStepper(const RCP<Epetra_Vector>& rhs_u0)
 {
     pde_.assembleRHS(u_, ExpVyVy_, *dt_);
     ThetaRHS_->Update(theta_, pde_.getRHSRef(), 0.0);
@@ -109,7 +109,7 @@ void Mean::ThetaStepper(const RCP<Epetra_Vector>& rhs_u0)
 }
 
 // =====================================================================================
-int Mean::LinSolve(Epetra_Vector* LHS, Epetra_Vector* RHS)
+int MeanSolver::LinSolve(Epetra_Vector* LHS, Epetra_Vector* RHS)
 {
     solver_->factorize();
     return solver_->solve(*LHS, *RHS, "Mean solve");
@@ -125,7 +125,7 @@ int Mean::LinSolve(Epetra_Vector* LHS, Epetra_Vector* RHS)
  *
  * @return @c true if the Newton loop converged.
  */
-bool Mean::NewtonSolver()
+bool MeanSolver::NewtonSolver()
 {
     isConverged_ = false;
     dx_->PutScalar(0.0);
@@ -184,7 +184,7 @@ bool Mean::NewtonSolver()
 }
 
 // =====================================================================================
-void Mean::RunBackTracking(Epetra_Vector& rhs_u0)
+void MeanSolver::RunBackTracking(Epetra_Vector& rhs_u0)
 {
     double reduction = -1.0 / 2;
     for (backTrack_ = 0; backTrack_ != numBackTrackingSteps_; ++backTrack_) {
@@ -212,7 +212,7 @@ void Mean::RunBackTracking(Epetra_Vector& rhs_u0)
  * @param x0  Initial guess (usually the solution from the previous time step).
  * @return @c true if the solver converged within tolerance.
  */
-bool Mean::newtonLineSearchSolve(Epetra_Vector& x0)
+bool MeanSolver::newtonLineSearchSolve(Epetra_Vector& x0)
 {
     int nIter = 0;
     double alpha = 1.0e-4, maxiter = 30, lambdaMax = 0.5, lambdaMin = 0.1;
@@ -310,7 +310,7 @@ bool Mean::newtonLineSearchSolve(Epetra_Vector& x0)
 }
 
 // =====================================================================================
-void Mean::WriteSolution(std::string filename, double param,
+void MeanSolver::WriteSolution(std::string filename, double param,
                          const Epetra_Vector& soln)
 {
     Teuchos::RCP<std::ostream> out;

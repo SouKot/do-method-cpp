@@ -52,7 +52,7 @@ using namespace std;
 #include "globdefs.H"
 #include "Interface.hpp"        // resolves Mean → Burger::Mean or QG::Mean
 #include "Problem_Interface.hpp"
-#include "StochSys.hpp"
+#include "CoeffSolver.hpp"
 #include "DOUtils.hpp"
 #include "DOTimeLoop.hpp"
 
@@ -236,8 +236,8 @@ void runSimulation(Teuchos::RCP<Epetra_Comm> Comm, Epetra_Time& timer)
     printnormMV(*Vn, 2, "initial norm of V");
     if (MyPID == 0) cout << "\nInitializing Stoch. Coeff. class...\n";
 
-    Teuchos::RCP<Y_Stoch> y_interface =
-        Teuchos::rcp(new Y_Stoch(Stochit, numSubTimeStep, numvecV,
+    Teuchos::RCP<CoeffSolver> y_interface =
+        Teuchos::rcp(new CoeffSolver(Stochit, numSubTimeStep, numvecV,
                                  &dt, Teuchos::rcpFromRef(detA), soln,
                                  Teuchos::null, Vn, Wbase, Comm,
                                  Teuchos::rcpFromRef(CoefParams),
@@ -384,7 +384,7 @@ int main(int argc = 0, char* argv[] = NULL)
     // Mean is the type alias provided by Interface.hpp for this build target.
     // No #if guard needed: the alias already encodes the brgr / quasi_geo choice.
     try {
-        runSimulation<Mean>(Comm, timer);
+        runSimulation<MeanSolver>(Comm, timer);
     }
     TEUCHOS_STANDARD_CATCH_STATEMENTS(true, std::cerr, status);
 

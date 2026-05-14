@@ -16,10 +16,10 @@
  * =====================================================================================
  */
 #if brgr==1
-#include "../Burger/Mean.hpp"
+#include "../Burger/MeanSolver.hpp"
 #endif
 #if quasi_geo==1
-#include "../QG/Mean.hpp"
+#include "../QG/MeanSolver.hpp"
 #endif
 #if need_locaInterface == 1
 #include "NOX_Epetra_LinearSystem_Amesos.H"

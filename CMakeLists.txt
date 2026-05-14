@@ -65,7 +65,7 @@ set(GEN_SOURCES
 # Sources shared by all DO targets (stochastic solver, basis solver)
 # Stochastic solver core: basis solver, coefficient solver, linear solver back-end
 set(DO_COMMON_SOURCES
-  DO/StochSys.cpp
+  DO/CoeffSolver.cpp
   DO/BasisSolver.cpp
   DO/LinearSolverWrapper.cpp
 )
@@ -83,13 +83,13 @@ set(DO_SWE_SOURCES
 )
 
 set(BRGR_SOURCES
-  Burger/Mean.cpp
+  Burger/MeanSolver.cpp
   Burger/PDEAssembler.cpp)
 
 set(QG_SOURCES
   QG/QG_Data.cpp
   QG/QG.cpp
-  QG/Mean.cpp
+  QG/MeanSolver.cpp
   QG/PDEAssembler.cpp
 )
 

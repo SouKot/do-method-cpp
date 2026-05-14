@@ -1,7 +1,7 @@
 /*
  * =====================================================================================
  *
- *       Filename:  StochSys.hpp
+ *       Filename:  CoeffSolver.hpp
  *
  *    Description:  class for solving stochastic system
  *
@@ -16,8 +16,8 @@
  * =====================================================================================
  */
 
-#ifndef do_method_h
-#define do_method_h
+#ifndef DO_COEFF_SOLVER_HPP
+#define DO_COEFF_SOLVER_HPP
 #include "EpetraExt_MultiVectorIn.h"
 #include "EpetraExt_MultiVectorOut.h"
 #include "Epetra_CrsGraph.h"
@@ -84,11 +84,11 @@ using DomainPtr = Teuchos::RCP<DomainPlaceholder>;
  *   - Generation of Wiener increments via NoiseGenerator.
  *
  * @see BasisSolver  The companion class solving for the spatial basis V.
- * @see StochasticState  The shared data contract coupling Y_Stoch and BasisSolver.
+ * @see StochasticState  The shared data contract coupling CoeffSolver and BasisSolver.
  *
- * @class Y_Stoch StochSys.hpp "StochSys.hpp"
+ * @class CoeffSolver CoeffSolver.hpp "CoeffSolver.hpp"
  */
-class Y_Stoch
+class CoeffSolver
 {
 public:
   /**
@@ -112,7 +112,7 @@ public:
    * @param toleranceRHS  Newton convergence tolerance.
    * @param NormRHS  Initial RHS norm.
    */
-  Y_Stoch(int NumStochIter,
+  CoeffSolver(int NumStochIter,
           int num_Subtime_Step,
           int m,
           double* dt,

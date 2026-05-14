@@ -19,7 +19,7 @@
  *
  * =====================================================================================
  */
-#include "StochSys.hpp"
+#include "CoeffSolver.hpp"
 #include "StochIO.hpp"
 #include "Epetra_LinearProblem.h"
 #include "Epetra_Operator.h"
@@ -40,7 +40,7 @@
 #include "FVM_model_interface.h"
 #endif /* -----  not NEED_LOCAINTERFACE  ----- */
 
-Y_Stoch::Y_Stoch(int NumStochIter,
+CoeffSolver::CoeffSolver(int NumStochIter,
                  int num_Subtime_Step,
                  int m,
                  double* dt,
@@ -277,7 +277,7 @@ Y_Stoch::Y_Stoch(int NumStochIter,
 /* ******************************************************** */
 
 void
-Y_Stoch::CreateLocMultiVec(const std::string& WhichOne)
+CoeffSolver::CreateLocMultiVec(const std::string& WhichOne)
 {
   if (WhichOne == "y") {
     for (int i = 0; i < yTrans_->MyLength(); i++) {
@@ -298,7 +298,7 @@ Y_Stoch::CreateLocMultiVec(const std::string& WhichOne)
 /* ******************************************************** */
 
 void
-Y_Stoch::CreateDistTransMultivec()
+CoeffSolver::CreateDistTransMultivec()
 {
   for (int i = 0; i < yTrans_->MyLength(); i++) {
     for (int j = 0; j < yTrans_->NumVectors(); j++) {
@@ -315,7 +315,7 @@ Y_Stoch::CreateDistTransMultivec()
 /* ******************************************************** */
 
 void
-Y_Stoch::Bilinear(const Teuchos::RCP<Epetra_Vector>& ud,
+CoeffSolver::Bilinear(const Teuchos::RCP<Epetra_Vector>& ud,
                   const Teuchos::RCP<Epetra_MultiVector>& u,
                   const Teuchos::RCP<Epetra_MultiVector>& v,
                   const Teuchos::RCP<Epetra_MultiVector>& uv)
@@ -369,7 +369,7 @@ Y_Stoch::Bilinear(const Teuchos::RCP<Epetra_Vector>& ud,
  * Hn - E<Vy,Vy>
  */
 void
-Y_Stoch::HBilinV()
+CoeffSolver::HBilinV()
 {
   //  Epetra_MultiVector temp(*Exp_yy_);
   int k;
@@ -403,7 +403,7 @@ Y_Stoch::HBilinV()
 /* ******************************************************** */
 
 void
-Y_Stoch::computeExpVVyVy()
+CoeffSolver::computeExpVVyVy()
 {
   /********* expv4 = E[<Vy,Vy>] ********/
   // expv4->Scale((-subdt_));
@@ -419,7 +419,7 @@ Y_Stoch::computeExpVVyVy()
 /* ******************************************************** */
 
 void
-Y_Stoch::NonLinRHS()
+CoeffSolver::NonLinRHS()
 {
   if (!useNwtn_) {
     rhsNonLin->Multiply('N', 'N', 1.0, *VHn, *YY, 0.0);
@@ -434,7 +434,7 @@ Y_Stoch::NonLinRHS()
 /* ******************************************************** */
 
 void
-Y_Stoch::jacBilinTerm()
+CoeffSolver::jacBilinTerm()
 {
   JacNonLin->Scale(0.0);
   for (int i = 0; i < m_; i++) {
@@ -452,7 +452,7 @@ Y_Stoch::jacBilinTerm()
 /* ******************************************************** */
 
 void
-Y_Stoch::LinCoeff()
+CoeffSolver::LinCoeff()
 {
   A_->Multiply(false, *Vnew, *AV);
   VAV->Multiply('T', 'N', 1.0, *Vnew, *AV, 0.0);
@@ -470,7 +470,7 @@ Y_Stoch::LinCoeff()
     printnormMV(*Vnew, 2, "norm of V cols:");
   }
   if (debug_) {
-    std::cout << "\n In Y_Stoch::LinCoeff" << std::endl;
+    std::cout << "\n In CoeffSolver::LinCoeff" << std::endl;
     double nrm1[Vnew->NumVectors()];
     lin_coeff->Norm1(&nrm1[0]);
     std::cout << "One norm of I-dt*VAV" << std::endl;
@@ -504,7 +504,7 @@ Y_Stoch::LinCoeff()
  * =====================================================================================
  */
 void
-Y_Stoch::y_jac()
+CoeffSolver::y_jac()
 {
   // jacBilinTerm();
   *jac = *lin_coeff;
@@ -520,7 +520,7 @@ Y_Stoch::y_jac()
  * =====================================================================================
  */
 void
-Y_Stoch::y_rhs()
+CoeffSolver::y_rhs()
 {
   if (!useNwtn_) {
     NonLinRHS();
@@ -556,20 +556,20 @@ Y_Stoch::y_rhs()
 }
 
 Teuchos::RCP<Epetra_Map>
-Y_Stoch::get_x_map()
+CoeffSolver::get_x_map()
 {
   return map_x_;
 }
 
 void
-Y_Stoch::set_x(const Teuchos::RCP<Epetra_MultiVector>& x0_temp)
+CoeffSolver::set_x(const Teuchos::RCP<Epetra_MultiVector>& x0_temp)
 {
   x0_ = x0_temp;
   *x_ = *x0_temp;
 }
 
 void
-Y_Stoch::setDwiener(const Teuchos::RCP<Epetra_MultiVector>& z0_temp)
+CoeffSolver::setDwiener(const Teuchos::RCP<Epetra_MultiVector>& z0_temp)
 {
   dW = z0_temp;
 
@@ -585,24 +585,24 @@ Y_Stoch::setDwiener(const Teuchos::RCP<Epetra_MultiVector>& z0_temp)
 }
 
 Teuchos::RCP<Epetra_Map>
-Y_Stoch::get_f_map()
+CoeffSolver::get_f_map()
 {
   return map_x_;
 }
 
 Teuchos::RCP<Epetra_MultiVector>
-Y_Stoch::get_x_init()
+CoeffSolver::get_x_init()
 {
   return x0_;
 }
 
 Teuchos::RCP<Epetra_Vector>
-Y_Stoch::getEVyVy()
+CoeffSolver::getEVyVy()
 {
   return expv4;
 }
 void
-Y_Stoch::Solve()
+CoeffSolver::Solve()
 {
   double* Viewx;
   double* ViewRHS;
@@ -633,7 +633,7 @@ Y_Stoch::Solve()
 }
 
 void
-Y_Stoch::StochasticIterations()
+CoeffSolver::StochasticIterations()
 {
   subdt_ = *dt_ / numSubTimeStep;
   double time, LocTime;
@@ -689,7 +689,7 @@ Y_Stoch::StochasticIterations()
   Epetra_Time timer4(timer1);
   y_prob.SetMatrix(*Yjac);
   if (debug_) {
-    printnormMV(*Vnew, 1, "1-norm of V in StochSys::StochasticIterations():");
+    printnormMV(*Vnew, 1, "1-norm of V in CoeffSolver::StochasticIterations():");
     std::cout << "One Norm of Yjac = " << Yjac->NormOne() << std::endl;
   }
   // shouldEquil=y_prob.ShouldEquilibrate();
@@ -774,7 +774,7 @@ Y_Stoch::StochasticIterations()
 }
 
 void
-Y_Stoch::computeExpVal()
+CoeffSolver::computeExpVal()
 {
   computeCrossVariance();
   computeEyyTyT();
@@ -783,7 +783,7 @@ Y_Stoch::computeExpVal()
 }
 
 void
-Y_Stoch::computeEVyVy()
+CoeffSolver::computeEVyVy()
 {
   expv4->Scale(0.0);
   for (int i = 0; i < m_; i++) {
@@ -794,7 +794,7 @@ Y_Stoch::computeEVyVy()
 }
 
 void
-Y_Stoch::computeCrossVariance()
+CoeffSolver::computeCrossVariance()
 {
   CreateDistTransMultivec(); /* Create zTrans and yTrans which have distributed
                                 map */
@@ -803,7 +803,7 @@ Y_Stoch::computeCrossVariance()
 }
 
 void
-Y_Stoch::computeEyyTyT()
+CoeffSolver::computeEyyTyT()
 {
   double* ViewYY;
   double* ViewLocExpyyy;
@@ -836,13 +836,13 @@ Y_Stoch::computeEyyTyT()
 }
 
 void
-Y_Stoch::computeEVyVyy()
+CoeffSolver::computeEVyVyy()
 {
   Exp_VyVyy->Multiply('N', 'N', 1.0, *Hn, *EyyTyT, 0.0);
 }
 // ************************************************************************
 void
-Y_Stoch::computeExpDExpyy()
+CoeffSolver::computeExpDExpyy()
 // ************************************************************************
 {
   Epetra_MultiVector Inv_Exp_yy(Exp_yy_->Map(), Exp_yy_->NumVectors());
@@ -877,7 +877,7 @@ Y_Stoch::computeExpDExpyy()
 }
 
 void
-Y_Stoch::SymMatPseudoInverse(Epetra_MultiVector& mat,
+CoeffSolver::SymMatPseudoInverse(Epetra_MultiVector& mat,
                              Epetra_MultiVector& matInv)
 {
   int myLDA = mat.GlobalLength();
@@ -907,7 +907,7 @@ Y_Stoch::SymMatPseudoInverse(Epetra_MultiVector& mat,
 }
 // ************************************************************************
 void
-Y_Stoch::PostProcess(Epetra_Vector& second_mmnt)
+CoeffSolver::PostProcess(Epetra_Vector& second_mmnt)
 
 // ************************************************************************
 {
@@ -971,7 +971,7 @@ Y_Stoch::PostProcess(Epetra_Vector& second_mmnt)
 }
 
 void
-Y_Stoch::Newton()
+CoeffSolver::Newton()
 {
   isConverged_ = false;
   dx_->PutScalar(0.0);
@@ -1028,7 +1028,7 @@ Y_Stoch::Newton()
 }
 //======================================================================
 void
-Y_Stoch::RunBackTracking()
+CoeffSolver::RunBackTracking()
 {
   // Initialize reduction with -1/2
   double reduction = -1.0 / 2;
@@ -1057,7 +1057,7 @@ Y_Stoch::RunBackTracking()
 }
 
 void
-Y_Stoch::printTransNormMV(Epetra_MultiVector& mv, int normType, const std::string& str)
+CoeffSolver::printTransNormMV(Epetra_MultiVector& mv, int normType, const std::string& str)
 {
   Epetra_Map mp(mv.NumVectors(), 0, mv.Comm());
   Epetra_MultiVector mvT(mp, mv.MyLength());

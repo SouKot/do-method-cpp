@@ -18,7 +18,7 @@
  *
  * =====================================================================================
  */
-#include "Mean.hpp"
+#include "MeanSolver.hpp"
 #include "HYMLS_MatrixUtils.hpp"
 #include "Teuchos_XMLParameterListHelpers.hpp"
 #include "Teuchos_oblackholestream.hpp"
@@ -29,7 +29,7 @@
 using namespace Teuchos;
 
 // =====================================================================================
-Mean::Mean(RCP<Teuchos::ParameterList> PrmLst, double* t, double* dt,
+MeanSolver::MeanSolver(RCP<Teuchos::ParameterList> PrmLst, double* t, double* dt,
            RCP<Epetra_Comm> Comm)
     : pde_(PrmLst->get("nx", 200),
            PrmLst->get("mu", 0.1),
@@ -97,7 +97,7 @@ Mean::Mean(RCP<Teuchos::ParameterList> PrmLst, double* t, double* dt,
  * spatially discretised RHS including diffusion, advection, and stochastic
  * correction.  The residual is stored in ThetaRHS_.
  */
-void Mean::ThetaStepper()
+void MeanSolver::ThetaStepper()
 {
     pde_.assembleRHS(u_, ExpVyVy_, *dt_);
     ThetaRHS_->Update(theta_, pde_.getRHSRef(), 0.0);
@@ -108,7 +108,7 @@ void Mean::ThetaStepper()
 }
 
 // =====================================================================================
-int Mean::LinSolve(Epetra_Vector& LHS, Epetra_Vector& RHS)
+int MeanSolver::LinSolve(Epetra_Vector& LHS, Epetra_Vector& RHS)
 {
     solver_->factorize();
     return solver_->solve(LHS, RHS, "Mean solve");
@@ -123,7 +123,7 @@ int Mean::LinSolve(Epetra_Vector& LHS, Epetra_Vector& RHS)
  *
  * @return @c true if the Newton loop converged.
  */
-bool Mean::NewtonSolver()
+bool MeanSolver::NewtonSolver()
 {
     isConverged_ = false;
     dx_->PutScalar(0.0);
@@ -170,7 +170,7 @@ bool Mean::NewtonSolver()
 }
 
 // =====================================================================================
-void Mean::RunBackTracking()
+void MeanSolver::RunBackTracking()
 {
     double reduction = -1.0 / 2;
     for (backTrack_ = 0; backTrack_ != numBackTrackingSteps_; ++backTrack_) {
@@ -188,7 +188,7 @@ void Mean::RunBackTracking()
 }
 
 // =====================================================================================
-void Mean::WriteSolution(std::string filename, double param,
+void MeanSolver::WriteSolution(std::string filename, double param,
                          const Epetra_Vector& soln)
 {
     Teuchos::RCP<std::ostream> out;

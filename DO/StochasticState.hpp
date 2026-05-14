@@ -4,7 +4,7 @@
  *       Filename:  StochasticState.hpp
  *
  *    Description:  Shared state struct for coupling BasisSolver (V-solver) and
- *                  Y_Stoch (coefficient solver) without circular references.
+ *                  CoeffSolver (coefficient solver) without circular references.
  *
  *                  Both classes are constructed with an RCP<StochasticState> and
  *                  access shared data exclusively through it, making the coupling
@@ -36,16 +36,16 @@
 /// @{
 
 /**
- * @brief Shared data contract between Y_Stoch and BasisSolver.
+ * @brief Shared data contract between CoeffSolver and BasisSolver.
  *
  * Instead of exchanging raw pointers or calling sync methods, both classes
  * hold an @c RCP<StochasticState> and read/write the fields they own:
  *
  * | Field      | Written by     | Read by        |
  * |------------|----------------|----------------|
- * | V          | BasisSolver    | Y_Stoch        |
- * | y          | Y_Stoch        | BasisSolver    |
- * | ExpDExpyy  | Y_Stoch        | BasisSolver    |
+ * | V          | BasisSolver    | CoeffSolver        |
+ * | y          | CoeffSolver        | BasisSolver    |
+ * | ExpDExpyy  | CoeffSolver        | BasisSolver    |
  * | udet       | Mean solver    | both           |
  * | A          | Mean solver    | both           |
  * | W          | Mean solver    | both           |
@@ -54,10 +54,10 @@ struct StochasticState {
     /// Stochastic basis matrix (N × m). Owned by BasisSolver.
     Teuchos::RCP<Epetra_MultiVector> V;
 
-    /// Stochastic coefficient matrix (m × S). Owned by Y_Stoch.
+    /// Stochastic coefficient matrix (m × S). Owned by CoeffSolver.
     Teuchos::RCP<Epetra_MultiVector> y;
 
-    /// E[ d(ExpDExp) / yy ] coupling term (N × m). Computed by Y_Stoch.
+    /// E[ d(ExpDExp) / yy ] coupling term (N × m). Computed by CoeffSolver.
     Teuchos::RCP<Epetra_MultiVector> ExpDExpyy;
 
     /// Mean-field solution vector. Owned by the Mean solver.
@@ -77,7 +77,7 @@ struct StochasticState {
     /**
      * @brief Callback for the model-specific bilinear form u⊗v → uv.
      *
-     * Replaces the former @c model_->BilinearTerm() coupling between Y_Stoch
+     * Replaces the former @c model_->BilinearTerm() coupling between CoeffSolver
      * and Mean.  The driver sets this once after constructing the Mean object.
      *
      * Signature:  void(RCP<Epetra_Vector> u, RCP<Epetra_Vector> v,

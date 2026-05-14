@@ -25,7 +25,7 @@
 #include "StochasticState.hpp"
 #include "StochIO.hpp"
 #include "Problem_Interface.hpp"
-#include "StochSys.hpp"
+#include "CoeffSolver.hpp"
 #include "EpetraExt_MatrixMatrix.h"
 #include "HYMLS_MatrixUtils.hpp"
 #include "Teuchos_RCP.hpp"
@@ -87,14 +87,14 @@ inline void dumpInitialJacobian(const Teuchos::RCP<Epetra_CrsMatrix>& A,
  * @brief Advance the stochastic (Y, V) unknowns for one time step.
  *
  * Performs the three-stage stochastic sub-step:
- *   -# **Coefficient update** — Y_Stoch::StochasticIterations() updates the coefficient matrix Y.
+ *   -# **Coefficient update** — CoeffSolver::StochasticIterations() updates the coefficient matrix Y.
  *   -# **Basis update** — Problem_Interface::computeBlocks(), v_stoch_init(), TransferNorm()
  *      update the stochastic basis V.
  *   -# **Statistics update** — HBilinV(), computeEyyTyT(), computeEVyVy() update the
  *      second-moment statistics needed by the mean solver.
  *
  * The caller is responsible for refreshing the stochastic forcing (via
- * @c model->refreshForcing(t)) **before** this call; Y_Stoch and Problem_Interface
+ * @c model->refreshForcing(t)) **before** this call; CoeffSolver and Problem_Interface
  * already hold a shared pointer to Wbase and see the update automatically.
  *
  * @param[in]     isStochOn    If false the function returns immediately (deterministic run).
@@ -108,7 +108,7 @@ inline void dumpInitialJacobian(const Teuchos::RCP<Epetra_CrsMatrix>& A,
 inline void runStochStep(bool isStochOn,
                          bool timeProf,
                          double dt,
-                         const Teuchos::RCP<Y_Stoch>& y_interface,
+                         const Teuchos::RCP<CoeffSolver>& y_interface,
                          const Teuchos::RCP<Problem_Interface>& Vstoch,
                          const Teuchos::RCP<Epetra_MultiVector>& Vn,
                          const StochTimers &tmr) {

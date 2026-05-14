@@ -70,7 +70,7 @@ using namespace std;
 #include "globdefs.H"
 #include "Interface.hpp"        // provides FVM::LocaInterface + ImplicitTimeStepper
 #include "Problem_Interface.hpp"
-#include "StochSys.hpp"
+#include "CoeffSolver.hpp"
 #include "DOUtils.hpp"
 #include "DOTimeLoop.hpp"
 #include <boost/random/mersenne_twister.hpp>
@@ -108,7 +108,7 @@ Teuchos::RCP<Teuchos::Time> meanJacTime = Teuchos::TimeMonitor::getNewTimer(
 #ifdef DEBUGGING
 static void test_jac_billin(Teuchos::RCP<FVM::LocaInterface> model,
                             Teuchos::RCP<Epetra_CrsMatrix> A,
-                            Teuchos::RCP<Y_Stoch> Ystoch) {
+                            Teuchos::RCP<CoeffSolver> Ystoch) {
     std::cout << "\n inside test_jac_bilin()\n";
     int n = A->NumMyRows();
     std::cout << "number of elements, n= " << n << "\n";
@@ -409,8 +409,8 @@ int main(int argc = 0, char *argv[] = NULL) {
         printnormMV(*Vn, 2, "initial norm of V");
         if (MyPID == 0) cout << "\nInitializing Stoch. Coeff. class...\n";
 
-        Teuchos::RCP<Y_Stoch> y_interface =
-                Teuchos::rcp(new Y_Stoch(Stochit, numSubTimeStep, numvecV,
+        Teuchos::RCP<CoeffSolver> y_interface =
+                Teuchos::rcp(new CoeffSolver(Stochit, numSubTimeStep, numvecV,
                                          &dt, Teuchos::rcpFromRef(detA), soln, domain,
                                          Vn, Wbase, Comm,
                                          Teuchos::rcpFromRef(CoefParams),
