@@ -48,8 +48,11 @@ PDEAssembler::PDEAssembler(int m, double mu, double theta,
 
     LinOp_->FillComplete();
     Op2x_->FillComplete();
-    Op1x_->FillComplete();
     eye_->FillComplete();
+
+    // Op1x_ is identity — copy after FillComplete so operator= succeeds
+    *Op1x_ = *eye_;
+    Op1x_->FillComplete();
 
     // Allocate Jacobian workspace
     LinJac_   = rcp(new Epetra_CrsMatrix(Epetra_DataAccess::Copy, *Map, 3));
@@ -163,9 +166,6 @@ void PDEAssembler::createLinOp(int m, double mu,
 
     LinOp_->Scale(mu / std::pow(dx, 2));
     Op2x_->Scale(1.0 / (2 * dx));
-
-    // Op1x_ is identity (diagonal)
-    *Op1x_ = *eye_;
 }
 
 // =====================================================================================
