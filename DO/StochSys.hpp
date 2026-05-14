@@ -34,14 +34,7 @@
 #include <Epetra_SerialDenseSVD.h>
 #include <Epetra_SerialDenseSolver.h>
 #include <Teuchos_SerialDenseMatrix.hpp>
-#if use_trng==1
-#include <trng/yarn2.hpp>
-#include <trng/normal_dist.hpp>
-#else
-#include <boost/random/mersenne_twister.hpp>
-#include <boost/random/normal_distribution.hpp>
-#include <boost/random/variate_generator.hpp>
-#endif
+#include "NoiseGenerator.hpp"
 // #include "Sacado.hpp"
 // #include "Sacado_Fad_BLAS.hpp"
 #include "AnasaziBlockDavidsonSolMgr.hpp"
@@ -178,21 +171,11 @@ public:
   bool Converged() { return isConverged_; }
   int Iterations() { return iter_; }
   Teuchos::RCP<Epetra_SerialDenseMatrix> getJacobian() { return Yjac; }
-  Teuchos::RCP<Epetra_MultiVector> getEyy(){return Exp_yy_;}
+  Teuchos::RCP<Epetra_MultiVector> getEyy()         { return Exp_yy_; }
+  Teuchos::RCP<Epetra_MultiVector> getExpDExpyy()   { return ExpDExpyy; }
+  Teuchos::RCP<Epetra_MultiVector> getY()           { return y_; }
+  Epetra_MultiVector&              getYTrans()       { return *yTrans_; }
 
-#if use_trng==1
-  trng::yarn2 eng;
-  typedef trng::normal_dist<> GEN;
-  Teuchos::RCP<GEN> gen;
-  /* Class Variables */
-#else
-  typedef boost::mt19937 ENG;                      // Mersenne Twister
-  typedef boost::normal_distribution<double> DIST; // Normal Distribution
-  typedef boost::variate_generator<ENG, DIST> GEN;
-  ENG eng;
-  DIST dist;
-  Teuchos::RCP<GEN> gen;
-#endif
   int numSubTimeStep, MyLDA;
   int m_, ttt, rszyy;
   int stochiter;
@@ -269,6 +252,7 @@ public:
 private:
   // /////////////////////////////////////
   // Private member data
+  NoiseGenerator noiseGen_;
   int iter_;
   int maxNumIterations_;
   int numPrecRecomputes_;

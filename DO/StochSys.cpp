@@ -20,6 +20,7 @@
  * =====================================================================================
  */
 #include "StochSys.hpp"
+#include "StochIO.hpp"
 #include "Epetra_LinearProblem.h"
 #include "Epetra_Operator.h"
 #include "Epetra_Time.h"
@@ -74,6 +75,7 @@ Y_Stoch::Y_Stoch(int NumStochIter,
   , toleranceRHS_(toleranceRHS)
   , NormRHS_(NormRHS)
   , numBackTrackingSteps_(numBackTrackingSteps)
+  , noiseGen_(A->Comm().NumProc(), A->Comm().MyPID())
 {
   MyPID = A->Comm().MyPID();
   using Teuchos::rcp;
@@ -177,19 +179,6 @@ Y_Stoch::Y_Stoch(int NumStochIter,
     ru = Epetra_SerialDenseMatrix(Epetra_DataAccess::View, r_val, m_, m_, m_);
   }
 
-#if use_trng==1
-  eng.split(A_->Comm().NumProc(), MyPID);
-  gen = Teuchos::rcp(new GEN(0.0,1.0));
-  if(MyPID==0)
-    std::cout<<"\n USING TRNG LIBRARY\n";
-#else
-  std::random_device random_dev;
-  eng = ENG(A_->Comm().MyPID() * 31 + random_dev());
-  dist = DIST(0.0, 1.0);
-  gen = Teuchos::rcp(new GEN(eng, dist));
-  if(MyPID==0)
-    std::cout<<"\n USING BOOST LIBRARY\n";
-#endif 
   // WARNING: At present the 'TypeCoeffFile' can be either 'None' or
   // 'Variance'. Using 'CoeffMatrix' will result in an error !!!!
   std::string CoefFile; // =     CoefParams.get("StochCoefFile","y.mm");
@@ -209,18 +198,8 @@ Y_Stoch::Y_Stoch(int NumStochIter,
   {
     if (MyPID == 0)
       std::cout << " Initializing Coeff.'s using " << CoefFile << ".\n";
-    
-    Epetra_MultiVector* y_coeff;
-    int err=(EpetraExt::MatrixMarketFileToMultiVector(CoefFile.c_str(),
-						      *Tmap, y_coeff));
-    if ( err!=0)
-    {
-      std::cout<<" error while reading matrix market file for yTrans_.!!!!";
-      getchar();
-    }
- 
-    *yTrans_= *y_coeff;
-    delete y_coeff;
+    auto y_coeff = StochIO::readMV(CoefFile, *Tmap);
+    *yTrans_ = *y_coeff;
     CreateLocMultiVec("y");
   }
 
@@ -228,20 +207,11 @@ Y_Stoch::Y_Stoch(int NumStochIter,
     if (MyPID == 0)
       std::cout << " Using provided variance vector for initializing Stoch. "
                 << "Coeff.'s \n";
-    Epetra_MultiVector* y_coeff;
-    EpetraExt::MatrixMarketFileToMultiVector(
-      CoefFile.c_str(), *map_x_, y_coeff);
-    for (int i = 0; i < yTrans_->NumVectors(); i++) {
-      for (int j = 0; j < yTrans_->MyLength(); j++) {
-#if use_trng==1
-	(*(*yTrans_)(i))[j] = sqrt((*(*y_coeff)(0))[i]) * (*gen)(eng);
-#else
-        (*(*yTrans_)(i))[j] = sqrt((*(*y_coeff)(0))[i]) * (*gen)();
-#endif
-      }
-    }
+    auto y_coeff = StochIO::readMV(CoefFile, *map_x_);
+    for (int i = 0; i < yTrans_->NumVectors(); i++)
+      for (int j = 0; j < yTrans_->MyLength(); j++)
+        (*(*yTrans_)(i))[j] = sqrt((*(*y_coeff)(0))[i]) * noiseGen_.sample();
     CreateLocMultiVec("y");
-    delete y_coeff;
   }
   double temval = 1.0, one = 1.0;
   if (debug_) {
@@ -254,7 +224,7 @@ Y_Stoch::Y_Stoch(int NumStochIter,
   }
   if (debug_)
     printnormMV(*Vnew, 2, "nrm of each vector in Vn:");
-  
+
   // Test on consistency of Jacobian and bilinear form.
 } /* end of 1st constructor */
 #else
@@ -295,6 +265,7 @@ Y_Stoch::Y_Stoch(int NumStochIter,
   , NormRHS_(NormRHS)
   , numBackTrackingSteps_(numBackTrackingSteps)
   , ttt(1)
+  , noiseGen_(A->Comm().NumProc(), A->Comm().MyPID())
 {
   MyPID = A->Comm().MyPID();
   using Teuchos::rcp;
@@ -401,17 +372,6 @@ Y_Stoch::Y_Stoch(int NumStochIter,
       Teuchos::View, r_val, m_, m_, m_));
     ru = Epetra_SerialDenseMatrix(Epetra_DataAccess::View, r_val, m_, m_, m_);
   }
-  std::random_device random_dev;
-#if use_trng==1
-  eng.split(A_->Comm().NumProc(), MyPID);
-  gen = Teuchos::rcp(new GEN(0.0,1.0));
-  std::cout<<"\n USING TRNG LIBRARY\n";
-#else
-  eng = ENG(A_->Comm().MyPID() * 31 + random_dev());
-  dist = DIST(0.0, 1.0);
-  gen = Teuchos::rcp(new GEN(eng, dist));
-  std::cout<<"\n USING BOOST LIBRARY\n";
-#endif
   std::string CoefFile; // =     CoefParams.get("StochCoefFile","y.mm");
   std::string TypeCoeffFile = CoefParams->get("Type of Coeff File", "None");
   test_ = CoefParams->get("Class Testing", false);
@@ -425,40 +385,24 @@ Y_Stoch::Y_Stoch(int NumStochIter,
   if (TypeCoeffFile != "None")
     CoefFile = CoefParams->get("StochCoefFile", "y.mm");
 
- if (TypeCoeffFile == "CoeffMatrix")
-{
+  if (TypeCoeffFile == "CoeffMatrix")
+  {
     if (MyPID == 0)
       std::cout << " Initializing Coeff.'s using " << CoefFile << ".\n";
-    Epetra_MultiVector* y_coeff;
-    int success = EpetraExt::MatrixMarketFileToMultiVector(
-	CoefFile.c_str(), *Tmap, y_coeff);
-    std::string msg= "Error in reading file "+ CoefFile;
-    TEUCHOS_TEST_FOR_EXCEPTION(success!=0,std::logic_error,msg);
-    for (int i = 0; i < yTrans_->NumVectors(); i++) {
-      for (int j = 0; j < yTrans_->MyLength(); j++) {
+    auto y_coeff = StochIO::readMV(CoefFile, *Tmap);
+    for (int i = 0; i < yTrans_->NumVectors(); i++)
+      for (int j = 0; j < yTrans_->MyLength(); j++)
         (*(*yTrans_)(i))[j] = (*(*y_coeff)(i))[j];
-      }
-    }
     CreateLocMultiVec("y");
-}
+  }
   if (TypeCoeffFile == "Variance") {
     if (MyPID == 0)
       std::cout << " Using provided variance vector for initializing Stoch. "
                 << "Coeff.'s \n";
-    Epetra_MultiVector* y_coeff;
-    int success = EpetraExt::MatrixMarketFileToMultiVector(
-      CoefFile.c_str(), *map_x_, y_coeff);
-    std::string msg= "Error in reading file "+ CoefFile;
-    TEUCHOS_TEST_FOR_EXCEPTION(success!=0,std::logic_error,msg);
-    for (int i = 0; i < yTrans_->NumVectors(); i++) {
-      for (int j = 0; j < yTrans_->MyLength(); j++) {
-#if use_trng==1
-        (*(*yTrans_)(i))[j] = sqrt((*(*y_coeff)(0))[i]) * (*gen)(eng);
-#else
-        (*(*yTrans_)(i))[j] = sqrt((*(*y_coeff)(0))[i]) * (*gen)();
-#endif
-      }
-    }
+    auto y_coeff = StochIO::readMV(CoefFile, *map_x_);
+    for (int i = 0; i < yTrans_->NumVectors(); i++)
+      for (int j = 0; j < yTrans_->MyLength(); j++)
+        (*(*yTrans_)(i))[j] = sqrt((*(*y_coeff)(0))[i]) * noiseGen_.sample();
     CreateLocMultiVec("y");
   }
   double temval = 1.0, one = 1.0;
@@ -827,8 +771,7 @@ Y_Stoch::setDwiener(const Teuchos::RCP<Epetra_MultiVector>& z0_temp)
     itrtr += 1;
     std::string flnm = "wnr" + Teuchos::toString(itrtr) + ".mm";
     std::cout << "\n filename is: " << flnm << "\n";
-    Epetra_MultiVector* tmpmv;
-    EpetraExt::MatrixMarketFileToMultiVector(flnm.c_str(), *map_z_, tmpmv);
+    auto tmpmv = StochIO::readMV(flnm, *map_z_);
     *dW = *tmpmv;
   } else {
     dW->Scale(sqrt(subdt_));
@@ -975,11 +918,7 @@ Y_Stoch::StochasticIterations()
     for (int i = 0; i < B->NumVectors(); i++) {
       avrg[i] = 0;
       for (stochiter_ = 0; stochiter_ < yTrans_->MyLength(); stochiter_++) {
-#if use_trng==1
-       	(*(*zTrans_)(i))[stochiter_] = (*gen)(eng);
-#else
-        (*(*zTrans_)(i))[stochiter_] = (*gen)();
-#endif
+        (*(*zTrans_)(i))[stochiter_] = noiseGen_.sample();
         avrg[i] += (*(*zTrans_)(i))[stochiter_];
       }
       avrg[i] = avrg[i] / NumStochIter_;
