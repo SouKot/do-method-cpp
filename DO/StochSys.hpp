@@ -46,8 +46,12 @@
 #include "DOUtils.hpp"
 #if need_locaInterface == 1
 #include "FVM_Domain.H"
+using DomainPtr = Teuchos::RCP<FVM::Domain>;
 #else /* -----  not NEED_LOCAINTERFACE  ----- */
 #include "Interface.hpp"
+/// @brief Placeholder type used when FVM::Domain is not available (non-LOCA builds).
+struct DomainPlaceholder {};
+using DomainPtr = Teuchos::RCP<DomainPlaceholder>;
 #endif /* -----  not NEED_LOCAINTERFACE  ----- */
 // Include header to define eigenproblem Ax = \lambda*x
 #include "AnasaziBasicEigenproblem.hpp"
@@ -87,14 +91,34 @@
 class Y_Stoch
 {
 public:
-#if need_locaInterface == 1
+  /**
+   * @brief Construct the stochastic coefficient solver.
+   *
+   * @param NumStochIter  Number of stochastic realisations.
+   * @param num_Subtime_Step  Sub-time-steps per outer step (subdt = dt / num_Subtime_Step).
+   * @param m  Number of DO basis modes.
+   * @param dt  Pointer to the current time-step size.
+   * @param A  Jacobian of the deterministic RHS.
+   * @param uav  Mean-field solution vector.
+   * @param domain  FVM domain (LOCA builds) or Teuchos::null (non-LOCA builds).
+   * @param Vn  Stochastic basis multi-vector (N × m).
+   * @param Wb  Stochastic forcing multi-vector.
+   * @param comm  Epetra communicator.
+   * @param CoefParams  Parameter list for this class.
+   * @param sharedState  Shared state object visible to BasisSolver.
+   * @param maxNumIter  Maximum Newton iterations.
+   * @param useBacktracking  Enable backtracking line-search.
+   * @param numBackTrackingSteps  Number of backtracking steps.
+   * @param toleranceRHS  Newton convergence tolerance.
+   * @param NormRHS  Initial RHS norm.
+   */
   Y_Stoch(int NumStochIter,
           int num_Subtime_Step,
           int m,
           double* dt,
           const Teuchos::RCP<Epetra_CrsMatrix>& A,
           const Teuchos::RCP<Epetra_Vector>& uav,
-          const Teuchos::RCP<FVM::Domain>& domain,
+          const DomainPtr& domain,
           const Teuchos::RCP<Epetra_MultiVector>& Vn,
           const Teuchos::RCP<Epetra_MultiVector>& Wb,
           const Teuchos::RCP<Epetra_Comm>& comm,
@@ -105,41 +129,6 @@ public:
           double numBackTrackingSteps,
           double toleranceRHS,
           double NormRHS);
-
-#else
-  /*!
-   \brief constructor with no links to LocaInterface
-
-   \fn Y_Stoch
-   \param NumStochIter : number of stochastic iteration
-   \param num_Subtime_Step : subdt= dt/num_Subtime_step
-   \param m : is the number of stochastic basis
-   \param dt :
-   \param A : is jacobian of RHS of deterministic system's (i.e., system without
-   stochastics) \param uav \param Vn : stocahstic basis (of size N*m) \param Wb
-   : stochastic forcing \param comm : \param CoefParams : a parameterlist
-   containing parameters for this class \param model : Mean class object \param
-   maxNumIter : maximum iterations newton solver \param useBacktracking :
-   whether to use backtracking or not \param numBackTrackingSteps \param
-   toleranceRHS : tolerance for newton solver \param NormRHS
-  */
-  Y_Stoch(int NumStochIter,
-          int num_Subtime_Step,
-          int m,
-          double* dt,
-          const Teuchos::RCP<Epetra_CrsMatrix>& A,
-          const Teuchos::RCP<Epetra_Vector>& uav,
-          const Teuchos::RCP<Epetra_MultiVector>& Vn,
-          const Teuchos::RCP<Epetra_MultiVector>& Wb,
-          const Teuchos::RCP<Epetra_Comm>& comm,
-          const Teuchos::RCP<Teuchos::ParameterList>& CoefParams,
-          const Teuchos::RCP<StochasticState>& sharedState,
-          int maxNumIter,
-          bool useBacktracking,
-          double numBackTrackingSteps,
-          double toleranceRHS,
-          double NormRHS);
-#endif /* -----  not NEED_LOCAINTERFACE  ----- */
   //** \name Overridden from EpetraExt::ModelEvaluator . */
   Teuchos::RCP<Epetra_Map> get_x_map();
   Teuchos::RCP<Epetra_Map> get_f_map();
@@ -297,8 +286,6 @@ private:
   Teuchos::RCP<Epetra_CrsMatrix> stress_;
   Teuchos::RCP<Epetra_MultiVector> exp_yy_;
   Teuchos::RCP<StochasticState> sharedState_;
-#if need_locaInterface == 1
-  Teuchos::RCP<FVM::Domain> domain_;
-#endif /* -----  not NEED_LOCAINTERFACE  ----- */
+  DomainPtr domain_;
 };
 #endif

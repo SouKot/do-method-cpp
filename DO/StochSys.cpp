@@ -39,17 +39,17 @@
 #if need_locaInterface == 1
 #include "FVM_model_interface.h"
 #endif /* -----  not NEED_LOCAINTERFACE  ----- */
-#if need_locaInterface == 1
+
 Y_Stoch::Y_Stoch(int NumStochIter,
                  int num_Subtime_Step,
                  int m,
                  double* dt,
                  const Teuchos::RCP<Epetra_CrsMatrix>& A,
                  const Teuchos::RCP<Epetra_Vector>& uav,
-                 const Teuchos::RCP<FVM::Domain>& domain,
+                 const DomainPtr& domain,
                  const Teuchos::RCP<Epetra_MultiVector>& Vn,
                  const Teuchos::RCP<Epetra_MultiVector>& Wb,
-                 const Teuchos::RCP<Epetra_Comm>& comm, // pass comm
+                 const Teuchos::RCP<Epetra_Comm>& comm,
                  const Teuchos::RCP<Teuchos::ParameterList>& CoefParams,
                  const Teuchos::RCP<StochasticState>& sharedState,
                  int maxNumIter,
@@ -66,199 +66,6 @@ Y_Stoch::Y_Stoch(int NumStochIter,
   , udet(uav)
   , domain_(domain)
   , sharedState_(sharedState)
-  , Vnew(Vn)
-  , B(Wb)
-  , N_(uav->GlobalLength())
-  , y_prob()
-  , isConverged_(false)
-  , backTracking_(useBacktracking)
-  , iter_(0)
-  , maxNumIterations_(maxNumIter)
-  , toleranceRHS_(toleranceRHS)
-  , NormRHS_(NormRHS)
-  , numBackTrackingSteps_(numBackTrackingSteps)
-  , noiseGen_(A->Comm().NumProc(), A->Comm().MyPID())
-{
-  MyPID = A->Comm().MyPID();
-  using Teuchos::rcp;
-  map_x_ = rcp(new Epetra_LocalMap(m_, 0, *Comm_));
-  map_z_ = rcp(new Epetra_LocalMap(B->NumVectors(), 0, A_->Comm()));
-  map_mm = rcp(new Epetra_LocalMap(m_ * m_, 0, *Comm_));
-  Tmap = rcp(new Epetra_Map(NumStochIter_, 0, *Comm_));
-
-  yTrans_ = Teuchos::rcp(new Epetra_MultiVector(*Tmap, m_));
-  zTrans_ = Teuchos::rcp(new Epetra_MultiVector(*Tmap, B->NumVectors()));
-  MyLDA = yTrans_->MyLength();
-  y_ = Teuchos::rcp(new Epetra_MultiVector(*map_x_, MyLDA));
-  z_ = Teuchos::rcp(new Epetra_MultiVector(*map_z_, MyLDA));
-  YY = Teuchos::rcp(new Epetra_MultiVector(*map_mm, MyLDA));
-  rszyy = m_ * m_;
-  x0_ = rcp(new Epetra_MultiVector(*map_x_, MyLDA));
-  x_ = rcp(new Epetra_MultiVector(*map_x_, MyLDA));
-  dx_ = rcp(new Epetra_MultiVector(*map_x_, MyLDA));
-  // f_out = Teuchos::rcp(new Epetra_Vector(*map_x_, MyLDA));
-  int n;
-  n = A->NumMyRows();
-  // map_expv4 = rcp(new Epetra_Map(n,0,*Comm_));
-  viv = rcp(new Epetra_MultiVector(*Vnew));
-  rhs = rcp(new Epetra_MultiVector(*map_x_, MyLDA));
-  Teuchos::RCP<Epetra_Map> fortMap = domain_->GetAssemblyMap();
-  fortudet = Teuchos::rcp(new Epetra_Vector(*fortMap));
-  fortVn = Teuchos::rcp(new Epetra_MultiVector(*fortMap, m_));
-  fortviv = Teuchos::rcp(new Epetra_MultiVector(*fortMap, m_));
-  AV = rcp(new Epetra_MultiVector(*Vnew));
-  VAV = rcp(new Epetra_MultiVector(*map_x_, m_));
-  udet_mtimes = rcp(new Epetra_MultiVector(*Vnew));
-  ones = rcp(new Epetra_Vector(*map_x_));
-  Vudet = rcp(new Epetra_MultiVector(*Vnew));
-  udetV = rcp(new Epetra_MultiVector(*Vnew));
-  VVudet = rcp(new Epetra_MultiVector(*map_x_, m_));
-  lin_coeff = rcp(new Epetra_MultiVector(*map_x_, m_));
-  JacNonLin = rcp(new Epetra_MultiVector(*map_x_, m_));
-  rhsNonLin = rcp(new Epetra_MultiVector(*map_x_, MyLDA));
-  Exp_zy = rcp(new Epetra_MultiVector(*map_z_, m_));
-  Exp_zy_ = rcp(new Epetra_MultiVector(*map_z_, m_));
-  Exp_yy_ = rcp(new Epetra_MultiVector(*map_x_, m_));
-  EyyTyT = rcp(new Epetra_MultiVector(*map_mm, m_));
-  ExpzyDExpyy = rcp(new Epetra_MultiVector(*map_z_, m_));
-  // ExpzyDExpyy->PutScalar(1.0);
-  ExpVyVyyDExpyy = rcp(new Epetra_MultiVector(*Vnew));
-  ExpDExpyy = rcp(new Epetra_MultiVector(*Vnew));
-  LocExpyyy = rcp(new Epetra_MultiVector(*map_x_, Vnew->NumVectors()));
-  //  getchar();
-
-  Exp_VyVyy = rcp(new Epetra_MultiVector(*Vnew));
-
-  Utmp = Teuchos::rcp(new Epetra_MultiVector(*map_x_, m_));
-  //  sol = rcp(new Epetra_SerialDenseMatrix(
-  //  Epetra_DataAccess::View, sol_val, m_, m_, W->NumVectors()));
-  Epetra_Map Glob_x_map(m_, 0, *Comm_);
-  ExpYY = rcp(new Epetra_CrsMatrix(Epetra_DataAccess::Copy, Glob_x_map, m_));
-  int GlobInd;
-  double val;
-  for (int i = 0; i < m_; i++) {
-    // GlobInd=ExpYY->GRID(i);
-    for (int j = i; j < m_; j++) {
-      val = 1.0;
-      GlobInd = ExpYY->InsertGlobalValues(i, 1, &val, &j);
-    }
-  }
-  
-  ExpYY->FillComplete();
-  eye = Teuchos::rcp(new Epetra_MultiVector(Epetra_Map(m_, 0, A_->Comm()), m_));
-  ExpVar = rcp(new Epetra_MultiVector(*map_x_, m_, false));
-  Vtemp = rcp(new Epetra_MultiVector(*Vnew));
-  const_coeff = rcp(new Epetra_MultiVector(
-    *map_x_, 1)); // map of udet from deterministic part( n*1 length vector )
-  rep_exp_vyvy = rcp(new Epetra_MultiVector(*map_x_, MyLDA));
-  for (int i = 0; i < MyLDA; i++)
-    (*rep_exp_vyvy)[i] = (*const_coeff)[0];
-
-  expv4 = rcp(new Epetra_Vector(
-    *udet)); // map of udet from deterministic part( n*1 length vector )
-  expv4->PutScalar(0.0);
-  xndiff = Teuchos::rcp(new Epetra_Vector(*map_x_, false));
-  VB = rcp(new Epetra_MultiVector(*map_x_, B->NumVectors()));
-  HYMLS::MatrixUtils::mmwrite("frc.mm",*B);
-  dW = rcp(new Epetra_MultiVector(*z_));
-  VBdW = rcp(new Epetra_MultiVector(*x_));
-  // lin_coeff->ExtractView(&JacVal,&m_);
-  jac = Teuchos::rcp(new Epetra_MultiVector(*lin_coeff));
-  {
-    double* jac_val;
-    jac->ExtractView(&jac_val, &m_);
-    Yjac = rcp(new Epetra_SerialDenseMatrix(Epetra_DataAccess::View, jac_val, m_, m_, m_));
-  }
-  H = rcp(new Epetra_MultiVector(*map_x_, m_ * m_));
-  Hn = rcp(new Epetra_MultiVector(Vnew->Map(), m_ * m_));
-  VHn = rcp(new Epetra_MultiVector(*map_x_, m_ * m_));
-  Rv = Teuchos::rcp(new Epetra_MultiVector(*Exp_yy_));
-  {
-    double* r_val;
-    Rv->ExtractView(&r_val, &m_);
-    Ru = Teuchos::rcp(new Teuchos::SerialDenseMatrix<int, double>(
-      Teuchos::View, r_val, m_, m_, m_));
-    ru = Epetra_SerialDenseMatrix(Epetra_DataAccess::View, r_val, m_, m_, m_);
-  }
-
-  // WARNING: At present the 'TypeCoeffFile' can be either 'None' or
-  // 'Variance'. Using 'CoeffMatrix' will result in an error !!!!
-  std::string CoefFile; // =     CoefParams.get("StochCoefFile","y.mm");
-  std::string TypeCoeffFile = CoefParams->get("Type of Coeff File", "None");
-  test_ = CoefParams->get("Class Testing", false);
-  debug_ = CoefParams->get("Class Debugging", false);
-  useNwtn_ = CoefParams->get("Use Newton", true);
-  if (TypeCoeffFile == "None") {
-    if (MyPID == 0)
-      std::cout << "Initializing Stoch. Coeff to zero \n";
-    y_->PutScalar(0.0);
-  }
-  if (TypeCoeffFile != "None")
-    CoefFile = CoefParams->get("StochCoefFile", "y.mm");
-  // y_->PutScalar(0.0001);
-  if (TypeCoeffFile == "CoeffMatrix")
-  {
-    if (MyPID == 0)
-      std::cout << " Initializing Coeff.'s using " << CoefFile << ".\n";
-    auto y_coeff = StochIO::readMV(CoefFile, *Tmap);
-    *yTrans_ = *y_coeff;
-    CreateLocMultiVec("y");
-  }
-
-  if (TypeCoeffFile == "Variance") {
-    if (MyPID == 0)
-      std::cout << " Using provided variance vector for initializing Stoch. "
-                << "Coeff.'s \n";
-    auto y_coeff = StochIO::readMV(CoefFile, *map_x_);
-    for (int i = 0; i < yTrans_->NumVectors(); i++)
-      for (int j = 0; j < yTrans_->MyLength(); j++)
-        (*(*yTrans_)(i))[j] = sqrt((*(*y_coeff)(0))[i]) * noiseGen_.sample();
-    CreateLocMultiVec("y");
-  }
-  double temval = 1.0, one = 1.0;
-  if (debug_) {
-    std::cout << "\nnum vectors in locexpyy = " << LocExpyyy->NumVectors()
-              << "\n";
-  }
-  for (int i = 0; i < eye->MyLength(); i++) {
-    int gr = eye->Map().GID(i);
-    eye->ReplaceGlobalValue(gr, gr, one);
-  }
-  if (debug_)
-    printnormMV(*Vnew, 2, "nrm of each vector in Vn:");
-
-  // Publish owned data into the shared state so BasisSolver sees it.
-  sharedState_->y         = y_;
-  sharedState_->ExpDExpyy = ExpDExpyy;
-
-  // Test on consistency of Jacobian and bilinear form.
-} /* end of 1st constructor */
-#else
-
-Y_Stoch::Y_Stoch(int NumStochIter,
-                 int num_Subtime_Step,
-                 int m,
-                 double* dt,
-                 const Teuchos::RCP<Epetra_CrsMatrix>& A,
-                 const Teuchos::RCP<Epetra_Vector>& uav,
-                 const Teuchos::RCP<Epetra_MultiVector>& Vn,
-                 const Teuchos::RCP<Epetra_MultiVector>& Wb,
-                 const Teuchos::RCP<Epetra_Comm>& comm, // pass comm
-                 const Teuchos::RCP<Teuchos::ParameterList>& CoefParams,
-                 const Teuchos::RCP<StochasticState>& sharedState,
-                 int maxNumIter,
-                 bool useBacktracking,
-                 double numBackTrackingSteps,
-                 double toleranceRHS,
-                 double NormRHS)
-  : Comm_(comm)
-  , sharedState_(sharedState)
-  , NumStochIter_(NumStochIter)
-  , numSubTimeStep(num_Subtime_Step)
-  , m_(m)
-  , dt_(dt)
-  , A_(A)
-  , udet(uav)
   , Vnew(Vn)
   , B(Wb)
   , N_(uav->GlobalLength())
@@ -293,12 +100,15 @@ Y_Stoch::Y_Stoch(int NumStochIter,
   f_out = Teuchos::rcp(new Epetra_Vector(*map_x_, MyLDA));
   int n;
   n = A->NumMyRows();
-  // map_expv4 = rcp(new Epetra_Map(n,0,*Comm_));
   viv = rcp(new Epetra_MultiVector(*Vnew));
   rhs = rcp(new Epetra_MultiVector(*map_x_, MyLDA));
-  //  Teuchos::RCP<Epetra_Map> fortMap=domain_->GetAssemblyMap();
-
-  //  fortviv = Teuchos::rcp(new Epetra_MultiVector(*fortMap, m_));
+#if need_locaInterface == 1
+  // Allocate Fortran-map work vectors for the LOCA/SWE bilinear interface.
+  Teuchos::RCP<Epetra_Map> fortMap = domain_->GetAssemblyMap();
+  fortudet = Teuchos::rcp(new Epetra_Vector(*fortMap));
+  fortVn = Teuchos::rcp(new Epetra_MultiVector(*fortMap, m_));
+  fortviv = Teuchos::rcp(new Epetra_MultiVector(*fortMap, m_));
+#endif
   AV = rcp(new Epetra_MultiVector(*Vnew));
   VAV = rcp(new Epetra_MultiVector(*map_x_, m_));
   udet_mtimes = rcp(new Epetra_MultiVector(*Vnew));
@@ -314,25 +124,18 @@ Y_Stoch::Y_Stoch(int NumStochIter,
   Exp_yy_ = rcp(new Epetra_MultiVector(*map_x_, m_));
   EyyTyT = rcp(new Epetra_MultiVector(*map_mm, m_));
   ExpzyDExpyy = rcp(new Epetra_MultiVector(*map_z_, m_));
-  // ExpzyDExpyy->PutScalar(1.0);
   ExpVyVyyDExpyy = rcp(new Epetra_MultiVector(*Vnew));
   ExpDExpyy = rcp(new Epetra_MultiVector(*Vnew));
   LocExpyyy = rcp(new Epetra_MultiVector(*map_x_, Vnew->NumVectors()));
-  //  getchar();
 
   Exp_VyVyy = rcp(new Epetra_MultiVector(*Vnew));
 
   Utmp = Teuchos::rcp(new Epetra_MultiVector(*map_x_, m_));
-  // std::cout<<"\naddress of first value in sol_val = "<<sol_val<<"\n";
-
-  // sol = rcp(new Epetra_SerialDenseMatrix(Epetra_DataAccess::View, sol_val,
-  // m_,m_, W->NumVectors()));
   Epetra_Map Glob_x_map(m_, 0, *Comm_);
   ExpYY = rcp(new Epetra_CrsMatrix(Epetra_DataAccess::Copy, Glob_x_map, m_));
   int GlobInd;
   double val;
   for (int i = 0; i < m_; i++) {
-    // GlobInd=ExpYY->GRID(i);
     for (int j = i; j < m_; j++) {
       val = 1.0;
       GlobInd = ExpYY->InsertGlobalValues(i, 1, &val, &j);
@@ -340,15 +143,12 @@ Y_Stoch::Y_Stoch(int NumStochIter,
   }
 
   ExpYY->FillComplete();
-  // std::cout<<"\naddress of first value in sol  = "<<&(*sol)(0,0)<<"\n";
   eye = Teuchos::rcp(new Epetra_MultiVector(Epetra_Map(m_, 0, A_->Comm()), m_));
   ExpVar = rcp(new Epetra_MultiVector(*map_x_, m_, false));
   Vtemp = rcp(new Epetra_MultiVector(*Vnew));
   const_coeff = rcp(new Epetra_MultiVector(
     *map_x_, 1)); // map of udet from deterministic part( n*1 length vector )
   rep_exp_vyvy = rcp(new Epetra_MultiVector(*map_x_, MyLDA));
-  // make a Multivector, of size n * stochiter, whose every vector points to
-  // E[VyVy] vector.
   for (int i = 0; i < MyLDA; i++)
     (*rep_exp_vyvy)[i] = (*const_coeff)[0];
 
@@ -357,10 +157,8 @@ Y_Stoch::Y_Stoch(int NumStochIter,
   expv4->PutScalar(0.0);
   xndiff = Teuchos::rcp(new Epetra_Vector(*map_x_, false));
   VB = rcp(new Epetra_MultiVector(*map_x_, B->NumVectors()));
-
   dW = rcp(new Epetra_MultiVector(*z_));
   VBdW = rcp(new Epetra_MultiVector(*x_));
-  // lin_coeff->ExtractView(&JacVal,&m_);
   jac = Teuchos::rcp(new Epetra_MultiVector(*lin_coeff));
   {
     double* jac_val;
@@ -378,7 +176,10 @@ Y_Stoch::Y_Stoch(int NumStochIter,
       Teuchos::View, r_val, m_, m_, m_));
     ru = Epetra_SerialDenseMatrix(Epetra_DataAccess::View, r_val, m_, m_, m_);
   }
-  std::string CoefFile; // =     CoefParams.get("StochCoefFile","y.mm");
+
+  // WARNING: At present the 'TypeCoeffFile' can be either 'None' or
+  // 'Variance'. Using 'CoeffMatrix' will result in an error !!!!
+  std::string CoefFile;
   std::string TypeCoeffFile = CoefParams->get("Type of Coeff File", "None");
   test_ = CoefParams->get("Class Testing", false);
   debug_ = CoefParams->get("Class Debugging", false);
@@ -390,15 +191,12 @@ Y_Stoch::Y_Stoch(int NumStochIter,
   }
   if (TypeCoeffFile != "None")
     CoefFile = CoefParams->get("StochCoefFile", "y.mm");
-
   if (TypeCoeffFile == "CoeffMatrix")
   {
     if (MyPID == 0)
       std::cout << " Initializing Coeff.'s using " << CoefFile << ".\n";
     auto y_coeff = StochIO::readMV(CoefFile, *Tmap);
-    for (int i = 0; i < yTrans_->NumVectors(); i++)
-      for (int j = 0; j < yTrans_->MyLength(); j++)
-        (*(*yTrans_)(i))[j] = (*(*y_coeff)(i))[j];
+    *yTrans_ = *y_coeff;
     CreateLocMultiVec("y");
   }
   if (TypeCoeffFile == "Variance") {
@@ -412,9 +210,6 @@ Y_Stoch::Y_Stoch(int NumStochIter,
     CreateLocMultiVec("y");
   }
   double temval = 1.0, one = 1.0;
-  // solver_type="iter";
-  // if(solver_type=="direct")
-  //{
   if (debug_) {
     std::cout << "\nnum vectors in locexpyy = " << LocExpyyy->NumVectors()
               << "\n";
@@ -423,10 +218,14 @@ Y_Stoch::Y_Stoch(int NumStochIter,
     int gr = eye->Map().GID(i);
     eye->ReplaceGlobalValue(gr, gr, one);
   }
+  if (debug_)
+    printnormMV(*Vnew, 2, "nrm of each vector in Vn:");
 
   // Publish owned data into the shared state so BasisSolver sees it.
   sharedState_->y         = y_;
   sharedState_->ExpDExpyy = ExpDExpyy;
+
+} /* end of constructor */
 
 #if 0
   // Test on consistency rhs and bilinear form after pitchfork bifurcation
@@ -475,8 +274,6 @@ Y_Stoch::Y_Stoch(int NumStochIter,
   plt::plot(vec);
   plt::show();
   getchar();
-#endif
-} /* end of 2nd constructor */
 #endif
 
 /* ******************************************************** */

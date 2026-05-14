@@ -239,7 +239,7 @@ void runSimulation(Teuchos::RCP<Epetra_Comm> Comm, Epetra_Time& timer)
     Teuchos::RCP<Y_Stoch> y_interface =
         Teuchos::rcp(new Y_Stoch(Stochit, numSubTimeStep, numvecV,
                                  &dt, Teuchos::rcpFromRef(detA), soln,
-                                 Vn, Wbase, Comm,
+                                 Teuchos::null, Vn, Wbase, Comm,
                                  Teuchos::rcpFromRef(CoefParams),
                                  sharedState,
                                  maxnumiter, usebacktrack, backtrackstep,
