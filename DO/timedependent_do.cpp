@@ -300,6 +300,9 @@ void runSimulation(Teuchos::RCP<Epetra_Comm> Comm, Epetra_Time& timer)
         if (timeProf) { meanTime->stop(); meanTime->incrementNumCalls(); }
 
         EpetraExt::MatrixMatrix::Add(*A, false, 1.0, detA, 0.0);
+        // Keep the V-solver's Jacobian in sync with the updated mean-field state
+        // so that the next stochastic step uses the current linearisation.
+        Vstoch->syncJacobian(detA);
 
         (*outstream) << "\n##############################################\n";
 

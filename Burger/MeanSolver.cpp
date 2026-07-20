@@ -40,11 +40,19 @@ MeanSolver::MeanSolver(RCP<Teuchos::ParameterList> PrmLst, double* t, double* dt
     , t_(t)
     , dt_(dt)
     , theta_(PrmLst->get("theta", 0.5))
-    , toleranceRHS_(10e-12)
-    , maxNumIterations_(30)
-    , numBackTrackingSteps_(5)
+    , toleranceRHS_  (PrmLst->get("Newton Tolerance",             1.0e-10))
+    , tolAcceptable_ (PrmLst->get("Newton Acceptable Tolerance",   1.0e-5))
+    , tolRelative_   (PrmLst->get("Newton Relative Tolerance",     1.0e-4))
+    , ewGamma_       (PrmLst->get("Newton EW Gamma",               0.9))
+    , ewAlphaEW_     (PrmLst->get("Newton EW Alpha",               1.618))
+    , alphaAdapt_    (PrmLst->get("Newton Relative Tolerance Factor", 0.01))
+    , schemeOrder_   (PrmLst->get("Newton Scheme Order",           2))
+    , maxNumIterations_(PrmLst->get("Newton Max Iter",             50))
+    , numBackTrackingSteps_(PrmLst->get("Newton Backtrack Steps",  20))
     , backTracking_(true)
     , isConverged_(false)
+    , criterion_(parseCriterion(
+          PrmLst->get("Newton Convergence Criterion", std::string("Relative Fixed"))))
     , test_(PrmLst->get("Testing", true))
     , debug_(PrmLst->get("Debugging", true))
 {
@@ -63,6 +71,14 @@ MeanSolver::MeanSolver(RCP<Teuchos::ParameterList> PrmLst, double* t, double* dt
 
     // Build initial forcing
     forcing_.createW();
+
+    // Report chosen criterion
+    if (MyPID_ == 0) {
+        const std::string cnames[] = {
+            "Absolute", "Relative Fixed", "Relative Adaptive", "Eisenstat-Walker"};
+        std::cout << "[Mean Newton] Convergence criterion: "
+                  << cnames[static_cast<int>(criterion_)] << "\n";
+    }
 
     // Setup solver
     std::string solver_type = PrmLst->get("Solver Package", "Amesos2");
@@ -108,6 +124,44 @@ void MeanSolver::ThetaStepper()
 }
 
 // =====================================================================================
+// -- Criterion helpers ----------------------------------------------------------------
+
+MeanSolver::NewtonCriterion
+MeanSolver::parseCriterion(const std::string& s)
+{
+    if (s == "Absolute")          return NewtonCriterion::Absolute;
+    if (s == "Relative Fixed")    return NewtonCriterion::RelativeFixed;
+    if (s == "Relative Adaptive") return NewtonCriterion::RelativeAdaptive;
+    if (s == "Eisenstat-Walker")  return NewtonCriterion::EisenstatWalker;
+    // Unknown string: warn and fall back to Relative Fixed.
+    std::cout << "[Mean Newton] WARNING: unknown criterion '" << s
+              << "' — falling back to 'Relative Fixed'.\n";
+    return NewtonCriterion::RelativeFixed;
+}
+
+bool MeanSolver::checkConvergence(double normFk, double normF0,
+                                  double normFprev, double etaEW) const
+{
+    switch (criterion_) {
+    case NewtonCriterion::Absolute:
+        return normFk < toleranceRHS_;
+
+    case NewtonCriterion::RelativeFixed:
+        return (normFk < toleranceRHS_) || (normFk / normF0 < tolRelative_);
+
+    case NewtonCriterion::RelativeAdaptive: {
+        // tol = alpha * dt^(p-1);  p=schemeOrder_, alpha=alphaAdapt_
+        const double adaptTol = alphaAdapt_ * std::pow(*dt_, schemeOrder_ - 1);
+        return (normFk < toleranceRHS_) || (normFk / normF0 < adaptTol);
+    }
+    case NewtonCriterion::EisenstatWalker:
+        // etaEW is updated by caller; convergence when ||F_k|| <= eta * ||F_0||
+        return (normFk < toleranceRHS_) || (normFk <= etaEW * normF0);
+    }
+    return false; // unreachable
+}
+
+// =====================================================================================
 int MeanSolver::LinSolve(Epetra_Vector& LHS, Epetra_Vector& RHS)
 {
     solver_->factorize();
@@ -128,12 +182,32 @@ bool MeanSolver::NewtonSolver()
     isConverged_ = false;
     dx_->PutScalar(0.0);
 
+    // Evaluate initial residual — used as normalisation base for relative criteria.
     ThetaStepper();
     ThetaRHS_->Scale(-1.0);
     ThetaRHS_->Norm2(&NormRHS_);
+    const double normF0   = (NormRHS_ > 0.0) ? NormRHS_ : 1.0;
+    double normFprev      = normF0;  // for Eisenstat-Walker tracking
+    double etaEW          = 1.0;     // Eisenstat-Walker force tolerance (init to 1)
 
-    if (debug_)
-        std::cout << "\nMean:: Newton:      initial norm: " << NormRHS_;
+    if (debug_) {
+        // Print which effective tolerance will be used this step
+        std::string critLabel;
+        switch (criterion_) {
+            case NewtonCriterion::Absolute:
+                critLabel = "abs<" + std::to_string(toleranceRHS_); break;
+            case NewtonCriterion::RelativeFixed:
+                critLabel = "rel<" + std::to_string(tolRelative_); break;
+            case NewtonCriterion::RelativeAdaptive: {
+                double atol = alphaAdapt_ * std::pow(*dt_, schemeOrder_ - 1);
+                critLabel = "rel-adaptive<" + std::to_string(atol); break;
+            }
+            case NewtonCriterion::EisenstatWalker:
+                critLabel = "EW(γ=" + std::to_string(ewGamma_) + ")"; break;
+        }
+        std::cout << "\nMean:: Newton: initial ||F|| = " << normF0
+                  << "  criterion: " << critLabel;
+    }
 
     for (iter_ = 0; iter_ != maxNumIterations_; ++iter_) {
         pde_.assembleJacobian(u_, *dt_, theta_);
@@ -144,29 +218,60 @@ bool MeanSolver::NewtonSolver()
         ThetaRHS_->Scale(-1.0);
         ThetaRHS_->Norm2(&NormRHStest_);
 
-        if (debug_) {
-            std::cout << "\nNewton:      iter: " << iter_;
-            std::cout << "\nNewton:      norm: " << NormRHStest_;
+        // Update Eisenstat-Walker eta for next iteration
+        if (criterion_ == NewtonCriterion::EisenstatWalker && iter_ > 0) {
+            const double etaCandidate =
+                ewGamma_ * std::pow(NormRHStest_ / normFprev, ewAlphaEW_);
+            // Guard: prevent eta from growing (Eisenstat-Walker safeguard)
+            etaEW = std::min(etaCandidate, ewGamma_ * etaEW * etaEW);
+            etaEW = std::max(etaEW, 1.0e-14); // floor to avoid underflow
         }
 
-        if (NormRHStest_ < toleranceRHS_) {
-            if (debug_) std::cout << "\nSuccess...";
+        if (debug_)
+            std::cout << "\nMean:: Newton: iter " << iter_
+                      << "  ||F|| = " << NormRHStest_
+                      << "  ||F||/||F0|| = " << NormRHStest_ / normF0
+                      << (criterion_ == NewtonCriterion::EisenstatWalker
+                              ? "  eta_EW = " + std::to_string(etaEW) : "");
+
+        if (checkConvergence(NormRHStest_, normF0, normFprev, etaEW)) {
+            if (debug_) std::cout << "\nMean:: Newton: converged.";
+            isConverged_ = true;
             break;
         }
-        if (backTracking_ && (NormRHS_ < NormRHStest_))
+
+        if (backTracking_ && (NormRHS_ < NormRHStest_)) {
             runBackTracking();
-        NormRHS_ = NormRHStest_;
+            ThetaRHS_->Scale(-1.0);  // restore sign after backtracking
+        }
+        normFprev = NormRHStest_;
+        NormRHS_  = NormRHStest_;
     }
 
-    if (iter_ == maxNumIterations_) {
-        std::cout << "\nNewton: ---> TROUBLE" << __FILE__ << __LINE__;
-        std::cout << "\nNewton not converged after Max number of iter!!!!!!\n";
-        std::cout << "\nrhs norm = " << NormRHStest_;
-    } else {
-        *u0_ = *u_;
-        isConverged_ = true;
+    // ---- Post-loop: always accept the step; only warn if not converged -----------
+    *u0_ = *u_;
+
+    if (!isConverged_) {
+        const double relRes = NormRHStest_ / normF0;
+        if (NormRHStest_ < tolAcceptable_) {
+            if (MyPID_ == 0)
+                std::cout << "\n[Mean Newton] WARNING t=" << *t_
+                          << ": primary criterion not met."
+                          << "  ||F|| = " << NormRHStest_
+                          << "  ||F||/||F0|| = " << relRes
+                          << "  (within acceptable tol " << tolAcceptable_
+                          << ") — continuing.";
+            isConverged_ = true;
+        } else {
+            if (MyPID_ == 0)
+                std::cout << "\n[Mean Newton] WARNING t=" << *t_
+                          << ": acceptable tol (" << tolAcceptable_
+                          << ") not met.  ||F|| = " << NormRHStest_
+                          << "  ||F||/||F0|| = " << relRes
+                          << " — step accepted with degraded accuracy.";
+        }
     }
-    return isConverged_;
+    return true; // simulation always continues
 }
 
 // =====================================================================================

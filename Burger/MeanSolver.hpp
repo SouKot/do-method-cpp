@@ -37,6 +37,7 @@
 #include "Epetra_SerialComm.h"
 #endif
 
+#include <cmath>
 #include <optional>
 #include <string>
 
@@ -95,9 +96,25 @@ public:
     void setEVyVy(Teuchos::RCP<Epetra_Vector> EVyVy) { EVyVy_ = EVyVy; }
 
 private:
+    // -----------------------------------------------------------------------
+    /// @brief Selects which convergence criterion governs the Newton loop.
+    ///
+    /// Set via "Newton Convergence Criterion" in params.xml:
+    ///  - "Absolute"          : ||F_k|| < tol_desired
+    ///  - "Relative Fixed"    : ||F_k||/||F_0|| < tol_relative
+    ///  - "Relative Adaptive" : ||F_k||/||F_0|| < alpha * dt^(p-1)
+    ///  - "Eisenstat-Walker"  : eta_k = gamma*(||F_k||/||F_{k-1}||)^ew_alpha
+    // -----------------------------------------------------------------------
+    enum class NewtonCriterion { Absolute, RelativeFixed, RelativeAdaptive, EisenstatWalker };
+    static NewtonCriterion parseCriterion(const std::string& s);
+    NewtonCriterion criterion_;
+
     void ThetaStepper();
     void runBackTracking();
     int  LinSolve(Epetra_Vector& LHS, Epetra_Vector& RHS);
+    /// Evaluate the active convergence criterion; returns true when converged.
+    bool checkConvergence(double normFk, double normF0,
+                          double normFprev, double etaEW) const;
 
     // Composed subsystems
     Burger::PDEAssembler     pde_;
@@ -117,7 +134,14 @@ private:
     double  theta_;
 
     // Newton parameters
-    double toleranceRHS_, NormRHS_, NormRHStest_;
+    double toleranceRHS_;   ///< Absolute desired tolerance (silent success if met)
+    double tolAcceptable_;  ///< Absolute acceptable tolerance (warn but continue)
+    double tolRelative_;    ///< Fixed relative tolerance  [Relative Fixed criterion]
+    double ewGamma_;        ///< Eisenstat-Walker gamma constant (default 0.9)
+    double ewAlphaEW_;      ///< Eisenstat-Walker exponent  (default 1.618)
+    double alphaAdapt_;     ///< Safety factor for Relative Adaptive: tol = alpha*dt^(p-1)
+    int    schemeOrder_;    ///< Temporal order p of the theta-scheme (1=BE, 2=CN)
+    double NormRHS_, NormRHStest_;
     int    iter_, maxNumIterations_;
     int    backTrack_, numBackTrackingSteps_;
     bool   isConverged_, backTracking_;

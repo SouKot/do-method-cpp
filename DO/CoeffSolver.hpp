@@ -191,6 +191,7 @@ public:
   int stochiter;
   int nDOF, MyPID, debugWienerCount = 0;
   double subdt_;
+  double theta_;  ///< Theta for Y-equation: 0.5=Crank-Nicolson, 1.0=Backward-Euler
   double* dt_;
   Teuchos::RCP<Epetra_CrsMatrix> A_, EYY;
   // Teuchos::RCP<Epetra_CrsMatrix> mass_;
@@ -212,6 +213,7 @@ public:
     EVyVy; // map of uMean from deterministic part( n*1 length vector )
   Teuchos::RCP<Epetra_MultiVector> const_coeff;
   Teuchos::RCP<Epetra_MultiVector> rhs;
+  Teuchos::RCP<Epetra_MultiVector> rhs_linear_; ///< (1-theta)*subdt*VAV*yCurr explicit part
   Teuchos::RCP<Epetra_MultiVector> W;
   Teuchos::RCP<Epetra_MultiVector> VB;
   Teuchos::RCP<Epetra_MultiVector> dW;

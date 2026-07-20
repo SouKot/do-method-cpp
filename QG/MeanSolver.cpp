@@ -143,18 +143,7 @@ bool MeanSolver::NewtonSolver()
         pde_.assembleJacobian(u_, *dt_, theta_);
         LinSolve(dx_.get(), ThetaRHS_.get());
 
-        // Eta-squared step-length (Burger-style)
-        double s, s0, etasq;
-        Epetra_Vector JU(*dx_);
-        pde_.getThetaJacobian()->Multiply(false, *dx_, JU);
-        dx_->Dot(JU, &s);
-        ThetaRHS_->Dot(*dx_, &s0);
-        etasq = (s0 / s);
-
-        if (etasq > 0.0)
-            u_->Update(std::sqrt(etasq), *dx_, 1.0);
-        else
-            u_->Update(std::sqrt(-etasq), *dx_, 1.0);
+        u_->Update(1.0, *dx_, 1.0);
 
         ThetaStepper(rcpFromRef(rhs_u0));
         ThetaRHS_->Scale(-1.0);
@@ -168,6 +157,10 @@ bool MeanSolver::NewtonSolver()
         if (NormRHStest_ < toleranceRHS_) {
             if (debug_) std::cout << "\nSuccess...";
             break;
+        }
+        if (backTracking_ && (NormRHS_ < NormRHStest_)) {
+            runBackTracking(rhs_u0);
+            ThetaRHS_->Scale(-1.0);  // restore sign after backtracking leaves ThetaRHS_=+G(u)
         }
         NormRHS_ = NormRHStest_;
     }

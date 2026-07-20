@@ -182,6 +182,10 @@ CoeffSolver::CoeffSolver(int numSamplesIn,
   test_ = CoefParams->get("Class Testing", false);
   debug_ = CoefParams->get("Class Debugging", false);
   useNwtn_ = CoefParams->get("Use Newton", true);
+  theta_ = CoefParams->get("Theta", 0.5);  // default Crank-Nicolson
+  rhs_linear_ = rcp(new Epetra_MultiVector(*localMapY, numSamples));
+  if (MyPID == 0)
+    std::cout << "\nCoeffSolver: theta = " << theta_ << "\n";
   if (TypeCoeffFile == "None") {
     if (MyPID == 0)
       std::cout << "Initializing Stoch. Coeff to zero \n";
@@ -456,13 +460,15 @@ CoeffSolver::computeLinearCoeff()
 {
   A_->Multiply(false, *V, *AV);
   VAV->Multiply('T', 'N', 1.0, *V, *AV, 0.0);
-  // lin_coeff = I - dt * (VAV)
-  lin_coeff->Update(
-    1.0, *VAV, 0.0); /* bilinear terms are not added in lin_coeff!!!!!! */
-  lin_coeff->Scale(-1.0 * (subdt_));
+  // LHS Jacobian: lin_coeff = I - theta * subdt * V'AV
+  lin_coeff->Update(1.0, *VAV, 0.0);
+  lin_coeff->Scale(-theta_ * subdt_);
   for (int i = 0; i < m_; i++) {
     lin_coeff->SumIntoMyValue(i, i, 1.00);
   }
+  // Explicit-part workspace: rhs_linear = (1-theta) * subdt * V'AV
+  // (to be multiplied by yCurr in assembleRHS and added to rhs)
+  rhs_linear_->Update((1.0 - theta_) * subdt_, *VAV, 0.0);
   if (debug_) {
     std::cout << "\n frobenius norm of A : " << A_->NormFrobenius() << "\n";
     printnormMV(*lin_coeff, 2, "norm of y-jacView cols:");
@@ -473,13 +479,13 @@ CoeffSolver::computeLinearCoeff()
     std::cout << "\n In CoeffSolver::computeLinearCoeff" << std::endl;
     double nrm1[V->NumVectors()];
     lin_coeff->Norm1(&nrm1[0]);
-    std::cout << "One norm of I-dt*VAV" << std::endl;
+    std::cout << "One norm of I-theta*dt*VAV" << std::endl;
     for (int i = 0; i < V->NumVectors(); ++i) {
       std::cout << nrm1[i] << "  ";
     }
     std::cout << std::endl;
     lin_coeff->MaxValue(&nrm1[0]);
-    std::cout << "max value of I-dt*VAV" << std::endl;
+    std::cout << "max value of I-theta*dt*VAV" << std::endl;
     for (int i = 0; i < V->NumVectors(); ++i) {
       std::cout << nrm1[i] << "  ";
     }
@@ -546,10 +552,13 @@ CoeffSolver::assembleRHS()
   } else {
     computeNonlinearRHS();
     rhs->PutScalar(0.0);
-    rhs->Multiply('N', 'N', 1.0, *lin_coeff, *yOld, 1.0); // rhs=-x+lin_coeff*x0
-    rhs->Update(-1.0, *yCurr, 1.0);
-    rhs->Update(-subdt_, *repEVyVy, 1.0); // rhs=-x+lin_coeff*x0+const_coeff
-    // rhs=-x + lin_coeff*x0 + const_coeff + rhs_nonlin
+    // Implicit theta part: theta * subdt * V'AV * yOld  (captured in lin_coeff * yOld)
+    rhs->Multiply('N', 'N', 1.0, *lin_coeff, *yOld, 1.0); // rhs = lin_coeff * yOld
+    // Explicit (1-theta) part: (1-theta) * subdt * V'AV * yCurr
+    rhs->Multiply('N', 'N', 1.0, *rhs_linear_, *yCurr, 1.0); // rhs += (1-theta)*subdt*VAV*yCurr
+    rhs->Update(-1.0, *yCurr, 1.0);   // rhs = lin_coeff*yOld + (1-theta)*subdt*VAV*yCurr - yCurr
+    rhs->Update(-subdt_, *repEVyVy, 1.0); // subtract dt*V'E[<Vy,Vy>]
+    // add nonlinear correction (bilinear fluctuation term)
     rhs->Update(subdt_, *rhsNonLin, 1.0);
     rhs->Update(-1.0, *VBdW, 1.0);
   }
@@ -639,7 +648,9 @@ CoeffSolver::StochasticIterations()
   double time, LocTime;
   Epetra_Time timer1(V->Comm());
 
-  computeEVyVy();
+  // NOTE: computeEVyVy() is called at the END of this function (after Newton
+  // converges) so it uses the *updated* y_ from the current time step.
+  // Calling it here with stale y_ would lag the mean-field correction by one step.
 
   if (test_) {
     LocTime = timer1.ElapsedTime();
@@ -770,6 +781,9 @@ CoeffSolver::StochasticIterations()
       std::cout << "*******************************************\n" << std::endl;
     }
   }
+  // Recompute E[<Vy,Vy>] using the *updated* y_ so the mean solver
+  // sees statistics from the current time step rather than lagged ones.
+  computeEVyVy();
   computeExpectations();
 }
 
